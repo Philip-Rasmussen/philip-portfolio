@@ -50,7 +50,7 @@ if (intro){
     document.body.classList.add('intro-lock');
 
     // counter 00 -> 100 synced with the loading bar
-    const counterDuration = 700;
+    const counterDuration = 850;
     const counterStart = performance.now();
     function tickCounter(now){
       const p = Math.min((now - counterStart) / counterDuration, 1);
@@ -65,8 +65,8 @@ if (intro){
       intro.classList.add('hide');
       document.body.classList.remove('intro-lock');
       staggerIn(heroReveals, 100);
-      setTimeout(drawSquiggle, 420);
-    }, 950);
+      setTimeout(drawSquiggle, 550);
+    }, 1080);
 
     intro.addEventListener('transitionend', (e) => {
       if (e.propertyName === 'transform') intro.classList.add('done');
@@ -319,5 +319,68 @@ if (modal){
   modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModal));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+}
+
+// ---------- journey: horizontal pinned scroll (desktop only) ----------
+const journeyPinWrap = document.getElementById('journeyPinWrap');
+const journeyTrack = document.getElementById('journeyTrack');
+const journeyProgressFill = document.getElementById('journeyProgressFill');
+const journeyDesktopMQ = window.matchMedia('(min-width: 900px)');
+
+if (journeyPinWrap && journeyTrack && journeyProgressFill && !reducedMotion){
+  function updateJourneyPin(){
+    if (!journeyDesktopMQ.matches){
+      journeyTrack.style.transform = '';
+      journeyProgressFill.style.width = '0%';
+      return;
+    }
+    const rect = journeyPinWrap.getBoundingClientRect();
+    const wrapHeight = journeyPinWrap.offsetHeight;
+    const vh = window.innerHeight;
+    const scrollable = wrapHeight - vh;
+    let progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
+    progress = Math.min(Math.max(progress, 0), 1);
+    const maxTranslate = Math.max(journeyTrack.scrollWidth - journeyTrack.clientWidth, 0);
+    journeyTrack.style.transform = `translateX(-${progress * maxTranslate}px)`;
+    journeyProgressFill.style.width = (progress * 100) + '%';
+  }
+  window.addEventListener('scroll', updateJourneyPin, { passive: true });
+  window.addEventListener('resize', updateJourneyPin);
+  updateJourneyPin();
+}
+
+// ---------- mobile nav (hamburger toggle) ----------
+const navBurger = document.getElementById('navBurger');
+const navMobile = document.getElementById('navMobile');
+if (navBurger && navMobile){
+  function closeMobileNav(){
+    navBurger.setAttribute('aria-expanded', 'false');
+    navMobile.classList.remove('open');
+    document.body.classList.remove('nav-open');
+  }
+  function toggleMobileNav(){
+    const open = navMobile.classList.toggle('open');
+    navBurger.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('nav-open', open);
+  }
+  navBurger.addEventListener('click', toggleMobileNav);
+  navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navMobile.classList.contains('open')) closeMobileNav();
+  });
+}
+
+// ---------- contact email: custom cursor label ----------
+if (canHover && cursor){
+  document.querySelectorAll('.contact-email-btn').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.classList.add('grow');
+      if (cursorLabel) cursorLabel.textContent = 'SEND';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.classList.remove('grow');
+      if (cursorLabel) cursorLabel.textContent = '';
+    });
   });
 }

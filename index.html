@@ -35,7 +35,16 @@
     <a href="#contact">Contact</a>
   </nav>
   <a href="#contact" class="nav-cta magnetic">Let's talk</a>
+  <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span>
+  </button>
 </header>
+
+<div class="nav-mobile" id="navMobile">
+  <a href="#work">Work</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+</div>
 
 <main>
 
@@ -237,9 +246,64 @@
         </p>
       </div>
     </div>
+  </section>
 
-    <div class="journey">
-      <h3 class="journey-heading reveal">My journey</h3>
+  <section id="journey" class="journey-scroll">
+
+    <!-- Desktop: horizontal pinned scroll -->
+    <div class="journey-pin-wrap" id="journeyPinWrap">
+      <div class="journey-pin">
+        <div class="journey-head">
+          <span class="section-num">04</span>
+          <h2>My journey</h2>
+        </div>
+        <div class="journey-track" id="journeyTrack">
+
+          <article class="journey-card">
+            <span class="journey-card-index">01</span>
+            <h3>Web Developer education</h3>
+            <p>Started out studying web development — learned how to build before I learned how to
+              edit. That structured, technical thinking still shows in how I plan a cut.</p>
+          </article>
+
+          <article class="journey-card">
+            <span class="journey-card-index">02</span>
+            <h3>Graphic Designer education <em>— finishing this November</em></h3>
+            <p>Currently wrapping up a Graphic Designer education. A good edit is also about
+              typography, layout, and colour — not just the timeline.</p>
+          </article>
+
+          <article class="journey-card">
+            <span class="journey-card-index">03</span>
+            <h3>Started with Top Comfy <em>— about a year ago</em></h3>
+            <p>My first real step into professional content work, outside of school.</p>
+          </article>
+
+          <article class="journey-card">
+            <span class="journey-card-index">04</span>
+            <h3>Launched my personal brand <em>— 4–5 months ago</em></h3>
+            <p>Started building and publishing under my own name — sharing the process, not just
+              the output.</p>
+          </article>
+
+          <article class="journey-card journey-card-now">
+            <span class="journey-card-index">05</span>
+            <h3>Now: media graphics apprentice at BET25</h3>
+            <p>Bringing design, development, and content together — day to day work on video and
+              graphics for a real brand.</p>
+          </article>
+
+        </div>
+        <div class="journey-progress"><span class="journey-progress-fill" id="journeyProgressFill"></span></div>
+      </div>
+    </div>
+
+    <!-- Mobile / touch: vertical scroll-fill timeline -->
+    <div class="journey-mobile-wrap">
+      <div class="journey-head">
+        <span class="section-num">04</span>
+        <h2>My journey</h2>
+      </div>
       <div class="timeline-wrap">
         <div class="timeline-track"></div>
         <div class="timeline-fill" id="timelineFill"></div>
@@ -284,15 +348,43 @@
   </section>
 
   <section id="contact" class="contact">
+    <div class="contact-marquee" aria-hidden="true">
+      <div class="contact-marquee-track">
+        <span>Let's work together</span><span>·</span><span>Open for work</span><span>·</span>
+        <span>Let's work together</span><span>·</span><span>Open for work</span><span>·</span>
+        <span>Let's work together</span><span>·</span><span>Open for work</span><span>·</span>
+      </div>
+    </div>
     <div class="contact-inner reveal">
-      <span class="section-num">04</span>
-      <h2>Got a project in mind?</h2>
-      <p>I'm open to freelance and full-time editing work. Reach out — I reply fast.</p>
-      <a href="mailto:philip.ronge@gmail.com" class="contact-email">philip.ronge@gmail.com</a>
-      <div class="socials">
-        <a href="#" target="_blank" rel="noopener">Instagram</a>
-        <a href="#" target="_blank" rel="noopener">TikTok</a>
-        <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+      <span class="section-num">05</span>
+
+      <div class="contact-grid">
+        <div class="contact-main">
+          <h2>Got a project<br>in mind?</h2>
+          <p>I'm open to freelance and full-time editing work. Reach out — I reply fast.</p>
+          <a href="mailto:philip.ronge@gmail.com" class="contact-email-btn magnetic">
+            <span>philip.ronge@gmail.com</span>
+            <span class="contact-email-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+
+        <div class="contact-socials">
+          <a href="#" target="_blank" rel="noopener" class="contact-social-row magnetic">
+            <span class="contact-social-index">01</span>
+            <span class="contact-social-name">Instagram</span>
+            <span class="contact-social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="contact-social-row magnetic">
+            <span class="contact-social-index">02</span>
+            <span class="contact-social-name">TikTok</span>
+            <span class="contact-social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a href="#" target="_blank" rel="noopener" class="contact-social-row magnetic">
+            <span class="contact-social-index">03</span>
+            <span class="contact-social-name">LinkedIn</span>
+            <span class="contact-social-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
