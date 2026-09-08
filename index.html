@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Philip — Video Editor & Content Creator</title>
-<meta name="description" content="Philip is a video editor and content creator based in Denmark. Editing, cinematography, and storytelling for brands.">
+<title>Philip — Video Editor, Designer & Content Creator</title>
+<meta name="description" content="Philip is a video editor, graphic designer, and content creator based in Denmark. Editing, design, cinematography, and storytelling for brands.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,8 +15,7 @@
 <body>
 
 <div class="intro" id="intro" aria-hidden="true">
-  <div class="intro-panel intro-panel-left"></div>
-  <div class="intro-panel intro-panel-right"></div>
+  <div class="intro-grid" id="introGrid"></div>
   <div class="intro-center">
     <span class="intro-counter" id="introCounter">00</span>
     <span class="intro-mark" id="introMark">PHILIP<span class="dot">.</span></span>
@@ -50,7 +49,7 @@
 
   <section id="top" class="hero">
     <p class="eyebrow reveal">
-      Video editor &amp; content creator — Aarhus, Denmark
+      Video editor, designer &amp; content creator — Aarhus, Denmark
       <span class="status-pill"><span class="status-dot"></span>Open for work</span>
     </p>
     <h1 class="hero-title">
@@ -65,7 +64,8 @@
     <p class="hero-sub reveal">
       Idea → hook → capture → structure → edit → sound → colour → publish → learn.
       I understand the whole chain — not just the timeline. Four years deep in the
-      Adobe Suite, editing professionally for the last couple of them.
+      Adobe Suite, split between video editing and graphic design, professional
+      for the last couple of them.
     </p>
     <div class="hero-actions reveal">
       <a href="#work" class="btn btn-primary magnetic">See the work</a>
@@ -96,7 +96,7 @@
     <div class="section-head reveal">
       <span class="section-num">01</span>
       <h2>Selected work</h2>
-      <p>Click a project to see the brief, the process, and the outcome. More going up as projects wrap.</p>
+      <p>Video edits and design work — click a project to see the brief, the process, and the outcome. More going up as projects wrap.</p>
     </div>
 
     <div class="work-grid">
@@ -158,18 +158,18 @@
       <article class="work-card reveal" tabindex="0" role="button"
         data-cover="assets/img/work/project-4-cover.jpg"
         data-title="Project title"
-        data-tags="Content series"
+        data-tags="Graphic design · Brand identity"
         data-client="Add client name"
         data-brief="What the client needed and why — add this once the project's real."
-        data-process="How you approached it: capture, structure, edit, sound, colour."
+        data-process="How you approached it: concept, layout, type, colour, delivery."
         data-outcome="What happened — the result, the number, the reaction."
         data-result="Add a headline result, e.g. 250K views in week one">
         <div class="work-media placeholder-media">
-          <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+          <span class="placeholder-label">Add thumbnail / cover image</span>
         </div>
         <div class="work-meta">
           <h3>Project title</h3>
-          <p class="work-tags">Content series</p>
+          <p class="work-tags">Graphic design · Brand identity</p>
         </div>
       </article>
 
@@ -211,6 +211,16 @@
     </div>
   </section>
 
+  <section id="quote" class="quote-section">
+    <div class="quote-inner reveal">
+      <p class="quote-text">
+        “<span class="quote-highlight">Drop in a line</span> from a manager, client, or teammate —
+        something short and specific beats a generic compliment.”
+      </p>
+      <span class="quote-attribution">Name — role, company <span class="quote-tbd">(swap in once confirmed)</span></span>
+    </div>
+  </section>
+
   <section id="about" class="about">
     <div class="section-head reveal">
       <span class="section-num">03</span>
@@ -225,9 +235,9 @@
 
       <div class="about-copy reveal">
         <p class="about-lede">
-          I'm Philip — 22, based in Denmark. I edit and shoot short-form and campaign content,
-          and I care about the whole chain: the hook, the pacing, the sound, the colour — not just
-          cutting clips together.
+          I'm Philip — 22, based in Denmark. I edit and shoot short-form and campaign content, and
+          I design just as much as I cut — I care about the whole chain: the hook, the pacing, the
+          sound, the colour, the layout — not just cutting clips together.
         </p>
         <p>
           I've been living in the Adobe Suite for about four years and know my way around all of
@@ -244,6 +254,57 @@
           about layout, type, and structure as much as I think about cuts. Give me a rough idea and
           I'll come back with something sharper than you pitched.
         </p>
+        <p>
+          Outside of work I'm usually at the gym or out for a run — turns out I don't like sitting
+          still, on a timeline or off it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="toolkit" class="toolkit">
+    <div class="section-head reveal">
+      <span class="section-num">04</span>
+      <h2>Toolkit</h2>
+      <p>What I actually build with — four years in, comfortable across the whole Adobe stack.</p>
+    </div>
+
+    <div class="toolkit-grid">
+      <div class="toolkit-card reveal">
+        <span class="toolkit-badge">Pr</span>
+        <h3>Premiere Pro</h3>
+        <p>Editing, structure, pacing — where most of the work happens.</p>
+        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></span>
+      </div>
+      <div class="toolkit-card reveal">
+        <span class="toolkit-badge">Ae</span>
+        <h3>After Effects</h3>
+        <p>Motion graphics, titles, small VFX touches.</p>
+        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></span>
+      </div>
+      <div class="toolkit-card reveal">
+        <span class="toolkit-badge">Ps</span>
+        <h3>Photoshop</h3>
+        <p>Thumbnails, retouching, graphic design work.</p>
+        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></span>
+      </div>
+      <div class="toolkit-card reveal">
+        <span class="toolkit-badge">Ai</span>
+        <h3>Illustrator</h3>
+        <p>Logos, layout, vector graphic design.</p>
+        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></span>
+      </div>
+      <div class="toolkit-card reveal">
+        <span class="toolkit-badge">Au</span>
+        <h3>Audition</h3>
+        <p>Sound design and clean-up — the part people skip.</p>
+        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span><span></span></span>
+      </div>
+      <div class="toolkit-card reveal">
+        <span class="toolkit-badge">&lt;/&gt;</span>
+        <h3>Dev &amp; design</h3>
+        <p>Built this site myself — helps me think in layout and structure, not just cuts.</p>
+        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span><span></span></span>
       </div>
     </div>
   </section>
@@ -254,7 +315,7 @@
     <div class="journey-pin-wrap" id="journeyPinWrap">
       <div class="journey-pin">
         <div class="journey-head">
-          <span class="section-num">04</span>
+          <span class="section-num">05</span>
           <h2>My journey</h2>
         </div>
         <div class="journey-track" id="journeyTrack">
@@ -301,7 +362,7 @@
     <!-- Mobile / touch: vertical scroll-fill timeline -->
     <div class="journey-mobile-wrap">
       <div class="journey-head">
-        <span class="section-num">04</span>
+        <span class="section-num">05</span>
         <h2>My journey</h2>
       </div>
       <div class="timeline-wrap">
@@ -356,7 +417,7 @@
       </div>
     </div>
     <div class="contact-inner reveal">
-      <span class="section-num">05</span>
+      <span class="section-num">06</span>
 
       <div class="contact-grid">
         <div class="contact-main">

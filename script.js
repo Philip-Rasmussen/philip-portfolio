@@ -21,8 +21,9 @@ if (squiggle){
   drawSquiggle = () => { path.style.strokeDashoffset = 0; };
 }
 
-// ---------- intro entrance ----------
+// ---------- intro entrance: pixel-tile dissolve ----------
 const intro = document.getElementById('intro');
+const introGrid = document.getElementById('introGrid');
 const heroReveals = Array.from(document.querySelectorAll('#top .reveal'));
 const introMark = document.getElementById('introMark');
 const introCounter = document.getElementById('introCounter');
@@ -49,6 +50,24 @@ if (intro){
   } else {
     document.body.classList.add('intro-lock');
 
+    // build the pixel-tile grid that will dissolve away
+    const cols = 12, rows = 7;
+    const tiles = [];
+    if (introGrid){
+      intro.style.setProperty('--intro-cols', cols);
+      intro.style.setProperty('--intro-rows', rows);
+      const frag = document.createDocumentFragment();
+      for (let r = 0; r < rows; r++){
+        for (let c = 0; c < cols; c++){
+          const tile = document.createElement('div');
+          tile.className = 'intro-tile';
+          frag.appendChild(tile);
+          tiles.push({ el: tile, r, c });
+        }
+      }
+      introGrid.appendChild(frag);
+    }
+
     // counter 00 -> 100 synced with the loading bar
     const counterDuration = 850;
     const counterStart = performance.now();
@@ -66,11 +85,19 @@ if (intro){
       document.body.classList.remove('intro-lock');
       staggerIn(heroReveals, 100);
       setTimeout(drawSquiggle, 550);
-    }, 1080);
 
-    intro.addEventListener('transitionend', (e) => {
-      if (e.propertyName === 'transform') intro.classList.add('done');
-    });
+      // dissolve the tiles in a diagonal wave, with a touch of randomness per tile
+      const maxWave = cols + rows;
+      tiles.forEach(({ el, r, c }) => {
+        const wave = (r + c) / maxWave; // 0 -> 1 across the diagonal
+        const jitter = Math.random() * 0.12;
+        const delay = (wave * 480) + (jitter * 300);
+        el.style.transitionDelay = delay + 'ms';
+        el.classList.add('out');
+      });
+
+      setTimeout(() => intro.classList.add('done'), 1320);
+    }, 1080);
   }
 } else {
   drawSquiggle();

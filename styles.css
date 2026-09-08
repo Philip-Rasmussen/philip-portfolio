@@ -737,7 +737,7 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .project-modal{
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -959,21 +959,32 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 }
 .modal-cta:hover{ color: var(--accent); }
 
-/* ---------- intro: split-panel reveal with counter ---------- */
+/* ---------- intro: pixel-tile dissolve with counter ---------- */
 .intro{
   position: fixed;
   inset: 0;
   z-index: 500;
-  display: flex;
 }
-.intro-panel{
-  flex: 1 1 50%;
-  background: var(--ink);
-  transition: transform 1.15s cubic-bezier(.65,0,.35,1);
-}
-.intro.hide .intro-panel-left{ transform: translateX(-101%); }
-.intro.hide .intro-panel-right{ transform: translateX(101%); }
 .intro.done{ display: none; }
+
+.intro-grid{
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--intro-cols, 12), 1fr);
+  grid-template-rows: repeat(var(--intro-rows, 7), 1fr);
+}
+.intro-tile{
+  background: var(--ink);
+  transform: scale(1);
+  opacity: 1;
+  transition: transform .5s cubic-bezier(.6,0,.4,1), opacity .45s ease;
+}
+.intro-tile.out{
+  transform: scale(0);
+  opacity: 0;
+}
 
 .intro-center{
   position: absolute;
@@ -1308,3 +1319,120 @@ body.nav-open{ overflow: hidden; }
   .journey-pin-wrap{ display: none !important; }
   .journey-mobile-wrap{ display: block !important; }
 }
+
+/* ---------- section-head: draw-on accent line per section ---------- */
+.section-head{ position: relative; }
+.section-head::before{
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .9s cubic-bezier(.2,.8,.2,1);
+}
+.section-head.in-view::before{ transform: scaleX(1); }
+@media (prefers-reduced-motion: reduce){
+  .section-head::before{ transition: none; transform: scaleX(1); }
+}
+
+/* ---------- quote section ---------- */
+.quote-section{
+  padding-top: 90px;
+  padding-bottom: 90px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.quote-inner{ max-width: 780px; margin: 0 auto; text-align: center; }
+.quote-text{
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(22px, 3.4vw, 34px);
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 0 0 24px;
+}
+.quote-highlight{ color: var(--accent); font-weight: 700; }
+.quote-attribution{
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.quote-tbd{
+  display: inline-block;
+  margin-left: 6px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-soft);
+  opacity: 0.6;
+  font-style: italic;
+}
+@media (max-width: 720px){
+  .quote-section{ padding-top: 64px; padding-bottom: 64px; }
+}
+
+/* ---------- toolkit ---------- */
+.toolkit-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 900px){
+  .toolkit-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px){
+  .toolkit-grid{ grid-template-columns: 1fr; }
+}
+.toolkit-card{
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+  background: var(--bone-dim);
+  transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease;
+}
+.toolkit-card:hover{ transform: translateY(-4px); border-color: var(--accent); }
+.toolkit-badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  margin-bottom: 20px;
+}
+.toolkit-card:nth-child(3n+2) .toolkit-badge{ background: var(--accent); color: var(--ink); }
+.toolkit-card h3{
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+.toolkit-card p{
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 18px;
+  min-height: 44px;
+}
+.toolkit-level{ display: flex; gap: 5px; }
+.toolkit-level span{
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+}
+.toolkit-level span.filled{ background: var(--accent); }
