@@ -454,10 +454,12 @@ if (toolkitSection && toolkitPanels.length){
     });
   });
 
-  // first-time entrance, once the section actually scrolls into view — a
-  // low threshold plus a bit of extra root margin means it reliably kicks
-  // off early enough that you catch the pop-in instead of it firing after
-  // you've already scrolled past
+  // first-time entrance, once the card grid itself is actually on screen.
+  // watching the whole section (heading + copy + tabs sit well above the
+  // cards) meant the choreography could finish before the cards were ever
+  // visible; watching the grid directly ties it to the thing that's
+  // actually popping in.
+  const toolkitCardGrid = document.getElementById('toolkitGrid') || toolkitSection;
   const toolkitIO = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting){
@@ -465,8 +467,8 @@ if (toolkitSection && toolkitPanels.length){
         toolkitIO.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.05, rootMargin: '0px 0px 220px 0px' });
-  toolkitIO.observe(toolkitSection);
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  toolkitIO.observe(toolkitCardGrid);
 }
 
 // ---------- custom cursor ----------
