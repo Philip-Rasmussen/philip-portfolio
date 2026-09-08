@@ -617,7 +617,6 @@ if (canHover && smoothScroll){
   window.addEventListener('wheel', (e) => {
     if (e.ctrlKey) return; // let pinch-zoom behave natively
     if (document.querySelector('.project-modal.open')) return; // let the open case-study modal scroll natively
-    if (e.target.closest && e.target.closest('[data-wheel-capture]')) return; // e.g. the work showcase handles its own wheel gesture
     e.preventDefault();
     smoothScroll.nudge(e.deltaY);
   }, { passive: false });
@@ -730,20 +729,6 @@ if (workShowcase && workTrack && workCards.length){
     if (e.key === 'ArrowLeft'){ e.preventDefault(); goToWork(workIndex - 1); }
     if (e.key === 'ArrowRight'){ e.preventDefault(); goToWork(workIndex + 1); }
   });
-
-  // wheel-to-advance while hovering the showcase: one project per gesture,
-  // with a short cooldown so a single trackpad flick doesn't fly through
-  // several projects at once. data-wheel-capture on the section keeps the
-  // page's own smooth-scroll handler from also grabbing this same event.
-  let workWheelCooldown = false;
-  workShowcase.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-    if (workWheelCooldown || Math.abs(delta) < 10) return;
-    workWheelCooldown = true;
-    goToWork(workIndex + (delta > 0 ? 1 : -1));
-    setTimeout(() => { workWheelCooldown = false; }, 550);
-  }, { passive: false });
 
   // basic touch swipe
   let workTouchX = null;
