@@ -169,6 +169,26 @@ if (timelineWrap && timelineFill && timelineItems.length){
   updateTimeline();
 }
 
+// ---------- about: guided-reveal reading rail (same technique as Journey) ----------
+const aboutSteps = document.getElementById('aboutSteps');
+const aboutStepsFill = document.getElementById('aboutStepsFill');
+const aboutStepEls = aboutSteps ? Array.from(aboutSteps.querySelectorAll('.about-step')) : [];
+if (aboutSteps && aboutStepsFill && aboutStepEls.length){
+  function updateAboutSteps(){
+    const rect = aboutSteps.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const progressPx = Math.min(Math.max(vh * 0.65 - rect.top, 0), rect.height);
+    aboutStepsFill.style.height = progressPx + 'px';
+    aboutStepEls.forEach(step => {
+      const mid = step.offsetTop + step.offsetHeight / 2;
+      step.classList.toggle('in-focus', mid <= progressPx);
+    });
+  }
+  window.addEventListener('scroll', updateAboutSteps, { passive: true });
+  window.addEventListener('resize', updateAboutSteps);
+  updateAboutSteps();
+}
+
 // ---------- custom cursor ----------
 const cursor = document.getElementById('cursorDot');
 const cursorLabel = cursor ? cursor.querySelector('.cursor-label') : null;
@@ -269,6 +289,7 @@ if (canHover && !reducedMotion){
 
   window.addEventListener('wheel', (e) => {
     if (e.ctrlKey) return; // let pinch-zoom behave natively
+    if (document.querySelector('.project-modal.open')) return; // let the open case-study modal scroll natively
     e.preventDefault();
     const max = document.documentElement.scrollHeight - window.innerHeight;
     targetY = Math.min(Math.max(targetY + e.deltaY, 0), max);
@@ -330,6 +351,7 @@ if (modal){
     lastFocused = document.activeElement;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     modal.querySelector('.project-modal-close').focus();
   }
@@ -337,6 +359,7 @@ if (modal){
   function closeModal(){
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
     if (lastFocused) lastFocused.focus();
   }
@@ -354,24 +377,6 @@ if (modal){
   modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModal));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
-  });
-}
-
-// ---------- press: click-through brand chips ----------
-const pressChips = document.querySelectorAll('.press-chip');
-const pressCopy = document.getElementById('pressCopy');
-if (pressChips.length && pressCopy){
-  pressChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      if (chip.classList.contains('is-active')) return;
-      pressChips.forEach(c => c.classList.remove('is-active'));
-      chip.classList.add('is-active');
-      pressCopy.classList.add('is-fading');
-      setTimeout(() => {
-        pressCopy.textContent = chip.dataset.copy || '';
-        pressCopy.classList.remove('is-fading');
-      }, 180);
-    });
   });
 }
 

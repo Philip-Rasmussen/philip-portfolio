@@ -27,16 +27,18 @@
 <div class="cursor-dot" id="cursorDot"><span class="cursor-label"></span></div>
 
 <header class="site-header">
-  <a href="#top" class="logo">PHILIP<span class="dot">.</span></a>
-  <nav class="nav">
-    <a href="#work">Work</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-  </nav>
-  <a href="#contact" class="nav-cta magnetic">Let's talk</a>
-  <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
-    <span></span><span></span>
-  </button>
+  <div class="site-header-inner">
+    <a href="#top" class="logo">PHILIP<span class="dot">.</span></a>
+    <nav class="nav">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="nav-cta magnetic">Let's talk</a>
+    <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
 </header>
 
 <div class="nav-mobile" id="navMobile">
@@ -50,7 +52,7 @@
   <section id="top" class="hero">
     <p class="eyebrow reveal">
       Video editor, designer &amp; content creator — Aarhus, Denmark
-      <span class="status-pill"><span class="status-dot"></span>Open for work</span>
+      <span class="status-pill"><span class="status-dot"></span>Open to full-time &amp; freelance</span>
     </p>
     <h1 class="hero-title">
       <span class="reveal">I edit stories</span>
@@ -179,20 +181,20 @@
   <section id="press" class="press">
     <div class="section-head reveal">
       <span class="section-num">02</span>
-      <h2>On the guest list</h2>
-      <p>Press access, not paid client work — but proof I show up when it's real. Click one.</p>
+      <h2>Companies I've worked with</h2>
+      <p>Press access, not paid client work — but proof I show up when it's real.</p>
     </div>
-    <div class="press-chips reveal" id="pressChips">
-      <button type="button" class="press-chip is-active"
-        data-copy="Invited as press through Red Bull — backstage access, artist interviews, on-site coverage.">Red Bull</button>
-      <button type="button" class="press-chip"
-        data-copy="One of Denmark's biggest festivals — covered it twice as press, through Red Bull.">DISTORTION</button>
-      <button type="button" class="press-chip"
-        data-copy="Red Bull's Soundclash event — same access, different stage.">Soundclash</button>
+    <div class="press-feature reveal">
+      <div class="press-feature-brand">Red Bull</div>
+      <p class="press-feature-copy">
+        Invited as press through Red Bull — backstage access, artist interviews, on-site coverage at two of Denmark's biggest events.
+      </p>
+      <div class="press-feature-events">
+        <span class="press-event-label">Covered as press at</span>
+        <span class="press-event">DISTORTION</span>
+        <span class="press-event">Soundclash</span>
+      </div>
     </div>
-    <p class="press-copy reveal" id="pressCopy">
-      Invited as press through Red Bull — backstage access, artist interviews, on-site coverage.
-    </p>
   </section>
 
   <section id="stats" class="stats">
@@ -244,25 +246,31 @@
           I design just as much as I cut — I care about the whole chain: the hook, the pacing, the
           sound, the colour, the layout — not just cutting clips together.
         </p>
-        <p>
-          I've been living in the Adobe Suite for about four years and know my way around all of
-          it — Premiere, After Effects, Photoshop, Illustrator, Audition. The last year or two of
-          that has been professional: real briefs, real deadlines, real clients.
-        </p>
-        <p>
-          Currently working as a media graphics apprentice at BET25 in Aarhus, alongside my own
-          projects. I'm not just someone who's opened Premiere Pro a few times — I've got real
-          output, a visual point of view, and a track record of making content that actually performs.
-        </p>
-        <p>
-          I also come at this from a design and dev background, not just an editing one — so I think
-          about layout, type, and structure as much as I think about cuts. Give me a rough idea and
-          I'll come back with something sharper than you pitched.
-        </p>
-        <p>
-          Outside of work I'm usually at the gym or out for a run — turns out I don't like sitting
-          still, on a timeline or off it.
-        </p>
+
+        <div class="about-steps" id="aboutSteps">
+          <div class="about-steps-track"><div class="about-steps-fill" id="aboutStepsFill"></div></div>
+          <div class="about-steps-list">
+            <p class="about-step">
+              I've been living in the Adobe Suite for about four years and know my way around all of
+              it — Premiere, After Effects, Photoshop, Illustrator, Audition. The last year or two of
+              that has been professional: real briefs, real deadlines, real clients.
+            </p>
+            <p class="about-step">
+              Currently working as a media graphics apprentice at BET25 in Aarhus, alongside my own
+              projects. I'm not just someone who's opened Premiere Pro a few times — I've got real
+              output, a visual point of view, and a track record of making content that actually performs.
+            </p>
+            <p class="about-step">
+              I also come at this from a design and dev background, not just an editing one — so I think
+              about layout, type, and structure as much as I think about cuts. Give me a rough idea and
+              I'll come back with something sharper than you pitched.
+            </p>
+            <p class="about-step">
+              Outside of work I'm usually at the gym or out for a run — turns out I don't like sitting
+              still, on a timeline or off it.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
