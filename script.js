@@ -148,21 +148,30 @@ const timelinePathTrack = document.getElementById('timelinePathTrack');
 const timelinePathFill = document.getElementById('timelinePathFill');
 const timelineItems = Array.from(document.querySelectorAll('.timeline-item'));
 
-// build each "01".."05" step number into a per-digit odometer strip
+// build each "01".."05" step number into a per-digit odometer strip.
+// Every row is pinned to the same *integer* pixel height (measured once,
+// then applied explicitly) instead of trusting `1em` on both the mask and
+// the rows to agree — browsers can round those independently by a
+// fraction of a pixel, which let a sliver of the neighbouring digit peek
+// through the mask on every non-zero digit.
 timelineItems.forEach(item => {
   const indexEl = item.querySelector('.timeline-index');
   if (!indexEl || indexEl.dataset.built) return;
   const digits = indexEl.textContent.trim().split('');
+  const rowPx = Math.round(indexEl.getBoundingClientRect().height) || 1;
   indexEl.textContent = '';
   digits.forEach(d => {
     const mask = document.createElement('span');
     mask.className = 'digit-mask';
+    mask.style.height = rowPx + 'px';
     const track = document.createElement('span');
     track.className = 'digit-track';
     track.dataset.target = d;
+    track.dataset.rowPx = rowPx;
     for (let n = 0; n <= 9; n++){
       const s = document.createElement('span');
       s.textContent = n;
+      s.style.height = rowPx + 'px';
       track.appendChild(s);
     }
     mask.appendChild(track);
@@ -175,14 +184,8 @@ function rollOdometer(item){
   item.querySelectorAll('.digit-track').forEach(track => {
     if (track.dataset.rolled) return;
     const target = parseInt(track.dataset.target, 10) || 0;
-    // measure the target digit's real rendered offset within the track
-    // (rather than assuming a uniform row height) so sub-pixel rounding on
-    // the clamp()-based font-size can't drift and let a neighbouring digit
-    // peek through the mask
-    const trackRect = track.getBoundingClientRect();
-    const spanRect = track.children[target].getBoundingClientRect();
-    const offset = spanRect.top - trackRect.top;
-    track.style.transform = `translateY(${-offset}px)`;
+    const rowPx = parseInt(track.dataset.rowPx, 10) || 0;
+    track.style.transform = `translateY(${-target * rowPx}px)`;
     track.dataset.rolled = 'true';
   });
 }
