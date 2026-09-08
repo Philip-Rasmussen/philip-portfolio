@@ -296,16 +296,19 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   width: min(100%, 640px);
   margin: 0 auto;
   cursor: pointer;
+  /* one card dominant, the rest shrunk down to thin peeking edges rather
+     than near-full-size siblings — the active card should read as the
+     clear subject, not one of several equal panels */
   transform:
-    translateX(calc(var(--offset) * 30%))
-    translateY(calc(var(--dist) * 12px))
-    scale(calc(1 - var(--dist) * 0.08))
-    rotate(calc(var(--offset) * 2deg));
-  opacity: calc(1 - var(--dist) * 0.4);
+    translateX(calc(var(--offset) * 58%))
+    translateY(calc(var(--dist) * 18px))
+    scale(calc(1 - var(--dist) * 0.34))
+    rotate(calc(var(--offset) * 3deg));
+  opacity: calc(1 - var(--dist) * 0.45);
   z-index: calc(20 - var(--dist));
-  /* a touch of spring on the way in — Apple-style overshoot rather than a
-     flat ease, so the stack feels like it settles into place */
-  transition: transform .6s cubic-bezier(.34,1.56,.64,1), opacity .5s cubic-bezier(.65,0,.35,1);
+  /* a firm spring on the way in — Apple-style overshoot rather than a
+     flat ease, so the stack feels like it snaps/settles into place */
+  transition: transform .55s cubic-bezier(.32,1.85,.6,1), opacity .45s cubic-bezier(.65,0,.35,1);
 }
 .work-track .work-card.is-active{ cursor: default; }
 .work-media{
@@ -330,10 +333,10 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 @media (max-width: 720px){
   .work-track .work-card{
     transform:
-      translateX(calc(var(--offset) * 18%))
-      translateY(calc(var(--dist) * 8px))
-      scale(calc(1 - var(--dist) * 0.1))
-      rotate(calc(var(--offset) * 1.2deg));
+      translateX(calc(var(--offset) * 40%))
+      translateY(calc(var(--dist) * 10px))
+      scale(calc(1 - var(--dist) * 0.3))
+      rotate(calc(var(--offset) * 2deg));
   }
 }
 
@@ -966,9 +969,9 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   max-height: 86vh;
   overflow-y: auto;
   padding: 44px;
-  transform: translateY(32px) scale(0.94);
+  transform: translateY(36px) scale(0.9);
   opacity: 0;
-  transition: transform .5s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+  transition: transform .5s cubic-bezier(.32,1.85,.6,1), opacity .28s ease;
 }
 .project-modal.open .project-modal-panel{
   transform: translateY(0) scale(1);
