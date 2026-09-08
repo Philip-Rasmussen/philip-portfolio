@@ -14,6 +14,10 @@
 </head>
 <body>
 
+<div class="intro" id="intro" aria-hidden="true">
+  <span class="intro-mark">PHILIP<span class="dot">.</span></span>
+</div>
+
 <div class="grain"></div>
 <div class="cursor-dot" id="cursorDot"><span class="cursor-label"></span></div>
 
@@ -83,12 +87,14 @@
     <div class="work-grid">
 
       <article class="work-card reveal" tabindex="0" role="button"
+        data-cover="assets/img/work/project-1-cover.jpg"
         data-title="Project title"
         data-tags="Short-form · Brand campaign"
         data-client="Add client name"
         data-brief="What the client needed and why — add this once the project's real."
         data-process="How you approached it: capture, structure, edit, sound, colour."
-        data-outcome="What happened — the result, the number, the reaction.">
+        data-outcome="What happened — the result, the number, the reaction."
+        data-result="Add a headline result, e.g. 250K views in week one">
         <div class="work-media placeholder-media">
           <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
         </div>
@@ -99,12 +105,14 @@
       </article>
 
       <article class="work-card reveal" tabindex="0" role="button"
+        data-cover="assets/img/work/project-2-cover.jpg"
         data-title="Project title"
         data-tags="Cinematography · Colour"
         data-client="Add client name"
         data-brief="What the client needed and why — add this once the project's real."
         data-process="How you approached it: capture, structure, edit, sound, colour."
-        data-outcome="What happened — the result, the number, the reaction.">
+        data-outcome="What happened — the result, the number, the reaction."
+        data-result="Add a headline result, e.g. 250K views in week one">
         <div class="work-media placeholder-media">
           <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
         </div>
@@ -115,12 +123,14 @@
       </article>
 
       <article class="work-card reveal" tabindex="0" role="button"
+        data-cover="assets/img/work/project-3-cover.jpg"
         data-title="Project title"
         data-tags="Edit · Sound design"
         data-client="Add client name"
         data-brief="What the client needed and why — add this once the project's real."
         data-process="How you approached it: capture, structure, edit, sound, colour."
-        data-outcome="What happened — the result, the number, the reaction.">
+        data-outcome="What happened — the result, the number, the reaction."
+        data-result="Add a headline result, e.g. 250K views in week one">
         <div class="work-media placeholder-media">
           <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
         </div>
@@ -131,12 +141,14 @@
       </article>
 
       <article class="work-card reveal" tabindex="0" role="button"
+        data-cover="assets/img/work/project-4-cover.jpg"
         data-title="Project title"
         data-tags="Content series"
         data-client="Add client name"
         data-brief="What the client needed and why — add this once the project's real."
         data-process="How you approached it: capture, structure, edit, sound, colour."
-        data-outcome="What happened — the result, the number, the reaction.">
+        data-outcome="What happened — the result, the number, the reaction."
+        data-result="Add a headline result, e.g. 250K views in week one">
         <div class="work-media placeholder-media">
           <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
         </div>
@@ -281,22 +293,45 @@
   <div class="project-modal-backdrop" data-close></div>
   <div class="project-modal-panel" role="dialog" aria-modal="true">
     <button class="project-modal-close" data-close aria-label="Close">✕</button>
-    <span class="project-modal-client"></span>
-    <h3 class="project-modal-title"></h3>
-    <p class="project-modal-tags"></p>
-    <div class="project-modal-body">
+
+    <div class="project-modal-cover placeholder-media">
+      <img class="project-modal-cover-img" alt="">
+      <span class="placeholder-label">Add a cover image/clip</span>
+      <div class="project-modal-cover-scrim">
+        <span class="project-modal-client"></span>
+        <h3 class="project-modal-title"></h3>
+      </div>
+    </div>
+
+    <div class="project-modal-content">
+      <div class="project-modal-tags"></div>
+
       <div class="project-modal-block">
         <h4>The brief</h4>
         <p class="project-modal-brief"></p>
       </div>
+
       <div class="project-modal-block">
         <h4>The process</h4>
+        <ul class="process-chain">
+          <li>Capture</li><li>Structure</li><li>Edit</li><li>Sound</li><li>Colour</li>
+        </ul>
         <p class="project-modal-process"></p>
       </div>
+
+      <div class="project-modal-gallery">
+        <div class="gallery-slot placeholder-media"><span class="placeholder-label">Add a still</span></div>
+        <div class="gallery-slot placeholder-media"><span class="placeholder-label">Add a still</span></div>
+        <div class="gallery-slot placeholder-media"><span class="placeholder-label">Add a still</span></div>
+      </div>
+
       <div class="project-modal-block">
         <h4>The outcome</h4>
         <p class="project-modal-outcome"></p>
+        <span class="result-badge"></span>
       </div>
+
+      <a href="#contact" class="modal-cta" data-close>Want something like this? Let's talk →</a>
     </div>
   </div>
 </div>

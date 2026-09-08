@@ -1,8 +1,36 @@
 // Footer year
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Scroll reveal
-const revealEls = document.querySelectorAll('.reveal');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- intro entrance ----------
+const intro = document.getElementById('intro');
+const heroReveals = Array.from(document.querySelectorAll('#top .reveal'));
+
+function staggerIn(els, gap){
+  els.forEach((el, i) => {
+    setTimeout(() => el.classList.add('in-view'), i * gap);
+  });
+}
+
+if (intro){
+  if (reducedMotion){
+    intro.remove();
+    staggerIn(heroReveals, 0);
+  } else {
+    document.body.classList.add('intro-lock');
+    requestAnimationFrame(() => intro.classList.add('show'));
+    setTimeout(() => {
+      intro.classList.add('hide');
+      document.body.classList.remove('intro-lock');
+      staggerIn(heroReveals, 110);
+    }, 850);
+    intro.addEventListener('transitionend', () => intro.classList.add('done'));
+  }
+}
+
+// ---------- scroll reveal (everything outside the hero) ----------
+const revealEls = document.querySelectorAll('.reveal:not(#top .reveal)');
 const io = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting){
@@ -13,7 +41,7 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
 revealEls.forEach(el => io.observe(el));
 
-// Stat counters — count up when the stats section scrolls into view
+// ---------- stat counters ----------
 const statEls = document.querySelectorAll('.stat-number');
 const statsIO = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -38,7 +66,7 @@ const statsIO = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 statEls.forEach(el => statsIO.observe(el));
 
-// Custom cursor (desktop / fine pointer only)
+// ---------- custom cursor ----------
 const cursor = document.getElementById('cursorDot');
 const cursorLabel = cursor ? cursor.querySelector('.cursor-label') : null;
 const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -87,7 +115,7 @@ if (canHover && cursor){
   });
 }
 
-// Magnetic buttons — subtle pull toward cursor
+// ---------- magnetic buttons ----------
 if (canHover){
   document.querySelectorAll('.magnetic').forEach(btn => {
     btn.addEventListener('mousemove', (e) => {
@@ -100,12 +128,13 @@ if (canHover){
   });
 }
 
-// Light parallax on elements with data-parallax
+// ---------- light parallax (only once an element has revealed) ----------
 const parallaxEls = document.querySelectorAll('[data-parallax]');
-if (parallaxEls.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+if (parallaxEls.length && !reducedMotion){
   function onScroll(){
     const vh = window.innerHeight;
     parallaxEls.forEach(el => {
+      if (!el.classList.contains('in-view')) return;
       const speed = parseFloat(el.dataset.parallax) || 0.05;
       const rect = el.getBoundingClientRect();
       const center = rect.top + rect.height / 2 - vh / 2;
@@ -113,35 +142,56 @@ if (parallaxEls.length && !window.matchMedia('(prefers-reduced-motion: reduce)')
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  const warmup = setInterval(onScroll, 300);
+  setTimeout(() => clearInterval(warmup), 4000); // catches the hero element once intro-stagger reveals it
 }
 
-// Play/pause hover-preview videos in work cards (once real <video> tags are added)
+// ---------- work card hover-preview video ----------
 document.querySelectorAll('.work-card video').forEach(video => {
   const card = video.closest('.work-card');
   card.addEventListener('mouseenter', () => video.play().catch(() => {}));
   card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
 });
 
-// Project case-study modal
+// ---------- project case-study modal ----------
 const modal = document.getElementById('projectModal');
 if (modal){
-  const panel = modal.querySelector('.project-modal-panel');
+  const coverImg = modal.querySelector('.project-modal-cover-img');
+  const coverWrap = modal.querySelector('.project-modal-cover');
   const titleEl = modal.querySelector('.project-modal-title');
   const tagsEl = modal.querySelector('.project-modal-tags');
   const clientEl = modal.querySelector('.project-modal-client');
   const briefEl = modal.querySelector('.project-modal-brief');
   const processEl = modal.querySelector('.project-modal-process');
   const outcomeEl = modal.querySelector('.project-modal-outcome');
+  const resultEl = modal.querySelector('.result-badge');
   let lastFocused = null;
 
   function openModal(card){
     titleEl.textContent = card.dataset.title || '';
-    tagsEl.textContent = card.dataset.tags || '';
     clientEl.textContent = card.dataset.client || '';
     briefEl.textContent = card.dataset.brief || '';
     processEl.textContent = card.dataset.process || '';
     outcomeEl.textContent = card.dataset.outcome || '';
+    resultEl.textContent = card.dataset.result || '';
+
+    tagsEl.innerHTML = '';
+    (card.dataset.tags || '').split('·').map(t => t.trim()).filter(Boolean).forEach(t => {
+      const span = document.createElement('span');
+      span.textContent = t;
+      tagsEl.appendChild(span);
+    });
+
+    coverWrap.classList.remove('no-cover');
+    coverImg.style.display = 'none';
+    coverImg.removeAttribute('src');
+    const coverSrc = card.dataset.cover;
+    if (coverSrc){
+      coverImg.onload = () => { coverImg.style.display = 'block'; };
+      coverImg.onerror = () => { coverImg.style.display = 'none'; };
+      coverImg.src = coverSrc;
+    }
+
     lastFocused = document.activeElement;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
