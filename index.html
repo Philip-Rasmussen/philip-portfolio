@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Philip — Video Editor & Content Creator</title>
+<meta name="description" content="Philip is a video editor and content creator based in Denmark. Editing, cinematography, and storytelling for brands.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+
+<header class="site-header">
+  <a href="#top" class="logo">PHILIP<span class="dot">.</span></a>
+  <nav class="nav">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a href="#contact" class="nav-cta">Let's talk</a>
+</header>
+
+<main>
+
+  <section id="top" class="hero">
+    <p class="eyebrow reveal">Video editor &amp; content creator — Aarhus, Denmark</p>
+    <h1 class="hero-title">
+      <span class="reveal">I edit stories</span>
+      <span class="reveal">that stop the scroll.</span>
+    </h1>
+    <p class="hero-sub reveal">
+      Idea → hook → capture → structure → edit → sound → colour → publish → learn.
+      I understand the whole chain — not just the timeline.
+    </p>
+    <div class="hero-actions reveal">
+      <a href="#work" class="btn btn-primary">See the work</a>
+      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+    </div>
+  </section>
+
+  <section id="work" class="work">
+    <div class="section-head reveal">
+      <span class="section-num">01</span>
+      <h2>Selected work</h2>
+      <p>A running collection of real edits and campaigns. More going up as projects wrap.</p>
+    </div>
+
+    <div class="work-grid">
+
+      <article class="work-card reveal">
+        <div class="work-media placeholder-media">
+          <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+        </div>
+        <div class="work-meta">
+          <h3>Project title</h3>
+          <p class="work-tags">Short-form · Brand campaign</p>
+        </div>
+      </article>
+
+      <article class="work-card reveal">
+        <div class="work-media placeholder-media">
+          <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+        </div>
+        <div class="work-meta">
+          <h3>Project title</h3>
+          <p class="work-tags">Cinematography · Colour</p>
+        </div>
+      </article>
+
+      <article class="work-card reveal">
+        <div class="work-media placeholder-media">
+          <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+        </div>
+        <div class="work-meta">
+          <h3>Project title</h3>
+          <p class="work-tags">Edit · Sound design</p>
+        </div>
+      </article>
+
+      <article class="work-card reveal">
+        <div class="work-media placeholder-media">
+          <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+        </div>
+        <div class="work-meta">
+          <h3>Project title</h3>
+          <p class="work-tags">Content series</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="about" class="about">
+    <div class="section-head reveal">
+      <span class="section-num">02</span>
+      <h2>About</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-photo reveal">
+        <img src="assets/img/philip-placeholder.jpg" alt="Philip" onerror="this.parentElement.classList.add('no-photo')">
+        <span class="no-photo-label">Drop your photo in<br>assets/img/philip-placeholder.jpg</span>
+      </div>
+
+      <div class="about-copy reveal">
+        <p class="about-lede">
+          I'm Philip — 22, based in Denmark. I edit and shoot short-form and campaign content,
+          and I care about the whole chain: the hook, the pacing, the sound, the colour — not just
+          cutting clips together.
+        </p>
+        <p>
+          Currently working as a media graphics apprentice at BET25 in Aarhus, alongside my own
+          projects. I'm not just someone who's opened Premiere Pro a few times — I've got real
+          output, a visual point of view, and a track record of making content that actually performs.
+        </p>
+
+        <ul class="chain-list">
+          <li><span>Idea</span></li>
+          <li><span>Hook</span></li>
+          <li><span>Capture</span></li>
+          <li><span>Structure</span></li>
+          <li><span>Edit</span></li>
+          <li><span>Sound</span></li>
+          <li><span>Colour</span></li>
+          <li><span>Publish</span></li>
+          <li><span>Learn</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="contact-inner reveal">
+      <span class="section-num">03</span>
+      <h2>Got a project in mind?</h2>
+      <p>I'm open to freelance and full-time editing work. Reach out — I reply fast.</p>
+      <a href="mailto:philip.ronge@gmail.com" class="contact-email">philip.ronge@gmail.com</a>
+      <div class="socials">
+        <a href="#" target="_blank" rel="noopener">Instagram</a>
+        <a href="#" target="_blank" rel="noopener">TikTok</a>
+        <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <span>© <span id="year"></span> Philip</span>
+  <a href="#top">Back to top ↑</a>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
