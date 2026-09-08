@@ -1,3 +1,12 @@
+// always start a fresh load (refresh included) at the top of the page with
+// every scroll-triggered animation reset, instead of the browser silently
+// restoring your old scroll position and making it look like nothing played
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) window.scrollTo(0, 0); // back/forward-cache restores
+});
+
 // Footer year
 document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -119,6 +128,49 @@ if (intro){
   drawSquiggle();
 }
 
+// ---------- quote: word-by-word blur reveal, Apple-UI style ----------
+const quoteTextEl = document.getElementById('quoteText');
+if (quoteTextEl){
+  let quoteWordIndex = 0;
+  function wrapQuoteWords(node){
+    Array.from(node.childNodes).forEach(child => {
+      if (child.nodeType === Node.TEXT_NODE){
+        const frag = document.createDocumentFragment();
+        child.textContent.split(/(\s+)/).forEach(part => {
+          if (part === '') return;
+          if (/^\s+$/.test(part)){
+            frag.appendChild(document.createTextNode(part));
+          } else {
+            const span = document.createElement('span');
+            span.className = 'q-word';
+            span.style.setProperty('--i', String(quoteWordIndex++));
+            span.textContent = part;
+            frag.appendChild(span);
+          }
+        });
+        node.replaceChild(frag, child);
+      } else if (child.nodeType === Node.ELEMENT_NODE){
+        wrapQuoteWords(child); // recurse so the highlighted phrase animates word-by-word too
+      }
+    });
+  }
+  wrapQuoteWords(quoteTextEl);
+
+  if (reducedMotion){
+    quoteTextEl.classList.add('words-in');
+  } else {
+    const quoteIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          quoteTextEl.classList.add('words-in');
+          quoteIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4, rootMargin: '0px 0px -60px 0px' });
+    quoteIO.observe(quoteTextEl);
+  }
+}
+
 // ---------- scroll reveal (everything outside the hero) ----------
 const revealEls = document.querySelectorAll('.reveal:not(#top .reveal)');
 const io = new IntersectionObserver((entries) => {
@@ -159,8 +211,11 @@ statEls.forEach(el => statsIO.observe(el));
 // ---------- seamless marquees: repeat the content enough times that the
 // track is always wider than 2x the viewport, so the -50% loop point never
 // runs out of text (which showed up as a bare stretch of empty bar on wide
-// screens) — re-measured on resize and once webfonts swap in ----------
-function ensureSeamlessMarquee(track){
+// screens) — re-measured on resize and once webfonts swap in. The animation
+// duration is derived from the final track width so the scroll speed (px/s)
+// stays constant no matter how many copies got added — otherwise adding
+// more copies to close the gap on a wide screen also sped the whole thing up.
+function ensureSeamlessMarquee(track, speedPxPerSec){
   if (!track) return;
   const unit = track.innerHTML;
   function fill(){
@@ -176,6 +231,10 @@ function ensureSeamlessMarquee(track){
     if (copies < 4) copies = 4;
     if (copies % 2 !== 0) copies += 1; // keep the -50% loop point on a seam
     track.innerHTML = unit.repeat(copies);
+
+    const totalWidth = track.scrollWidth || (unitWidth * copies);
+    const distance = totalWidth / 2; // the keyframes travel from 0 to -50%
+    track.style.animationDuration = (distance / speedPxPerSec) + 's';
   }
   fill();
   let resizeTimer;
@@ -185,8 +244,8 @@ function ensureSeamlessMarquee(track){
   });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fill);
 }
-ensureSeamlessMarquee(document.getElementById('marqueeTrack'));
-ensureSeamlessMarquee(document.getElementById('contactMarqueeTrack'));
+ensureSeamlessMarquee(document.getElementById('marqueeTrack'), 55);
+ensureSeamlessMarquee(document.getElementById('contactMarqueeTrack'), 28);
 
 // ---------- journey timeline: zigzag path connecting each milestone, drawn in
 // as you scroll, plus a rolling odometer step number per card ----------
@@ -406,7 +465,7 @@ if (toolkitSection && toolkitPanels.length){
         toolkitIO.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  }, { threshold: 0.05, rootMargin: '0px 0px 220px 0px' });
   toolkitIO.observe(toolkitSection);
 }
 
@@ -416,9 +475,16 @@ const cursorLabel = cursor ? cursor.querySelector('.cursor-label') : null;
 
 if (canHover && cursor){
   let x = 0, y = 0, cx = 0, cy = 0;
+  let idleTimer = null;
   window.addEventListener('mousemove', (e) => {
     x = e.clientX; y = e.clientY;
     cursor.classList.add('active');
+    // belt-and-braces #3: if the pointer just stops moving for a couple of
+    // seconds (e.g. a screenshot is taken, or the tab is switched via a
+    // method that doesn't fire blur/mouseleave), hide the dot anyway rather
+    // than let it sit frozen wherever it last was
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => cursor.classList.remove('active'), 2500);
   });
   // belt-and-braces: hide the dot the moment the pointer actually leaves the
   // page (mouseleave on document can be flaky across browsers), moves onto
@@ -575,7 +641,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   });
 });
 
-// ---------- work: one-project-at-a-time showcase ----------
+// ---------- work: overlapping card stack ----------
 const workShowcase = document.getElementById('workShowcase');
 const workTrack = document.getElementById('workTrack');
 const workCards = workTrack ? Array.from(workTrack.querySelectorAll('.work-card')) : [];
@@ -586,6 +652,11 @@ const workIndexCurrentEl = document.getElementById('workIndexCurrent');
 const workIndexTotalEl = document.getElementById('workIndexTotal');
 const workActiveTitleEl = document.getElementById('workActiveTitle');
 const workActiveTagsEl = document.getElementById('workActiveTags');
+
+// wired up once the modal block below initialises — the stack calls this
+// instead of binding its own click-to-open listener on every card, which is
+// what let a stray click land on the wrong project's modal before
+let openProjectModal = () => {};
 
 if (workShowcase && workTrack && workCards.length){
   let workIndex = 0;
@@ -602,11 +673,25 @@ if (workShowcase && workTrack && workCards.length){
     return dot;
   });
 
+  // shortest signed circular distance from card i to the active card — with
+  // 4 cards and index 0 active, card 3 sits at -1 (just behind, to the left)
+  // rather than +3 (all the way around the other side)
+  function circularOffset(i, active, total){
+    let diff = i - active;
+    if (diff > total / 2) diff -= total;
+    if (diff < -total / 2) diff += total;
+    return diff;
+  }
+
   function renderWork(){
-    workTrack.style.transform = `translateX(-${workIndex * 100}%)`;
     workCards.forEach((card, i) => {
+      const offset = circularOffset(i, workIndex, workTotal);
+      const dist = Math.abs(offset);
+      card.style.setProperty('--offset', offset);
+      card.style.setProperty('--dist', dist);
       card.classList.toggle('is-active', i === workIndex);
       card.setAttribute('tabindex', i === workIndex ? '0' : '-1');
+      card.setAttribute('aria-hidden', i === workIndex ? 'false' : 'true');
     });
     workDots.forEach((dot, i) => dot.classList.toggle('is-active', i === workIndex));
     const active = workCards[workIndex];
@@ -619,6 +704,21 @@ if (workShowcase && workTrack && workCards.length){
     workIndex = (i + workTotal) % workTotal;
     renderWork();
   }
+
+  // the highlighted (active) card opens its case study; any card still
+  // peeking out from the stack instead steps the stack to bring it forward
+  workCards.forEach((card, i) => {
+    card.addEventListener('click', () => {
+      if (i === workIndex) openProjectModal(card);
+      else goToWork(i);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      if (i === workIndex) openProjectModal(card);
+      else goToWork(i);
+    });
+  });
 
   if (workPrevBtn) workPrevBtn.addEventListener('click', () => goToWork(workIndex - 1));
   if (workNextBtn) workNextBtn.addEventListener('click', () => goToWork(workIndex + 1));
@@ -718,15 +818,7 @@ if (modal){
     if (lastFocused) lastFocused.focus();
   }
 
-  document.querySelectorAll('.work-card').forEach(card => {
-    card.addEventListener('click', () => openModal(card));
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' '){
-        e.preventDefault();
-        openModal(card);
-      }
-    });
-  });
+  openProjectModal = openModal;
 
   modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModal));
   document.addEventListener('keydown', (e) => {

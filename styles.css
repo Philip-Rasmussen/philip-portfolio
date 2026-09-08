@@ -154,11 +154,32 @@ main > section, .site-footer{
 }
 .hero-title span{ display: block; }
 .hero-title span:last-child{ color: var(--accent); }
+/* the "I'm Philip." line sized down from the accent headline by the golden
+   ratio (1.618), with a touch of breathing room between the two lines */
+.hero-title span:first-child{ font-size: calc(1em / 1.618); margin-bottom: 0.18em; }
 .hero-sub{
   max-width: 560px;
   font-size: clamp(16px, 2vw, 19px);
   color: var(--ink-soft);
-  margin: 0 0 42px;
+  margin: 0 0 20px;
+}
+.hero-skills{
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 36px;
+  padding: 0;
+}
+.hero-skills li{
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
 }
 .hero-actions{ display: flex; gap: 16px; flex-wrap: wrap; }
 
@@ -259,41 +280,64 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   gap: 18px;
 }
 .work-track{
+  position: relative;
   flex: 1 1 auto;
   min-width: 0;
-  display: flex;
-  overflow: hidden;
-  border-radius: 20px;
-  transition: transform .7s cubic-bezier(.65,0,.35,1);
-}
-.work-track .work-card{
-  flex: 0 0 100%;
-  width: 100%;
-  cursor: pointer;
-  opacity: 0.3;
-  transform: scale(0.97);
-  transition: opacity .6s cubic-bezier(.65,0,.35,1), transform .6s cubic-bezier(.65,0,.35,1);
-}
-.work-track .work-card.is-active{ opacity: 1; transform: scale(1); }
-.work-media{
   height: clamp(320px, 62vh, 640px);
+}
+/* overlapping card stack — each card's position is driven by --offset
+   (its signed distance from the active card) and --dist (that distance's
+   absolute value), both set from script.js on every navigation */
+.work-track .work-card{
+  --offset: 0;
+  --dist: 0;
+  position: absolute;
+  inset: 0;
+  width: min(100%, 640px);
+  margin: 0 auto;
+  cursor: pointer;
+  transform:
+    translateX(calc(var(--offset) * 30%))
+    translateY(calc(var(--dist) * 12px))
+    scale(calc(1 - var(--dist) * 0.08))
+    rotate(calc(var(--offset) * 2deg));
+  opacity: calc(1 - var(--dist) * 0.4);
+  z-index: calc(20 - var(--dist));
+  transition: transform .65s cubic-bezier(.65,0,.35,1), opacity .55s cubic-bezier(.65,0,.35,1);
+}
+.work-track .work-card.is-active{ cursor: default; }
+.work-media{
+  height: 100%;
   border-radius: 20px;
   overflow: hidden;
   background: var(--bone-dim);
   border: 1px solid var(--line);
   position: relative;
-  transition: transform .5s cubic-bezier(.65,0,.35,1), box-shadow .5s cubic-bezier(.65,0,.35,1);
+  transition: transform .5s cubic-bezier(.65,0,.35,1), box-shadow .5s cubic-bezier(.65,0,.35,1), border-color .3s ease;
 }
 .work-media video, .work-media img{
   width: 100%; height: 100%; object-fit: cover;
 }
-.work-track .work-card:hover .work-media,
-.work-track .work-card:focus-visible .work-media{
-  transform: scale(1.008);
-  box-shadow: 0 30px 56px -26px rgba(23,20,15,0.32);
+.work-track .work-card.is-active .work-media{
+  border-color: var(--accent);
+  box-shadow: 0 40px 70px -30px rgba(23,20,15,0.35);
+}
+.work-track .work-card:not(.is-active):hover .work-media{
+  transform: scale(1.01);
+}
+@media (max-width: 720px){
+  .work-track .work-card{
+    transform:
+      translateX(calc(var(--offset) * 18%))
+      translateY(calc(var(--dist) * 8px))
+      scale(calc(1 - var(--dist) * 0.1))
+      rotate(calc(var(--offset) * 1.2deg));
+  }
 }
 
 .work-arrow{
+  position: relative;
+  z-index: 30;
   flex: 0 0 auto;
   width: 50px; height: 50px;
   border-radius: 50%;
@@ -449,13 +493,13 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 /* ---------- contact: redesigned ---------- */
 .contact{
   position: relative;
-  padding-top: 200px;
+  padding-top: 260px;
   padding-bottom: 130px;
   overflow: hidden;
 }
 .contact-marquee{
   position: absolute;
-  top: 58px;
+  top: 46px;
   left: 0;
   right: 0;
   overflow: hidden;
@@ -471,7 +515,7 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .contact-marquee-track span{
   font-family: var(--font-display);
   text-transform: uppercase;
-  font-size: clamp(40px, 8vw, 100px);
+  font-size: clamp(36px, 6.5vw, 82px);
   color: var(--ink);
   opacity: 0.05;
   letter-spacing: 0.01em;
@@ -915,7 +959,7 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   position: relative;
   background: var(--bone);
   border-radius: 20px;
-  max-width: 680px;
+  max-width: min(1080px, 94vw);
   width: 100%;
   max-height: 86vh;
   overflow-y: auto;
@@ -1029,6 +1073,15 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .project-modal-close:hover{ background: var(--accent); color: var(--ink); }
 
 .project-modal-content{ padding: 36px 40px 48px; overflow-y: auto; flex: 1 1 auto; min-height: 0; -webkit-overflow-scrolling: touch; }
+
+/* on desktop, use the extra width instead of just stretching the mobile
+   layout: cover image as a full-height left column, content scrolling
+   independently on the right */
+@media (min-width: 860px){
+  .project-modal-panel{ flex-direction: row; max-height: 82vh; }
+  .project-modal-cover{ flex: 0 0 42%; aspect-ratio: auto; height: auto; }
+  .project-modal-content{ flex: 1 1 58%; padding: 48px 52px; }
+}
 .project-modal-tags{
   display: flex;
   flex-wrap: wrap;
@@ -1442,6 +1495,22 @@ body.nav-open{ overflow: hidden; }
   margin: 0 0 24px;
 }
 .quote-highlight{ color: var(--accent); font-weight: 700; }
+
+/* word-by-word reveal: each word pops up with a touch of motion blur,
+   staggered by its position in the paragraph via --i */
+.quote-text .q-word{
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em);
+  filter: blur(10px);
+  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1), filter .6s cubic-bezier(.16,1,.3,1);
+  transition-delay: calc(var(--i, 0) * 32ms);
+  will-change: transform, filter, opacity;
+}
+.quote-text.words-in .q-word{ opacity: 1; transform: translateY(0); filter: blur(0); }
+@media (prefers-reduced-motion: reduce){
+  .quote-text .q-word{ opacity: 1; transform: none; filter: none; transition: none; }
+}
 .quote-attribution{
   display: block;
   font-size: 13px;
