@@ -24,7 +24,7 @@
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </nav>
-  <a href="#contact" class="nav-cta">Let's talk</a>
+  <a href="#contact" class="nav-cta magnetic">Let's talk</a>
 </header>
 
 <main>
@@ -45,15 +45,15 @@
     </h1>
     <p class="hero-sub reveal">
       Idea → hook → capture → structure → edit → sound → colour → publish → learn.
-      I understand the whole chain — not just the timeline. Premiere Pro's basically
-      a second home at this point.
+      I understand the whole chain — not just the timeline. Four years deep in the
+      Adobe Suite, editing professionally for the last couple of them.
     </p>
     <div class="hero-actions reveal">
-      <a href="#work" class="btn btn-primary">See the work</a>
-      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+      <a href="#work" class="btn btn-primary magnetic">See the work</a>
+      <a href="#contact" class="btn btn-ghost magnetic">Get in touch</a>
     </div>
 
-    <div class="hero-reel reveal">
+    <div class="hero-reel reveal" data-parallax="0.06">
       <span class="reel-tag">watch</span>
       <div class="hero-reel-media placeholder-media">
         <span class="play-btn" aria-hidden="true">▶</span>
@@ -77,12 +77,18 @@
     <div class="section-head reveal">
       <span class="section-num">01</span>
       <h2>Selected work</h2>
-      <p>A running collection of real edits and campaigns. More going up as projects wrap.</p>
+      <p>Click a project to see the brief, the process, and the outcome. More going up as projects wrap.</p>
     </div>
 
     <div class="work-grid">
 
-      <article class="work-card reveal">
+      <article class="work-card reveal" tabindex="0" role="button"
+        data-title="Project title"
+        data-tags="Short-form · Brand campaign"
+        data-client="Add client name"
+        data-brief="What the client needed and why — add this once the project's real."
+        data-process="How you approached it: capture, structure, edit, sound, colour."
+        data-outcome="What happened — the result, the number, the reaction.">
         <div class="work-media placeholder-media">
           <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
         </div>
@@ -92,7 +98,13 @@
         </div>
       </article>
 
-      <article class="work-card reveal">
+      <article class="work-card reveal" tabindex="0" role="button"
+        data-title="Project title"
+        data-tags="Cinematography · Colour"
+        data-client="Add client name"
+        data-brief="What the client needed and why — add this once the project's real."
+        data-process="How you approached it: capture, structure, edit, sound, colour."
+        data-outcome="What happened — the result, the number, the reaction.">
         <div class="work-media placeholder-media">
           <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
         </div>
@@ -102,7 +114,13 @@
         </div>
       </article>
 
-      <article class="work-card reveal">
+      <article class="work-card reveal" tabindex="0" role="button"
+        data-title="Project title"
+        data-tags="Edit · Sound design"
+        data-client="Add client name"
+        data-brief="What the client needed and why — add this once the project's real."
+        data-process="How you approached it: capture, structure, edit, sound, colour."
+        data-outcome="What happened — the result, the number, the reaction.">
         <div class="work-media placeholder-media">
           <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
         </div>
@@ -112,7 +130,13 @@
         </div>
       </article>
 
-      <article class="work-card reveal">
+      <article class="work-card reveal" tabindex="0" role="button"
+        data-title="Project title"
+        data-tags="Content series"
+        data-client="Add client name"
+        data-brief="What the client needed and why — add this once the project's real."
+        data-process="How you approached it: capture, structure, edit, sound, colour."
+        data-outcome="What happened — the result, the number, the reaction.">
         <div class="work-media placeholder-media">
           <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
         </div>
@@ -125,31 +149,44 @@
     </div>
   </section>
 
+  <section id="press" class="press">
+    <div class="section-head reveal">
+      <span class="section-num">02</span>
+      <h2>Press &amp; features</h2>
+    </div>
+    <div class="press-strip reveal">
+      <span>Red Bull</span><span>DISTORTION</span><span>Soundclash</span>
+    </div>
+    <p class="press-copy reveal">
+      Invited as press to DISTORTION — one of Denmark's biggest festivals — twice, through Red Bull,
+      including their Soundclash event. Backstage access, artist interviews, on-site coverage.
+    </p>
+  </section>
+
   <section id="stats" class="stats">
     <div class="stats-grid">
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="0" data-suffix="">—</span>
-        <span class="stat-label">Years editing</span>
+        <span class="stat-number" data-target="4" data-suffix="+">—</span>
+        <span class="stat-label">Years in Adobe Suite</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="0" data-suffix="">—</span>
+        <span class="stat-number" data-target="25" data-suffix="+">—</span>
         <span class="stat-label">Projects shipped</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="0" data-suffix="">—</span>
+        <span class="stat-number" data-target="550" data-suffix="K+">—</span>
         <span class="stat-label">Views generated</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="0" data-suffix="">—</span>
-        <span class="stat-label">Followers</span>
+        <span class="stat-number" data-target="509" data-suffix="">—</span>
+        <span class="stat-label">Followers (IG + TikTok)</span>
       </div>
     </div>
-    <p class="stats-note reveal">Real numbers going in here shortly — placeholders for now.</p>
   </section>
 
   <section id="about" class="about">
     <div class="section-head reveal">
-      <span class="section-num">02</span>
+      <span class="section-num">03</span>
       <h2>About</h2>
     </div>
 
@@ -164,6 +201,11 @@
           I'm Philip — 22, based in Denmark. I edit and shoot short-form and campaign content,
           and I care about the whole chain: the hook, the pacing, the sound, the colour — not just
           cutting clips together.
+        </p>
+        <p>
+          I've been living in the Adobe Suite for about four years and know my way around all of
+          it — Premiere, After Effects, Photoshop, Illustrator, Audition. The last year or two of
+          that has been professional: real briefs, real deadlines, real clients.
         </p>
         <p>
           Currently working as a media graphics apprentice at BET25 in Aarhus, alongside my own
@@ -216,7 +258,7 @@
 
   <section id="contact" class="contact">
     <div class="contact-inner reveal">
-      <span class="section-num">03</span>
+      <span class="section-num">04</span>
       <h2>Got a project in mind?</h2>
       <p>I'm open to freelance and full-time editing work. Reach out — I reply fast.</p>
       <a href="mailto:philip.ronge@gmail.com" class="contact-email">philip.ronge@gmail.com</a>
@@ -234,6 +276,30 @@
   <span>© <span id="year"></span> Philip — built by hand, no template.</span>
   <a href="#top">Back to top ↑</a>
 </footer>
+
+<div class="project-modal" id="projectModal" aria-hidden="true">
+  <div class="project-modal-backdrop" data-close></div>
+  <div class="project-modal-panel" role="dialog" aria-modal="true">
+    <button class="project-modal-close" data-close aria-label="Close">✕</button>
+    <span class="project-modal-client"></span>
+    <h3 class="project-modal-title"></h3>
+    <p class="project-modal-tags"></p>
+    <div class="project-modal-body">
+      <div class="project-modal-block">
+        <h4>The brief</h4>
+        <p class="project-modal-brief"></p>
+      </div>
+      <div class="project-modal-block">
+        <h4>The process</h4>
+        <p class="project-modal-process"></p>
+      </div>
+      <div class="project-modal-block">
+        <h4>The outcome</h4>
+        <p class="project-modal-outcome"></p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="script.js"></script>
 </body>
