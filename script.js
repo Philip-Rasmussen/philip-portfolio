@@ -4,6 +4,22 @@ document.getElementById('year').textContent = new Date().getFullYear();
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+// batches a scroll handler to run at most once per animation frame — native
+// 'scroll' events can fire faster than the display refreshes, and re-running
+// several getBoundingClientRect-heavy handlers that often was a source of
+// jank independent of however the scroll itself was driven
+function rafThrottle(fn){
+  let ticking = false;
+  return function throttled(...args){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      fn.apply(this, args);
+      ticking = false;
+    });
+  };
+}
+
 function staggerIn(els, gap){
   els.forEach((el, i) => {
     setTimeout(() => el.classList.add('in-view'), i * gap);
@@ -140,6 +156,38 @@ const statsIO = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 statEls.forEach(el => statsIO.observe(el));
 
+// ---------- seamless marquees: repeat the content enough times that the
+// track is always wider than 2x the viewport, so the -50% loop point never
+// runs out of text (which showed up as a bare stretch of empty bar on wide
+// screens) — re-measured on resize and once webfonts swap in ----------
+function ensureSeamlessMarquee(track){
+  if (!track) return;
+  const unit = track.innerHTML;
+  function fill(){
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute; visibility:hidden; pointer-events:none; white-space:nowrap; display:flex; align-items:center; left:-9999px;';
+    probe.style.gap = getComputedStyle(track).gap;
+    probe.innerHTML = unit;
+    document.body.appendChild(probe);
+    const unitWidth = probe.scrollWidth || 200;
+    document.body.removeChild(probe);
+
+    let copies = Math.ceil((window.innerWidth * 2.2) / unitWidth);
+    if (copies < 4) copies = 4;
+    if (copies % 2 !== 0) copies += 1; // keep the -50% loop point on a seam
+    track.innerHTML = unit.repeat(copies);
+  }
+  fill();
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fill, 200);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fill);
+}
+ensureSeamlessMarquee(document.getElementById('marqueeTrack'));
+ensureSeamlessMarquee(document.getElementById('contactMarqueeTrack'));
+
 // ---------- journey timeline: zigzag path connecting each milestone, drawn in
 // as you scroll, plus a rolling odometer step number per card ----------
 const timelineWrap = document.getElementById('timelineWrap');
@@ -241,7 +289,7 @@ if (timelineWrap && timelineSvg && timelineItems.length){
 
   window.addEventListener('load', () => { layoutPath(); updateTimeline(); });
   window.addEventListener('resize', () => { layoutPath(); updateTimeline(); });
-  window.addEventListener('scroll', updateTimeline, { passive: true });
+  window.addEventListener('scroll', rafThrottle(updateTimeline), { passive: true });
   // fonts loading late can shift layout; re-measure once ready
   if (document.fonts && document.fonts.ready){
     document.fonts.ready.then(() => { layoutPath(); updateTimeline(); });
@@ -265,7 +313,7 @@ if (aboutSteps && aboutStepsFill && aboutStepEls.length){
       step.classList.toggle('in-focus', mid <= progressPx);
     });
   }
-  window.addEventListener('scroll', updateAboutSteps, { passive: true });
+  window.addEventListener('scroll', rafThrottle(updateAboutSteps), { passive: true });
   window.addEventListener('resize', updateAboutSteps);
   updateAboutSteps();
 }
@@ -347,7 +395,10 @@ if (toolkitSection && toolkitPanels.length){
     });
   });
 
-  // first-time entrance, once the section actually scrolls into view
+  // first-time entrance, once the section actually scrolls into view — a
+  // low threshold plus a bit of extra root margin means it reliably kicks
+  // off early enough that you catch the pop-in instead of it firing after
+  // you've already scrolled past
   const toolkitIO = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting){
@@ -355,7 +406,7 @@ if (toolkitSection && toolkitPanels.length){
         toolkitIO.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.25 });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
   toolkitIO.observe(toolkitSection);
 }
 
@@ -369,7 +420,15 @@ if (canHover && cursor){
     x = e.clientX; y = e.clientY;
     cursor.classList.add('active');
   });
+  // belt-and-braces: hide the dot the moment the pointer actually leaves the
+  // page (mouseleave on document can be flaky across browsers), moves onto
+  // browser chrome, or the tab/window loses focus — otherwise it freezes
+  // visible at its last position, which reads like a stray design element
   document.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+  document.addEventListener('mouseout', (e) => {
+    if (!e.relatedTarget) cursor.classList.remove('active');
+  });
+  window.addEventListener('blur', () => cursor.classList.remove('active'));
 
   function loop(){
     cx += (x - cx) * 0.25;
@@ -433,43 +492,168 @@ if (parallaxEls.length && !reducedMotion){
       el.style.transform = `translateY(${center * -speed}px)`;
     });
   }
-  window.addEventListener('scroll', onScrollParallax, { passive: true });
+  window.addEventListener('scroll', rafThrottle(onScrollParallax), { passive: true });
   const warmup = setInterval(onScrollParallax, 300);
   setTimeout(() => clearInterval(warmup), 4000);
 }
 
-// ---------- smoother scroll: eased wheel glide (desktop only) ----------
-if (canHover && !reducedMotion){
+// ---------- smooth scroll controller ----------
+// one shared eased-glide engine drives both the desktop wheel feel and every
+// in-page anchor link (nav, hero CTAs, footer "back to top"), so scrolling
+// feels the same everywhere instead of switching between a custom glide for
+// wheel input and the browser's own (differently-timed) smooth scroll for
+// link clicks.
+const smoothScroll = (() => {
+  if (reducedMotion) return null;
   let targetY = window.scrollY;
   let currentY = window.scrollY;
   let raf = null;
-  const ease = 0.085;
+  const ease = 0.12;
 
-  function glide(){
-    currentY += (targetY - currentY) * ease;
-    if (Math.abs(targetY - currentY) < 0.4){
+  function maxScroll(){
+    return document.documentElement.scrollHeight - window.innerHeight;
+  }
+
+  function frame(){
+    const dist = targetY - currentY;
+    if (Math.abs(dist) < 0.5){
       currentY = targetY;
-      window.scrollTo({ top: currentY, behavior: 'instant' });
+      window.scrollTo(0, currentY);
       raf = null;
       return;
     }
-    window.scrollTo({ top: currentY, behavior: 'instant' });
-    raf = requestAnimationFrame(glide);
+    currentY += dist * ease;
+    window.scrollTo(0, currentY);
+    raf = requestAnimationFrame(frame);
   }
 
+  function start(){ if (!raf) raf = requestAnimationFrame(frame); }
+
+  return {
+    nudge(delta){
+      targetY = Math.min(Math.max(targetY + delta, 0), maxScroll());
+      start();
+    },
+    scrollTo(y){
+      targetY = Math.min(Math.max(y, 0), maxScroll());
+      start();
+    },
+    syncToNative(){
+      if (!raf){ targetY = window.scrollY; currentY = window.scrollY; }
+    },
+    isGliding(){ return !!raf; }
+  };
+})();
+
+if (canHover && smoothScroll){
   window.addEventListener('wheel', (e) => {
     if (e.ctrlKey) return; // let pinch-zoom behave natively
     if (document.querySelector('.project-modal.open')) return; // let the open case-study modal scroll natively
+    if (e.target.closest && e.target.closest('[data-wheel-capture]')) return; // e.g. the work showcase handles its own wheel gesture
     e.preventDefault();
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    targetY = Math.min(Math.max(targetY + e.deltaY, 0), max);
-    if (!raf) raf = requestAnimationFrame(glide);
+    smoothScroll.nudge(e.deltaY);
   }, { passive: false });
 
   // keep target in sync with keyboard / scrollbar-drag scrolling
-  window.addEventListener('scroll', () => {
-    if (!raf){ targetY = window.scrollY; currentY = window.scrollY; }
+  window.addEventListener('scroll', smoothScroll.syncToNative, { passive: true });
+}
+
+// route every in-page anchor link through the same smooth-scroll engine,
+// landing a fixed distance below the fixed header instead of flush against it
+const HEADER_OFFSET = 90;
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  const id = link.getAttribute('href').slice(1);
+  if (!id) return;
+  link.addEventListener('click', (e) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    const y = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+    if (smoothScroll) smoothScroll.scrollTo(y);
+    else window.scrollTo({ top: y, behavior: reducedMotion ? 'auto' : 'smooth' });
+    if (history.pushState) history.pushState(null, '', `#${id}`);
+  });
+});
+
+// ---------- work: one-project-at-a-time showcase ----------
+const workShowcase = document.getElementById('workShowcase');
+const workTrack = document.getElementById('workTrack');
+const workCards = workTrack ? Array.from(workTrack.querySelectorAll('.work-card')) : [];
+const workPrevBtn = document.getElementById('workPrev');
+const workNextBtn = document.getElementById('workNext');
+const workDotsWrap = document.getElementById('workDots');
+const workIndexCurrentEl = document.getElementById('workIndexCurrent');
+const workIndexTotalEl = document.getElementById('workIndexTotal');
+const workActiveTitleEl = document.getElementById('workActiveTitle');
+const workActiveTagsEl = document.getElementById('workActiveTags');
+
+if (workShowcase && workTrack && workCards.length){
+  let workIndex = 0;
+  const workTotal = workCards.length;
+  if (workIndexTotalEl) workIndexTotalEl.textContent = String(workTotal).padStart(2, '0');
+
+  const workDots = workCards.map((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'work-dot';
+    dot.setAttribute('aria-label', `Go to project ${i + 1}`);
+    dot.addEventListener('click', () => goToWork(i));
+    if (workDotsWrap) workDotsWrap.appendChild(dot);
+    return dot;
+  });
+
+  function renderWork(){
+    workTrack.style.transform = `translateX(-${workIndex * 100}%)`;
+    workCards.forEach((card, i) => {
+      card.classList.toggle('is-active', i === workIndex);
+      card.setAttribute('tabindex', i === workIndex ? '0' : '-1');
+    });
+    workDots.forEach((dot, i) => dot.classList.toggle('is-active', i === workIndex));
+    const active = workCards[workIndex];
+    if (workIndexCurrentEl) workIndexCurrentEl.textContent = String(workIndex + 1).padStart(2, '0');
+    if (workActiveTitleEl) workActiveTitleEl.textContent = active.dataset.title || '';
+    if (workActiveTagsEl) workActiveTagsEl.textContent = active.dataset.tags || '';
+  }
+
+  function goToWork(i){
+    workIndex = (i + workTotal) % workTotal;
+    renderWork();
+  }
+
+  if (workPrevBtn) workPrevBtn.addEventListener('click', () => goToWork(workIndex - 1));
+  if (workNextBtn) workNextBtn.addEventListener('click', () => goToWork(workIndex + 1));
+
+  workShowcase.addEventListener('keydown', (e) => {
+    if (e.target !== workShowcase) return; // don't hijack arrow keys while a card itself has focus
+    if (e.key === 'ArrowLeft'){ e.preventDefault(); goToWork(workIndex - 1); }
+    if (e.key === 'ArrowRight'){ e.preventDefault(); goToWork(workIndex + 1); }
+  });
+
+  // wheel-to-advance while hovering the showcase: one project per gesture,
+  // with a short cooldown so a single trackpad flick doesn't fly through
+  // several projects at once. data-wheel-capture on the section keeps the
+  // page's own smooth-scroll handler from also grabbing this same event.
+  let workWheelCooldown = false;
+  workShowcase.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (workWheelCooldown || Math.abs(delta) < 10) return;
+    workWheelCooldown = true;
+    goToWork(workIndex + (delta > 0 ? 1 : -1));
+    setTimeout(() => { workWheelCooldown = false; }, 550);
+  }, { passive: false });
+
+  // basic touch swipe
+  let workTouchX = null;
+  workShowcase.addEventListener('touchstart', (e) => { workTouchX = e.touches[0].clientX; }, { passive: true });
+  workShowcase.addEventListener('touchend', (e) => {
+    if (workTouchX === null) return;
+    const dx = e.changedTouches[0].clientX - workTouchX;
+    if (Math.abs(dx) > 40) goToWork(workIndex + (dx < 0 ? 1 : -1));
+    workTouchX = null;
   }, { passive: true });
+
+  renderWork();
 }
 
 // ---------- work card hover-preview video ----------

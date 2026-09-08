@@ -55,9 +55,9 @@
       <span class="status-pill"><span class="status-dot"></span>Open to full-time &amp; freelance</span>
     </p>
     <h1 class="hero-title">
-      <span class="reveal">I edit stories</span>
+      <span class="reveal">I'm Philip.</span>
       <span class="reveal hero-title-accent">
-        that stop the scroll.
+        I edit video and design for brands.
         <svg class="squiggle" id="squiggle" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true">
           <path d="M2 16 C 40 4, 70 26, 105 14 S 170 2, 205 15 S 270 26, 305 13 S 370 3, 398 15" />
         </svg>
@@ -84,13 +84,10 @@
   </section>
 
   <div class="marquee" aria-hidden="true">
-    <div class="marquee-track">
-      <span>Video Editing</span><span>·</span><span>Colour Grading</span><span>·</span>
-      <span>Sound Design</span><span>·</span><span>Graphic Design</span><span>·</span>
-      <span>Cinematography</span><span>·</span><span>Motion Graphics</span><span>·</span>
-      <span>Video Editing</span><span>·</span><span>Colour Grading</span><span>·</span>
-      <span>Sound Design</span><span>·</span><span>Graphic Design</span><span>·</span>
-      <span>Cinematography</span><span>·</span><span>Motion Graphics</span><span>·</span>
+    <div class="marquee-track" id="marqueeTrack">
+      <span>Video Editing</span><span class="dot"></span><span>Colour Grading</span><span class="dot"></span>
+      <span>Sound Design</span><span class="dot"></span><span>Graphic Design</span><span class="dot"></span>
+      <span>Cinematography</span><span class="dot"></span><span>Motion Graphics</span><span class="dot"></span>
     </div>
   </div>
 
@@ -98,83 +95,90 @@
     <div class="section-head reveal">
       <span class="section-num">01</span>
       <h2>Selected work</h2>
-      <p>Video edits and design work — click a project to see the brief, the process, and the outcome. More going up as projects wrap.</p>
+      <p>One project at a time — click through with the arrows, or click the frame for the brief, the process, and the outcome.</p>
     </div>
 
-    <div class="work-grid">
+    <div class="work-showcase reveal" id="workShowcase" data-wheel-capture tabindex="0" aria-label="Selected work — use arrow keys or the buttons to browse">
+      <div class="work-showcase-glow" aria-hidden="true"></div>
 
-      <article class="work-card reveal" tabindex="0" role="button"
-        data-cover="assets/img/work/project-1-cover.jpg"
-        data-title="Project title"
-        data-tags="Short-form · Brand campaign"
-        data-client="Add client name"
-        data-brief="What the client needed and why — add this once the project's real."
-        data-process="How you approached it: capture, structure, edit, sound, colour."
-        data-outcome="What happened — the result, the number, the reaction."
-        data-result="Add a headline result, e.g. 250K views in week one">
-        <div class="work-media placeholder-media">
-          <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
-        </div>
-        <div class="work-meta">
-          <h3>Project title</h3>
-          <p class="work-tags">Short-form · Brand campaign</p>
-        </div>
-      </article>
+      <div class="work-showcase-frame">
+        <button type="button" class="work-arrow work-arrow-left" id="workPrev" aria-label="Previous project">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 L7 12 L15 20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
 
-      <article class="work-card reveal" tabindex="0" role="button"
-        data-cover="assets/img/work/project-2-cover.jpg"
-        data-title="Project title"
-        data-tags="Cinematography · Colour"
-        data-client="Add client name"
-        data-brief="What the client needed and why — add this once the project's real."
-        data-process="How you approached it: capture, structure, edit, sound, colour."
-        data-outcome="What happened — the result, the number, the reaction."
-        data-result="Add a headline result, e.g. 250K views in week one">
-        <div class="work-media placeholder-media">
-          <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
-        </div>
-        <div class="work-meta">
-          <h3>Project title</h3>
-          <p class="work-tags">Cinematography · Colour</p>
-        </div>
-      </article>
+        <div class="work-track" id="workTrack">
 
-      <article class="work-card reveal" tabindex="0" role="button"
-        data-cover="assets/img/work/project-3-cover.jpg"
-        data-title="Project title"
-        data-tags="Edit · Sound design"
-        data-client="Add client name"
-        data-brief="What the client needed and why — add this once the project's real."
-        data-process="How you approached it: capture, structure, edit, sound, colour."
-        data-outcome="What happened — the result, the number, the reaction."
-        data-result="Add a headline result, e.g. 250K views in week one">
-        <div class="work-media placeholder-media">
-          <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
-        </div>
-        <div class="work-meta">
-          <h3>Project title</h3>
-          <p class="work-tags">Edit · Sound design</p>
-        </div>
-      </article>
+          <article class="work-card" role="button"
+            data-cover="assets/img/work/project-1-cover.jpg"
+            data-title="Project title"
+            data-tags="Short-form · Brand campaign"
+            data-client="Add client name"
+            data-brief="What the client needed and why — add this once the project's real."
+            data-process="How you approached it: capture, structure, edit, sound, colour."
+            data-outcome="What happened — the result, the number, the reaction."
+            data-result="Add a headline result, e.g. 250K views in week one">
+            <div class="work-media placeholder-media">
+              <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+            </div>
+          </article>
 
-      <article class="work-card reveal" tabindex="0" role="button"
-        data-cover="assets/img/work/project-4-cover.jpg"
-        data-title="Project title"
-        data-tags="Graphic design · Brand identity"
-        data-client="Add client name"
-        data-brief="What the client needed and why — add this once the project's real."
-        data-process="How you approached it: concept, layout, type, colour, delivery."
-        data-outcome="What happened — the result, the number, the reaction."
-        data-result="Add a headline result, e.g. 250K views in week one">
-        <div class="work-media placeholder-media">
-          <span class="placeholder-label">Add thumbnail / cover image</span>
-        </div>
-        <div class="work-meta">
-          <h3>Project title</h3>
-          <p class="work-tags">Graphic design · Brand identity</p>
-        </div>
-      </article>
+          <article class="work-card" role="button"
+            data-cover="assets/img/work/project-2-cover.jpg"
+            data-title="Project title"
+            data-tags="Cinematography · Colour"
+            data-client="Add client name"
+            data-brief="What the client needed and why — add this once the project's real."
+            data-process="How you approached it: capture, structure, edit, sound, colour."
+            data-outcome="What happened — the result, the number, the reaction."
+            data-result="Add a headline result, e.g. 250K views in week one">
+            <div class="work-media placeholder-media">
+              <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+            </div>
+          </article>
 
+          <article class="work-card" role="button"
+            data-cover="assets/img/work/project-3-cover.jpg"
+            data-title="Project title"
+            data-tags="Edit · Sound design"
+            data-client="Add client name"
+            data-brief="What the client needed and why — add this once the project's real."
+            data-process="How you approached it: capture, structure, edit, sound, colour."
+            data-outcome="What happened — the result, the number, the reaction."
+            data-result="Add a headline result, e.g. 250K views in week one">
+            <div class="work-media placeholder-media">
+              <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+            </div>
+          </article>
+
+          <article class="work-card" role="button"
+            data-cover="assets/img/work/project-4-cover.jpg"
+            data-title="Project title"
+            data-tags="Graphic design · Brand identity"
+            data-client="Add client name"
+            data-brief="What the client needed and why — add this once the project's real."
+            data-process="How you approached it: concept, layout, type, colour, delivery."
+            data-outcome="What happened — the result, the number, the reaction."
+            data-result="Add a headline result, e.g. 250K views in week one">
+            <div class="work-media placeholder-media">
+              <span class="placeholder-label">Add thumbnail / cover image</span>
+            </div>
+          </article>
+
+        </div>
+
+        <button type="button" class="work-arrow work-arrow-right" id="workNext" aria-label="Next project">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 L17 12 L9 20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="work-showcase-meta">
+        <div class="work-showcase-info">
+          <span class="work-showcase-index"><span id="workIndexCurrent">01</span> / <span id="workIndexTotal">04</span></span>
+          <h3 id="workActiveTitle">Project title</h3>
+          <p id="workActiveTags">Short-form · Brand campaign</p>
+        </div>
+        <div class="work-showcase-dots" id="workDots"></div>
+      </div>
     </div>
   </section>
 
@@ -242,28 +246,28 @@
 
       <div class="about-copy reveal">
         <p class="about-lede">
-          I'm Philip — 22, based in Denmark. I edit and shoot short-form and campaign content, and
-          I design just as much as I cut — I care about the whole chain: the hook, the pacing, the
-          sound, the colour, the layout — not just cutting clips together.
+          I'm Philip — <strong>22, based in Denmark</strong>. I edit and design short-form and
+          campaign content, and I care about the whole chain: hook, pacing, sound, colour,
+          layout — not just cutting clips together.
         </p>
 
         <div class="about-steps" id="aboutSteps">
           <div class="about-steps-track"><div class="about-steps-fill" id="aboutStepsFill"></div></div>
           <div class="about-steps-list">
             <p class="about-step">
-              I've been living in the Adobe Suite for about four years and know my way around all of
-              it — Premiere, After Effects, Photoshop, Illustrator, Audition. The last year or two of
-              that has been professional: real briefs, real deadlines, real clients.
+              I've been in the Adobe Suite for <strong>about four years</strong> — Premiere, After
+              Effects, Photoshop, DaVinci Resolve. The last year or two has been
+              <strong>professional</strong>: real briefs, real deadlines, real clients.
             </p>
             <p class="about-step">
-              Currently working as a media graphics apprentice at BET25 in Aarhus, alongside my own
-              projects. I'm not just someone who's opened Premiere Pro a few times — I've got real
-              output, a visual point of view, and a track record of making content that actually performs.
+              Currently a <strong>media graphics apprentice at BET25</strong> in Aarhus, alongside my
+              own projects. I've got real output, a visual point of view, and a track record of
+              content that actually performs.
             </p>
             <p class="about-step">
-              I also come at this from a design and dev background, not just an editing one — so I think
-              about layout, type, and structure as much as I think about cuts. Give me a rough idea and
-              I'll come back with something sharper than you pitched.
+              I come at this from a <strong>design and dev background</strong> too, not just editing —
+              so I think about layout, type, and structure as much as I think about cuts. Give me a
+              rough idea and I'll come back with something sharper than you pitched.
             </p>
             <p class="about-step">
               Outside of work I'm usually at the gym or out for a run — turns out I don't like sitting
@@ -451,9 +455,7 @@
 
   <section id="contact" class="contact">
     <div class="contact-marquee" aria-hidden="true">
-      <div class="contact-marquee-track">
-        <span>Let's work together</span><span>·</span><span>Open for work</span><span>·</span>
-        <span>Let's work together</span><span>·</span><span>Open for work</span><span>·</span>
+      <div class="contact-marquee-track" id="contactMarqueeTrack">
         <span>Let's work together</span><span>·</span><span>Open for work</span><span>·</span>
       </div>
     </div>
