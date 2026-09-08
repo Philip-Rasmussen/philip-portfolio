@@ -2,10 +2,7 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-// ---------- intro entrance ----------
-const intro = document.getElementById('intro');
-const heroReveals = Array.from(document.querySelectorAll('#top .reveal'));
+const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 function staggerIn(els, gap){
   els.forEach((el, i) => {
@@ -13,20 +10,70 @@ function staggerIn(els, gap){
   });
 }
 
+// ---------- squiggle draw-on ----------
+const squiggle = document.getElementById('squiggle');
+let drawSquiggle = () => {};
+if (squiggle){
+  const path = squiggle.querySelector('path');
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = len;
+  path.style.strokeDashoffset = len;
+  drawSquiggle = () => { path.style.strokeDashoffset = 0; };
+}
+
+// ---------- intro entrance ----------
+const intro = document.getElementById('intro');
+const heroReveals = Array.from(document.querySelectorAll('#top .reveal'));
+const introMark = document.getElementById('introMark');
+const introCounter = document.getElementById('introCounter');
+const introBarFill = document.getElementById('introBarFill');
+
+// split the wordmark into per-letter spans for a stagger-in effect
+if (introMark){
+  const text = introMark.textContent;
+  introMark.innerHTML = '';
+  [...text].forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.className = 'ch' + (ch === '.' ? ' dot' : '');
+    span.textContent = ch;
+    span.style.animationDelay = (i * 0.045) + 's';
+    introMark.appendChild(span);
+  });
+}
+
 if (intro){
   if (reducedMotion){
     intro.remove();
     staggerIn(heroReveals, 0);
+    drawSquiggle();
   } else {
     document.body.classList.add('intro-lock');
-    requestAnimationFrame(() => intro.classList.add('show'));
+
+    // counter 00 -> 100 synced with the loading bar
+    const counterDuration = 700;
+    const counterStart = performance.now();
+    function tickCounter(now){
+      const p = Math.min((now - counterStart) / counterDuration, 1);
+      const val = Math.floor(p * 100);
+      if (introCounter) introCounter.textContent = String(val).padStart(2, '0');
+      if (introBarFill) introBarFill.style.width = (p * 100) + '%';
+      if (p < 1) requestAnimationFrame(tickCounter);
+    }
+    requestAnimationFrame(tickCounter);
+
     setTimeout(() => {
       intro.classList.add('hide');
       document.body.classList.remove('intro-lock');
-      staggerIn(heroReveals, 110);
-    }, 850);
-    intro.addEventListener('transitionend', () => intro.classList.add('done'));
+      staggerIn(heroReveals, 100);
+      setTimeout(drawSquiggle, 420);
+    }, 950);
+
+    intro.addEventListener('transitionend', (e) => {
+      if (e.propertyName === 'transform') intro.classList.add('done');
+    });
   }
+} else {
+  drawSquiggle();
 }
 
 // ---------- scroll reveal (everything outside the hero) ----------
@@ -66,10 +113,30 @@ const statsIO = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 statEls.forEach(el => statsIO.observe(el));
 
+// ---------- journey timeline: scroll-progress fill ----------
+const timelineWrap = document.querySelector('.timeline-wrap');
+const timelineFill = document.getElementById('timelineFill');
+const timelineItems = Array.from(document.querySelectorAll('.timeline-item'));
+if (timelineWrap && timelineFill && timelineItems.length){
+  function updateTimeline(){
+    const rect = timelineWrap.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const progressPx = Math.min(Math.max(vh * 0.65 - rect.top, 0), rect.height);
+    timelineFill.style.height = progressPx + 'px';
+    timelineItems.forEach(item => {
+      const dot = item.querySelector('.timeline-dot');
+      const dotOffset = dot.offsetTop;
+      item.classList.toggle('active', dotOffset <= progressPx + 4);
+    });
+  }
+  window.addEventListener('scroll', updateTimeline, { passive: true });
+  window.addEventListener('resize', updateTimeline);
+  updateTimeline();
+}
+
 // ---------- custom cursor ----------
 const cursor = document.getElementById('cursorDot');
 const cursorLabel = cursor ? cursor.querySelector('.cursor-label') : null;
-const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 if (canHover && cursor){
   let x = 0, y = 0, cx = 0, cy = 0;
@@ -131,7 +198,7 @@ if (canHover){
 // ---------- light parallax (only once an element has revealed) ----------
 const parallaxEls = document.querySelectorAll('[data-parallax]');
 if (parallaxEls.length && !reducedMotion){
-  function onScroll(){
+  function onScrollParallax(){
     const vh = window.innerHeight;
     parallaxEls.forEach(el => {
       if (!el.classList.contains('in-view')) return;
@@ -141,9 +208,42 @@ if (parallaxEls.length && !reducedMotion){
       el.style.transform = `translateY(${center * -speed}px)`;
     });
   }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  const warmup = setInterval(onScroll, 300);
-  setTimeout(() => clearInterval(warmup), 4000); // catches the hero element once intro-stagger reveals it
+  window.addEventListener('scroll', onScrollParallax, { passive: true });
+  const warmup = setInterval(onScrollParallax, 300);
+  setTimeout(() => clearInterval(warmup), 4000);
+}
+
+// ---------- smoother scroll: eased wheel glide (desktop only) ----------
+if (canHover && !reducedMotion){
+  let targetY = window.scrollY;
+  let currentY = window.scrollY;
+  let raf = null;
+  const ease = 0.085;
+
+  function glide(){
+    currentY += (targetY - currentY) * ease;
+    if (Math.abs(targetY - currentY) < 0.4){
+      currentY = targetY;
+      window.scrollTo({ top: currentY, behavior: 'instant' });
+      raf = null;
+      return;
+    }
+    window.scrollTo({ top: currentY, behavior: 'instant' });
+    raf = requestAnimationFrame(glide);
+  }
+
+  window.addEventListener('wheel', (e) => {
+    if (e.ctrlKey) return; // let pinch-zoom behave natively
+    e.preventDefault();
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    targetY = Math.min(Math.max(targetY + e.deltaY, 0), max);
+    if (!raf) raf = requestAnimationFrame(glide);
+  }, { passive: false });
+
+  // keep target in sync with keyboard / scrollbar-drag scrolling
+  window.addEventListener('scroll', () => {
+    if (!raf){ targetY = window.scrollY; currentY = window.scrollY; }
+  }, { passive: true });
 }
 
 // ---------- work card hover-preview video ----------
