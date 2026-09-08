@@ -1114,82 +1114,107 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   .intro{ display: none; }
 }
 
-/* ---------- journey timeline: clean bullet list, scroll-guided ---------- */
-.timeline-wrap{ position: relative; max-width: 760px; }
-.timeline-track{
+/* ---------- journey timeline: zigzag milestone cards along a scroll-drawn path
+   (inspired by heynesh.com's About Me timeline — alternating cards connected
+   by a line that grows as you scroll, with a rolling odometer step number) ---------- */
+.timeline-wrap{ position: relative; max-width: 980px; margin: 0 auto; }
+.timeline-path{
   position: absolute;
-  top: 6px; bottom: 6px; left: 5px;
-  width: 1px;
-  background: var(--line);
-}
-.timeline-fill{
-  position: absolute;
-  top: 6px; left: 5px;
-  width: 1px;
-  height: 0%;
-  background: var(--accent);
-  transition: height .12s linear;
-}
-.timeline-guide{
-  position: absolute;
-  left: 5px;
-  top: 0;
-  width: 22px;
-  height: 22px;
-  color: var(--accent);
-  transform: translate(-50%, -2px);
-  filter: drop-shadow(0 3px 7px rgba(255,78,50,0.4));
-  transition: top .08s linear, left .2s ease;
-  z-index: 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
   pointer-events: none;
-  opacity: 0;
+  z-index: 1;
 }
-.timeline-guide.is-visible{ opacity: 1; }
-.timeline-guide svg{ width: 100%; height: 100%; display: block; }
+#timelinePathTrack{ stroke: var(--line); stroke-width: 2; }
+#timelinePathFill{ stroke: var(--accent); stroke-width: 2; }
+
 .timeline{
   list-style: none;
   margin: 0;
   padding: 0;
   position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
 }
 .timeline-item{
   position: relative;
-  padding: 0 0 44px 44px;
+  width: calc(50% - 34px);
+  opacity: 0;
+  transform: translateY(28px) scale(0.95);
+  transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
 }
-.timeline-item:last-child{ padding-bottom: 0; }
-.timeline-index{
-  position: absolute;
-  left: 44px;
-  top: -3px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  color: var(--line);
-  transition: color .3s ease;
-}
-.timeline-item.active .timeline-index{ color: var(--accent); }
+.timeline-item:nth-child(odd){ align-self: flex-start; }
+.timeline-item:nth-child(even){ align-self: flex-end; }
+.timeline-item.active{ opacity: 1; transform: translateY(0) scale(1); }
+
 .timeline-dot{
   position: absolute;
-  left: 0;
-  top: 6px;
-  width: 11px;
-  height: 11px;
+  top: 28px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--bone);
   border: 2px solid var(--line);
-  transition: border-color .3s ease, background .3s ease, transform .3s ease;
+  transition: border-color .3s ease, background .3s ease, transform .3s ease, box-shadow .3s ease;
+  z-index: 3;
 }
+.timeline-item:nth-child(odd) .timeline-dot{ right: -34px; }
+.timeline-item:nth-child(even) .timeline-dot{ left: -34px; }
 .timeline-item.active .timeline-dot{
   border-color: var(--accent);
   background: var(--accent);
-  transform: scale(1.25);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 18%, transparent);
+  transform: scale(1.3);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.timeline-card{
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 26px 28px;
+  background: color-mix(in srgb, var(--bone) 65%, transparent);
+  backdrop-filter: blur(6px);
+}
+.timeline-index{
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 2.6vw, 2.4rem);
+  line-height: 1;
+  color: var(--line);
+  margin-bottom: 12px;
+  transition: color .4s ease;
+}
+.timeline-item.active .timeline-index{ color: var(--accent); }
+.digit-mask{
+  position: relative;
+  overflow: hidden;
+  height: 1em;
+  width: 0.62em;
+  display: inline-block;
+}
+.digit-track{
+  position: absolute;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  transform: translateY(0);
+  transition: transform 1.1s cubic-bezier(.16,1,.3,1);
+}
+.digit-track span{
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .timeline-title{
   display: block;
   font-weight: 700;
   font-size: 18px;
-  margin-bottom: 6px;
-  padding-left: 28px;
+  margin-bottom: 8px;
   color: var(--ink-soft);
   transition: color .3s ease;
 }
@@ -1202,15 +1227,21 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 }
 .timeline-item p{
   margin: 0;
-  padding-left: 28px;
   color: var(--ink-soft);
   font-size: 15px;
-  max-width: 520px;
   opacity: 0.55;
   transform: translateY(6px);
   transition: opacity .4s ease, transform .4s ease;
 }
 .timeline-item.active p{ opacity: 1; transform: translateY(0); }
+
+@media (max-width: 760px){
+  .timeline-item{ width: 100%; padding-left: 30px; }
+  .timeline-item:nth-child(odd),
+  .timeline-item:nth-child(even){ align-self: flex-start; }
+  .timeline-item:nth-child(odd) .timeline-dot,
+  .timeline-item:nth-child(even) .timeline-dot{ left: 0; right: auto; }
+}
 
 /* ---------- squiggle draw-on animation ---------- */
 .squiggle path{

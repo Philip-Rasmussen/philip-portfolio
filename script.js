@@ -140,32 +140,96 @@ const statsIO = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 statEls.forEach(el => statsIO.observe(el));
 
-// ---------- journey timeline: scroll-progress fill + paper-plane guide ----------
-const timelineWrap = document.querySelector('.timeline-wrap');
-const timelineFill = document.getElementById('timelineFill');
-const timelineGuide = document.getElementById('timelineGuide');
+// ---------- journey timeline: zigzag path connecting each milestone, drawn in
+// as you scroll, plus a rolling odometer step number per card ----------
+const timelineWrap = document.getElementById('timelineWrap');
+const timelineSvg = document.getElementById('timelinePath');
+const timelinePathTrack = document.getElementById('timelinePathTrack');
+const timelinePathFill = document.getElementById('timelinePathFill');
 const timelineItems = Array.from(document.querySelectorAll('.timeline-item'));
-if (timelineWrap && timelineFill && timelineItems.length){
-  function updateTimeline(){
-    const rect = timelineWrap.getBoundingClientRect();
-    const vh = window.innerHeight;
-    const progressPx = Math.min(Math.max(vh * 0.65 - rect.top, 0), rect.height);
-    timelineFill.style.height = progressPx + 'px';
-    timelineItems.forEach(item => {
-      const dotOffset = item.offsetTop + 6; // 6 = dot's own top offset within its item
-      item.classList.toggle('active', dotOffset <= progressPx + 4);
+
+// build each "01".."05" step number into a per-digit odometer strip
+timelineItems.forEach(item => {
+  const indexEl = item.querySelector('.timeline-index');
+  if (!indexEl || indexEl.dataset.built) return;
+  const digits = indexEl.textContent.trim().split('');
+  indexEl.textContent = '';
+  digits.forEach(d => {
+    const mask = document.createElement('span');
+    mask.className = 'digit-mask';
+    const track = document.createElement('span');
+    track.className = 'digit-track';
+    track.dataset.target = d;
+    for (let n = 0; n <= 9; n++){
+      const s = document.createElement('span');
+      s.textContent = n;
+      track.appendChild(s);
+    }
+    mask.appendChild(track);
+    indexEl.appendChild(mask);
+  });
+  indexEl.dataset.built = 'true';
+});
+
+function rollOdometer(item){
+  item.querySelectorAll('.digit-track').forEach(track => {
+    if (track.dataset.rolled) return;
+    const target = parseInt(track.dataset.target, 10) || 0;
+    // measure the target digit's real rendered offset within the track
+    // (rather than assuming a uniform row height) so sub-pixel rounding on
+    // the clamp()-based font-size can't drift and let a neighbouring digit
+    // peek through the mask
+    const trackRect = track.getBoundingClientRect();
+    const spanRect = track.children[target].getBoundingClientRect();
+    const offset = spanRect.top - trackRect.top;
+    track.style.transform = `translateY(${-offset}px)`;
+    track.dataset.rolled = 'true';
+  });
+}
+
+if (timelineWrap && timelineSvg && timelineItems.length){
+  function layoutPath(){
+    const wrapRect = timelineWrap.getBoundingClientRect();
+    timelineSvg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${wrapRect.height}`);
+    const points = timelineItems.map(item => {
+      const dot = item.querySelector('.timeline-dot');
+      const r = dot.getBoundingClientRect();
+      return { x: r.left + r.width / 2 - wrapRect.left, y: r.top + r.height / 2 - wrapRect.top };
     });
-    if (timelineGuide){
-      timelineGuide.classList.toggle('is-visible', progressPx > 2);
-      const wobbleX = Math.sin(progressPx / 55) * 9;
-      const wobbleRot = Math.sin(progressPx / 38) * 12;
-      timelineGuide.style.top = progressPx + 'px';
-      timelineGuide.style.left = `calc(5px + ${wobbleX}px)`;
-      timelineGuide.style.transform = `translate(-50%, -2px) rotate(${wobbleRot}deg)`;
+    const d = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x + ',' + p.y).join(' ');
+    timelinePathTrack.setAttribute('d', d);
+    timelinePathFill.setAttribute('d', d);
+    const len = timelinePathFill.getTotalLength();
+    timelinePathFill.style.strokeDasharray = len;
+    timelinePathFill.style.strokeDashoffset = len;
+    timelinePathFill.dataset.length = len;
+  }
+
+  function updateTimeline(){
+    const vh = window.innerHeight;
+    const len = parseFloat(timelinePathFill.dataset.length || '0');
+    timelineItems.forEach((item, i) => {
+      const dot = item.querySelector('.timeline-dot');
+      const dotRect = dot.getBoundingClientRect();
+      const passed = dotRect.top < vh * 0.72;
+      item.classList.toggle('active', passed);
+      if (passed) rollOdometer(item);
+    });
+    if (len){
+      const wrapRect = timelineWrap.getBoundingClientRect();
+      const progress = Math.min(Math.max((vh * 0.72 - wrapRect.top) / wrapRect.height, 0), 1);
+      timelinePathFill.style.strokeDashoffset = len * (1 - progress);
     }
   }
+
+  window.addEventListener('load', () => { layoutPath(); updateTimeline(); });
+  window.addEventListener('resize', () => { layoutPath(); updateTimeline(); });
   window.addEventListener('scroll', updateTimeline, { passive: true });
-  window.addEventListener('resize', updateTimeline);
+  // fonts loading late can shift layout; re-measure once ready
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(() => { layoutPath(); updateTimeline(); });
+  }
+  layoutPath();
   updateTimeline();
 }
 
