@@ -140,9 +140,10 @@ const statsIO = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 statEls.forEach(el => statsIO.observe(el));
 
-// ---------- journey timeline: scroll-progress fill ----------
+// ---------- journey timeline: scroll-progress fill + paper-plane guide ----------
 const timelineWrap = document.querySelector('.timeline-wrap');
 const timelineFill = document.getElementById('timelineFill');
+const timelineGuide = document.getElementById('timelineGuide');
 const timelineItems = Array.from(document.querySelectorAll('.timeline-item'));
 if (timelineWrap && timelineFill && timelineItems.length){
   function updateTimeline(){
@@ -151,10 +152,17 @@ if (timelineWrap && timelineFill && timelineItems.length){
     const progressPx = Math.min(Math.max(vh * 0.65 - rect.top, 0), rect.height);
     timelineFill.style.height = progressPx + 'px';
     timelineItems.forEach(item => {
-      const dot = item.querySelector('.timeline-dot');
-      const dotOffset = dot.offsetTop;
+      const dotOffset = item.offsetTop + 6; // 6 = dot's own top offset within its item
       item.classList.toggle('active', dotOffset <= progressPx + 4);
     });
+    if (timelineGuide){
+      timelineGuide.classList.toggle('is-visible', progressPx > 2);
+      const wobbleX = Math.sin(progressPx / 55) * 9;
+      const wobbleRot = Math.sin(progressPx / 38) * 12;
+      timelineGuide.style.top = progressPx + 'px';
+      timelineGuide.style.left = `calc(5px + ${wobbleX}px)`;
+      timelineGuide.style.transform = `translate(-50%, -2px) rotate(${wobbleRot}deg)`;
+    }
   }
   window.addEventListener('scroll', updateTimeline, { passive: true });
   window.addEventListener('resize', updateTimeline);
@@ -349,32 +357,22 @@ if (modal){
   });
 }
 
-// ---------- journey: horizontal pinned scroll (desktop only) ----------
-const journeyPinWrap = document.getElementById('journeyPinWrap');
-const journeyTrack = document.getElementById('journeyTrack');
-const journeyProgressFill = document.getElementById('journeyProgressFill');
-const journeyDesktopMQ = window.matchMedia('(min-width: 900px)');
-
-if (journeyPinWrap && journeyTrack && journeyProgressFill && !reducedMotion){
-  function updateJourneyPin(){
-    if (!journeyDesktopMQ.matches){
-      journeyTrack.style.transform = '';
-      journeyProgressFill.style.width = '0%';
-      return;
-    }
-    const rect = journeyPinWrap.getBoundingClientRect();
-    const wrapHeight = journeyPinWrap.offsetHeight;
-    const vh = window.innerHeight;
-    const scrollable = wrapHeight - vh;
-    let progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
-    progress = Math.min(Math.max(progress, 0), 1);
-    const maxTranslate = Math.max(journeyTrack.scrollWidth - journeyTrack.clientWidth, 0);
-    journeyTrack.style.transform = `translateX(-${progress * maxTranslate}px)`;
-    journeyProgressFill.style.width = (progress * 100) + '%';
-  }
-  window.addEventListener('scroll', updateJourneyPin, { passive: true });
-  window.addEventListener('resize', updateJourneyPin);
-  updateJourneyPin();
+// ---------- press: click-through brand chips ----------
+const pressChips = document.querySelectorAll('.press-chip');
+const pressCopy = document.getElementById('pressCopy');
+if (pressChips.length && pressCopy){
+  pressChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (chip.classList.contains('is-active')) return;
+      pressChips.forEach(c => c.classList.remove('is-active'));
+      chip.classList.add('is-active');
+      pressCopy.classList.add('is-fading');
+      setTimeout(() => {
+        pressCopy.textContent = chip.dataset.copy || '';
+        pressCopy.classList.remove('is-fading');
+      }, 180);
+    });
+  });
 }
 
 // ---------- mobile nav (hamburger toggle) ----------

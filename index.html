@@ -179,14 +179,19 @@
   <section id="press" class="press">
     <div class="section-head reveal">
       <span class="section-num">02</span>
-      <h2>Press &amp; features</h2>
+      <h2>On the guest list</h2>
+      <p>Press access, not paid client work — but proof I show up when it's real. Click one.</p>
     </div>
-    <div class="press-strip reveal">
-      <span>Red Bull</span><span>DISTORTION</span><span>Soundclash</span>
+    <div class="press-chips reveal" id="pressChips">
+      <button type="button" class="press-chip is-active"
+        data-copy="Invited as press through Red Bull — backstage access, artist interviews, on-site coverage.">Red Bull</button>
+      <button type="button" class="press-chip"
+        data-copy="One of Denmark's biggest festivals — covered it twice as press, through Red Bull.">DISTORTION</button>
+      <button type="button" class="press-chip"
+        data-copy="Red Bull's Soundclash event — same access, different stage.">Soundclash</button>
     </div>
-    <p class="press-copy reveal">
-      Invited as press to DISTORTION — one of Denmark's biggest festivals — twice, through Red Bull,
-      including their Soundclash event. Backstage access, artist interviews, on-site coverage.
+    <p class="press-copy reveal" id="pressCopy">
+      Invited as press through Red Bull — backstage access, artist interviews, on-site coverage.
     </p>
   </section>
 
@@ -309,102 +314,58 @@
     </div>
   </section>
 
-  <section id="journey" class="journey-scroll">
-
-    <!-- Desktop: horizontal pinned scroll -->
-    <div class="journey-pin-wrap" id="journeyPinWrap">
-      <div class="journey-pin">
-        <div class="journey-head">
-          <span class="section-num">05</span>
-          <h2>My journey</h2>
-        </div>
-        <div class="journey-track" id="journeyTrack">
-
-          <article class="journey-card">
-            <span class="journey-card-index">01</span>
-            <h3>Web Developer education</h3>
-            <p>Started out studying web development — learned how to build before I learned how to
-              edit. That structured, technical thinking still shows in how I plan a cut.</p>
-          </article>
-
-          <article class="journey-card">
-            <span class="journey-card-index">02</span>
-            <h3>Graphic Designer education <em>— finishing this November</em></h3>
-            <p>Currently wrapping up a Graphic Designer education. A good edit is also about
-              typography, layout, and colour — not just the timeline.</p>
-          </article>
-
-          <article class="journey-card">
-            <span class="journey-card-index">03</span>
-            <h3>Started with Top Comfy <em>— about a year ago</em></h3>
-            <p>My first real step into professional content work, outside of school.</p>
-          </article>
-
-          <article class="journey-card">
-            <span class="journey-card-index">04</span>
-            <h3>Launched my personal brand <em>— 4–5 months ago</em></h3>
-            <p>Started building and publishing under my own name — sharing the process, not just
-              the output.</p>
-          </article>
-
-          <article class="journey-card journey-card-now">
-            <span class="journey-card-index">05</span>
-            <h3>Now: media graphics apprentice at BET25</h3>
-            <p>Bringing design, development, and content together — day to day work on video and
-              graphics for a real brand.</p>
-          </article>
-
-        </div>
-        <div class="journey-progress"><span class="journey-progress-fill" id="journeyProgressFill"></span></div>
-      </div>
+  <section id="journey" class="journey">
+    <div class="section-head reveal">
+      <span class="section-num">05</span>
+      <h2>My journey</h2>
+      <p>The short version of how I got here — a new milestone every few months.</p>
     </div>
 
-    <!-- Mobile / touch: vertical scroll-fill timeline -->
-    <div class="journey-mobile-wrap">
-      <div class="journey-head">
-        <span class="section-num">05</span>
-        <h2>My journey</h2>
-      </div>
-      <div class="timeline-wrap">
-        <div class="timeline-track"></div>
-        <div class="timeline-fill" id="timelineFill"></div>
-        <ol class="timeline" id="timelineList">
-          <li class="timeline-item">
-            <span class="timeline-index">01</span>
-            <span class="timeline-dot"></span>
-            <span class="timeline-title">Web Developer education</span>
-            <p>Started out studying web development — learned how to build before I learned how to
-              edit. That structured, technical thinking still shows in how I plan a cut.</p>
-          </li>
-          <li class="timeline-item">
-            <span class="timeline-index">02</span>
-            <span class="timeline-dot"></span>
-            <span class="timeline-title">Graphic Designer education <em>— finishing this November</em></span>
-            <p>Currently wrapping up a Graphic Designer education. A good edit is also about
-              typography, layout, and colour — not just the timeline.</p>
-          </li>
-          <li class="timeline-item">
-            <span class="timeline-index">03</span>
-            <span class="timeline-dot"></span>
-            <span class="timeline-title">Started with Top Comfy <em>— about a year ago</em></span>
-            <p>My first real step into professional content work, outside of school.</p>
-          </li>
-          <li class="timeline-item">
-            <span class="timeline-index">04</span>
-            <span class="timeline-dot"></span>
-            <span class="timeline-title">Launched my personal brand <em>— 4–5 months ago</em></span>
-            <p>Started building and publishing under my own name — sharing the process, not just
-              the output.</p>
-          </li>
-          <li class="timeline-item">
-            <span class="timeline-index">05</span>
-            <span class="timeline-dot"></span>
-            <span class="timeline-title">Now: media graphics apprentice at BET25</span>
-            <p>Bringing design, development, and content together — day to day work on video and
-              graphics for a real brand.</p>
-          </li>
-        </ol>
-      </div>
+    <div class="timeline-wrap">
+      <div class="timeline-track"></div>
+      <div class="timeline-fill" id="timelineFill"></div>
+      <span class="timeline-guide" id="timelineGuide" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 22 L21 4 L12 8 L3 4 Z" fill="currentColor"/>
+          <path d="M12 8 L12 22" stroke="var(--bone)" stroke-width="1" fill="none"/>
+        </svg>
+      </span>
+      <ol class="timeline" id="timelineList">
+        <li class="timeline-item">
+          <span class="timeline-index">01</span>
+          <span class="timeline-dot"></span>
+          <span class="timeline-title">Web Developer education</span>
+          <p>Started out studying web development — learned how to build before I learned how to
+            edit. That structured, technical thinking still shows in how I plan a cut.</p>
+        </li>
+        <li class="timeline-item">
+          <span class="timeline-index">02</span>
+          <span class="timeline-dot"></span>
+          <span class="timeline-title">Graphic Designer education <em>— finishing this November</em></span>
+          <p>Currently wrapping up a Graphic Designer education. A good edit is also about
+            typography, layout, and colour — not just the timeline.</p>
+        </li>
+        <li class="timeline-item">
+          <span class="timeline-index">03</span>
+          <span class="timeline-dot"></span>
+          <span class="timeline-title">Started with Top Comfy <em>— about a year ago</em></span>
+          <p>My first real step into professional content work, outside of school.</p>
+        </li>
+        <li class="timeline-item">
+          <span class="timeline-index">04</span>
+          <span class="timeline-dot"></span>
+          <span class="timeline-title">Launched my personal brand <em>— 4–5 months ago</em></span>
+          <p>Started building and publishing under my own name — sharing the process, not just
+            the output.</p>
+        </li>
+        <li class="timeline-item timeline-item-now">
+          <span class="timeline-index">05</span>
+          <span class="timeline-dot"></span>
+          <span class="timeline-title">Now: media graphics apprentice at BET25</span>
+          <p>Bringing design, development, and content together — day to day work on video and
+            graphics for a real brand.</p>
+        </li>
+      </ol>
     </div>
   </section>
 
