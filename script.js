@@ -197,9 +197,23 @@ if (timelineWrap && timelineSvg && timelineItems.length){
     const points = timelineItems.map(item => {
       const dot = item.querySelector('.timeline-dot');
       const r = dot.getBoundingClientRect();
+      // center point is stable whether or not the dot's pop-in scale has
+      // played yet, since scale() doesn't move the element's own centre
       return { x: r.left + r.width / 2 - wrapRect.left, y: r.top + r.height / 2 - wrapRect.top };
     });
-    const d = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x + ',' + p.y).join(' ');
+    // smooth flowing curve through every dot instead of sharp straight-
+    // line zigzag joints: curve toward the midpoint between each pair of
+    // points, using the point itself as the control handle
+    let d = `M ${points[0].x},${points[0].y}`;
+    for (let i = 1; i < points.length - 1; i++){
+      const mx = (points[i].x + points[i + 1].x) / 2;
+      const my = (points[i].y + points[i + 1].y) / 2;
+      d += ` Q ${points[i].x},${points[i].y} ${mx},${my}`;
+    }
+    if (points.length > 1){
+      const last = points[points.length - 1];
+      d += ` L ${last.x},${last.y}`;
+    }
     timelinePathTrack.setAttribute('d', d);
     timelinePathFill.setAttribute('d', d);
     const len = timelinePathFill.getTotalLength();
@@ -254,6 +268,95 @@ if (aboutSteps && aboutStepsFill && aboutStepEls.length){
   window.addEventListener('scroll', updateAboutSteps, { passive: true });
   window.addEventListener('resize', updateAboutSteps);
   updateAboutSteps();
+}
+
+// ---------- toolkit: programs / skills switcher + staggered reveal ----------
+const toolkitSection = document.getElementById('toolkit');
+const toolkitPanels = toolkitSection ? Array.from(toolkitSection.querySelectorAll('.toolkit-panel')) : [];
+const toolkitTabs = toolkitSection ? Array.from(toolkitSection.querySelectorAll('.toolkit-tab')) : [];
+const toolkitPrev = document.getElementById('toolkitPrev');
+const toolkitNext = document.getElementById('toolkitNext');
+
+if (toolkitSection && toolkitPanels.length){
+  const panelOrder = toolkitPanels.map(p => p.dataset.panel);
+  let activeIndex = Math.max(0, panelOrder.indexOf(
+    toolkitPanels.find(p => p.classList.contains('is-active'))?.dataset.panel
+  ));
+
+  function runToolkitChoreography(panel){
+    const cards = Array.from(panel.querySelectorAll('.toolkit-card, .skill-card'));
+    cards.forEach((card, i) => {
+      card.classList.remove('in-view');
+      // reset any previously-filled level dots so the meter can replay
+      card.querySelectorAll('.toolkit-level span.filled').forEach(s => {
+        s.classList.remove('filled');
+        s.style.transitionDelay = '';
+      });
+    });
+    // force a reflow so the removed classes actually register before we
+    // re-add them — otherwise the browser coalesces it into a no-op
+    void panel.offsetWidth;
+
+    const CARD_STAGGER = 90; // ms between each card starting its entrance
+    const CARD_DURATION = 500; // matches the .toolkit-card / .skill-card transition
+    cards.forEach((card, i) => {
+      setTimeout(() => {
+        card.classList.add('in-view');
+        const level = card.querySelector('.toolkit-level');
+        if (level){
+          const fill = parseInt(level.dataset.fill, 10) || 0;
+          const dots = Array.from(level.children);
+          // bar starts filling only once the card has finished popping in
+          setTimeout(() => {
+            dots.slice(0, fill).forEach((dot, di) => {
+              dot.style.transitionDelay = (di * 70) + 'ms';
+              dot.classList.add('filled');
+            });
+          }, CARD_DURATION * 0.5);
+        }
+      }, i * CARD_STAGGER);
+    });
+  }
+
+  function showPanel(nextIndex, direction){
+    nextIndex = (nextIndex + panelOrder.length) % panelOrder.length;
+    if (nextIndex === activeIndex) return;
+    const nextPanelName = panelOrder[nextIndex];
+    const currentPanel = toolkitPanels[activeIndex];
+    const nextPanel = toolkitPanels[nextIndex];
+
+    currentPanel.classList.remove('is-active');
+    nextPanel.style.setProperty('--enter-x', direction === 'prev' ? '-26px' : '26px');
+    nextPanel.classList.add('is-active', 'is-entering');
+    nextPanel.addEventListener('animationend', function handler(){
+      nextPanel.classList.remove('is-entering');
+      nextPanel.removeEventListener('animationend', handler);
+    });
+
+    toolkitTabs.forEach(tab => tab.classList.toggle('is-active', tab.dataset.panel === nextPanelName));
+    activeIndex = nextIndex;
+    runToolkitChoreography(nextPanel);
+  }
+
+  if (toolkitPrev) toolkitPrev.addEventListener('click', () => showPanel(activeIndex - 1, 'prev'));
+  if (toolkitNext) toolkitNext.addEventListener('click', () => showPanel(activeIndex + 1, 'next'));
+  toolkitTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetIndex = panelOrder.indexOf(tab.dataset.panel);
+      showPanel(targetIndex, targetIndex > activeIndex ? 'next' : 'prev');
+    });
+  });
+
+  // first-time entrance, once the section actually scrolls into view
+  const toolkitIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        runToolkitChoreography(toolkitPanels[activeIndex]);
+        toolkitIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  toolkitIO.observe(toolkitSection);
 }
 
 // ---------- custom cursor ----------

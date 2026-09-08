@@ -279,46 +279,112 @@
     <div class="section-head reveal">
       <span class="section-num">04</span>
       <h2>Toolkit</h2>
-      <p>What I actually build with — four years in, comfortable across the whole Adobe stack.</p>
+      <p>What I actually build with — four years in, comfortable across a real stack.</p>
     </div>
 
-    <div class="toolkit-grid">
-      <div class="toolkit-card reveal">
-        <span class="toolkit-badge">Pr</span>
-        <h3>Premiere Pro</h3>
-        <p>Editing, structure, pacing — where most of the work happens.</p>
-        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></span>
+    <div class="toolkit-switcher reveal">
+      <button type="button" class="toolkit-arrow toolkit-arrow-left" id="toolkitPrev" aria-label="Previous panel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 L7 12 L15 20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="toolkit-panels">
+        <div class="toolkit-tabs" id="toolkitTabs">
+          <button type="button" class="toolkit-tab is-active" data-panel="programs">Programs</button>
+          <button type="button" class="toolkit-tab" data-panel="skills">Skills</button>
+        </div>
+
+        <div class="toolkit-panel is-active" data-panel="programs">
+          <div class="toolkit-grid" id="toolkitGrid">
+            <div class="toolkit-card" style="--brand-dark:#523A5C; --brand-bright:#DB76FA;">
+              <span class="toolkit-badge">Pr</span>
+              <h3>Premiere Pro</h3>
+              <p>Editing, structure, pacing — where most of the work happens.</p>
+              <span class="toolkit-level" data-fill="6">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </span>
+            </div>
+            <div class="toolkit-card" style="--brand-dark:#00005B; --brand-bright:#9999FF;">
+              <span class="toolkit-badge">Ae</span>
+              <h3>After Effects</h3>
+              <p>Motion graphics, titles, small VFX touches.</p>
+              <span class="toolkit-level" data-fill="5">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </span>
+            </div>
+            <div class="toolkit-card" style="--brand-dark:#001E36; --brand-bright:#31A8FF;">
+              <span class="toolkit-badge">Ps</span>
+              <h3>Photoshop</h3>
+              <p>Thumbnails, retouching, graphic design work.</p>
+              <span class="toolkit-level" data-fill="5">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </span>
+            </div>
+            <div class="toolkit-card" style="--brand-dark:#231F20; --brand-bright:#F1651F;">
+              <span class="toolkit-badge">Dr</span>
+              <h3>DaVinci Resolve</h3>
+              <p>Colour grading and finishing — giving an edit its final look.</p>
+              <span class="toolkit-level" data-fill="4">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </span>
+            </div>
+            <div class="toolkit-card" style="--brand-dark:#49021F; --brand-bright:#FF3366;">
+              <span class="toolkit-badge">Id</span>
+              <h3>InDesign</h3>
+              <p>Layout and print-ready design work, multi-page and structured.</p>
+              <span class="toolkit-level" data-fill="4">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </span>
+            </div>
+            <div class="toolkit-card" style="--brand-dark:#330000; --brand-bright:#FF9A00;">
+              <span class="toolkit-badge">Ai</span>
+              <h3>Illustrator</h3>
+              <p>Logos, icons, vector graphics.</p>
+              <span class="toolkit-level" data-fill="3">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolkit-panel" data-panel="skills">
+          <div class="skills-grid" id="skillsGrid">
+            <div class="skill-card">
+              <span class="skill-tag">Premiere Pro</span>
+              <h3>Video Editing</h3>
+              <p>Idea to final cut — structure, pacing, and sound working together.</p>
+            </div>
+            <div class="skill-card">
+              <span class="skill-tag">DaVinci Resolve</span>
+              <h3>Colour Grading</h3>
+              <p>Giving footage a consistent, intentional look.</p>
+            </div>
+            <div class="skill-card">
+              <span class="skill-tag">Video &amp; content</span>
+              <h3>Storytelling</h3>
+              <p>Hooks and pacing that keep people watching past the first three seconds.</p>
+            </div>
+            <div class="skill-card">
+              <span class="skill-tag">After Effects</span>
+              <h3>Motion Graphics</h3>
+              <p>Titles, transitions, small VFX touches that sell an edit.</p>
+            </div>
+            <div class="skill-card">
+              <span class="skill-tag">Illustrator · InDesign</span>
+              <h3>Brand &amp; Identity Design</h3>
+              <p>Logos, layout, and visual systems that hold together.</p>
+            </div>
+            <div class="skill-card">
+              <span class="skill-tag">Social &amp; short-form</span>
+              <h3>Short-Form Content</h3>
+              <p>Built for the scroll — hook first, no dead air.</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="toolkit-card reveal">
-        <span class="toolkit-badge">Ae</span>
-        <h3>After Effects</h3>
-        <p>Motion graphics, titles, small VFX touches.</p>
-        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></span>
-      </div>
-      <div class="toolkit-card reveal">
-        <span class="toolkit-badge">Ps</span>
-        <h3>Photoshop</h3>
-        <p>Thumbnails, retouching, graphic design work.</p>
-        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></span>
-      </div>
-      <div class="toolkit-card reveal">
-        <span class="toolkit-badge">Ai</span>
-        <h3>Illustrator</h3>
-        <p>Logos, layout, vector graphic design.</p>
-        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></span>
-      </div>
-      <div class="toolkit-card reveal">
-        <span class="toolkit-badge">Au</span>
-        <h3>Audition</h3>
-        <p>Sound design and clean-up — the part people skip.</p>
-        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span><span></span></span>
-      </div>
-      <div class="toolkit-card reveal">
-        <span class="toolkit-badge">&lt;/&gt;</span>
-        <h3>Dev &amp; design</h3>
-        <p>Built this site myself — helps me think in layout and structure, not just cuts.</p>
-        <span class="toolkit-level"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span><span></span></span>
-      </div>
+
+      <button type="button" class="toolkit-arrow toolkit-arrow-right" id="toolkitNext" aria-label="Next panel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 L17 12 L9 20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
   </section>
 
