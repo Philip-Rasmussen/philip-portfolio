@@ -15,7 +15,7 @@
 <body>
 
 <div class="grain"></div>
-<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-dot" id="cursorDot"><span class="cursor-label"></span></div>
 
 <header class="site-header">
   <a href="#top" class="logo">PHILIP<span class="dot">.</span></a>
@@ -30,14 +30,23 @@
 <main>
 
   <section id="top" class="hero">
-    <p class="eyebrow reveal">Video editor &amp; content creator — Aarhus, Denmark</p>
+    <p class="eyebrow reveal">
+      Video editor &amp; content creator — Aarhus, Denmark
+      <span class="status-pill"><span class="status-dot"></span>Open for work</span>
+    </p>
     <h1 class="hero-title">
       <span class="reveal">I edit stories</span>
-      <span class="reveal">that stop the scroll.</span>
+      <span class="reveal hero-title-accent">
+        that stop the scroll.
+        <svg class="squiggle" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M2 16 C 40 4, 70 26, 105 14 S 170 2, 205 15 S 270 26, 305 13 S 370 3, 398 15" />
+        </svg>
+      </span>
     </h1>
     <p class="hero-sub reveal">
       Idea → hook → capture → structure → edit → sound → colour → publish → learn.
-      I understand the whole chain — not just the timeline.
+      I understand the whole chain — not just the timeline. Premiere Pro's basically
+      a second home at this point.
     </p>
     <div class="hero-actions reveal">
       <a href="#work" class="btn btn-primary">See the work</a>
@@ -45,12 +54,24 @@
     </div>
 
     <div class="hero-reel reveal">
+      <span class="reel-tag">watch</span>
       <div class="hero-reel-media placeholder-media">
         <span class="play-btn" aria-hidden="true">▶</span>
         <span class="placeholder-label">Showreel — drop in your best cuts here</span>
       </div>
     </div>
   </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Video Editing</span><span>·</span><span>Colour Grading</span><span>·</span>
+      <span>Sound Design</span><span>·</span><span>Graphic Design</span><span>·</span>
+      <span>Cinematography</span><span>·</span><span>Motion Graphics</span><span>·</span>
+      <span>Video Editing</span><span>·</span><span>Colour Grading</span><span>·</span>
+      <span>Sound Design</span><span>·</span><span>Graphic Design</span><span>·</span>
+      <span>Cinematography</span><span>·</span><span>Motion Graphics</span><span>·</span>
+    </div>
+  </div>
 
   <section id="work" class="work">
     <div class="section-head reveal">
@@ -104,6 +125,28 @@
     </div>
   </section>
 
+  <section id="stats" class="stats">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <span class="stat-number" data-target="0" data-suffix="">—</span>
+        <span class="stat-label">Years editing</span>
+      </div>
+      <div class="stat-item reveal">
+        <span class="stat-number" data-target="0" data-suffix="">—</span>
+        <span class="stat-label">Projects shipped</span>
+      </div>
+      <div class="stat-item reveal">
+        <span class="stat-number" data-target="0" data-suffix="">—</span>
+        <span class="stat-label">Views generated</span>
+      </div>
+      <div class="stat-item reveal">
+        <span class="stat-number" data-target="0" data-suffix="">—</span>
+        <span class="stat-label">Followers</span>
+      </div>
+    </div>
+    <p class="stats-note reveal">Real numbers going in here shortly — placeholders for now.</p>
+  </section>
+
   <section id="about" class="about">
     <div class="section-head reveal">
       <span class="section-num">02</span>
@@ -129,7 +172,8 @@
         </p>
         <p>
           I also come at this from a design and dev background, not just an editing one — so I think
-          about layout, type, and structure as much as I think about cuts.
+          about layout, type, and structure as much as I think about cuts. Give me a rough idea and
+          I'll come back with something sharper than you pitched.
         </p>
       </div>
     </div>
@@ -187,7 +231,7 @@
 </main>
 
 <footer class="site-footer">
-  <span>© <span id="year"></span> Philip</span>
+  <span>© <span id="year"></span> Philip — built by hand, no template.</span>
   <a href="#top">Back to top ↑</a>
 </footer>
 
