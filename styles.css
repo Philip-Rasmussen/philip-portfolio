@@ -301,8 +301,16 @@ section{ padding-top: 120px; padding-bottom: 56px; }
      the track's own edges (see --offset below) — on narrow viewports that
      bleed was wide enough to push the whole page into horizontal scroll.
      Clipping it here, at the component that actually causes the overflow,
-     keeps the peek effect but stops it from ever widening the page. */
-  overflow-x: hidden;
+     keeps the peek effect but stops it from ever widening the page.
+     IMPORTANT: this must be `overflow-x: clip`, not `hidden`. Per the CSS
+     overflow spec, pairing an explicit `hidden` on one axis with `visible`
+     on the other silently turns the "visible" axis into `auto` (the UA has
+     to make it scrollable so nothing is unreachably clipped) — that's what
+     was creating a real, independently-scrollable box here, on top of the
+     page's own scroll: the "I can still scroll inside the section" /
+     "scroll bar comes back" bug. `clip` doesn't establish a scroll
+     container at all, so the other axis stays genuinely visible/static. */
+  overflow-x: clip;
   overflow-y: visible;
 }
 .work-showcase:focus-visible{ outline: none; }
@@ -575,9 +583,6 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 @media (prefers-reduced-motion: reduce){
   .work-dot::after{ transition: none; }
 }
-@media (max-width: 720px){
-  .work-showcase-dots{ margin-left: -10px; }
-}
 .work-dot:focus-visible,
 .work-arrow:focus-visible,
 .toolkit-tab:focus-visible,
@@ -616,18 +621,32 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   transform: none;
   filter: none;
 }
+/* the rule above only wins the cascade against the plain .reveal default —
+   html.reveal-js .reveal (see the scroll-reveal block) is more specific
+   and would otherwise still fade this element in on top of its own
+   clip-path wipe below. This compound selector is specific enough to beat
+   that too, so .about-photo genuinely opts out of the generic fade in
+   every state, exactly as the comment above intends. */
+html.reveal-js .about-photo.reveal{ opacity: 1; transform: none; filter: none; transition: none; }
 @media (max-width: 820px){
   .about-photo{ aspect-ratio: 4/5; min-height: 0; }
 }
 .about-photo-clip{
   position: absolute;
   inset: 0;
+  /* no-JS-safe default: fully visible until html.reveal-js says otherwise
+     (see the .reveal comment above) — a portrait photo is exactly the kind
+     of content that must never be able to get stuck permanently invisible
+     because a scroll observer didn't fire on some device. */
+  clip-path: inset(0 0 0% 0);
+}
+html.reveal-js .about-photo-clip{
   clip-path: inset(0 0 100% 0);
   transition: clip-path var(--dur-lg) var(--ease);
 }
-.about-photo.in-view .about-photo-clip{ clip-path: inset(0 0 0% 0); }
+html.reveal-js .about-photo.in-view .about-photo-clip{ clip-path: inset(0 0 0% 0); }
 @media (prefers-reduced-motion: reduce){
-  .about-photo-clip{ transition: none; clip-path: inset(0 0 0% 0); }
+  .about-photo-clip, html.reveal-js .about-photo-clip{ transition: none; clip-path: inset(0 0 0% 0); }
 }
 .about-photo img{
   width: 100%; height: 100%; object-fit: cover;
@@ -850,7 +869,11 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   .contact-email-btn{ width: 100%; justify-content: space-between; }
 }
 @media (max-width: 720px){
-  .contact{ padding-top: 90px; padding-bottom: 90px; }
+  /* the marquee is absolutely positioned (top: 46px) over this section, so
+     shrinking padding-top too far — as before — left almost no gap between
+     its greyed-out text and the "06" heading directly below it. Enough
+     padding to clear the marquee's own height plus real breathing room. */
+  .contact{ padding-top: 160px; padding-bottom: 90px; }
 }
 
 /* ---------- footer ---------- */
@@ -871,32 +894,49 @@ section{ padding-top: 120px; padding-bottom: 56px; }
    entry, which could leave headings and paragraphs genuinely hard to read
    for a beat during normal scrolling, and filter animation is expensive to
    composite on top of that. Plain opacity/transform reads just as
-   intentional and never costs legibility. */
+   intentional and never costs legibility.
+
+   No-JS-safe by default: .reveal on its own is just fully visible, static
+   HTML. Only html.reveal-js (added synchronously by the inline script in
+   <head>, before first paint) switches it into the "starts hidden, fades/
+   slides in on scroll" behaviour. This means a JS error, a slow connection,
+   or a scroll-observer edge case on a real device can never leave a
+   section permanently invisible — worst case it just never animates in. */
 .reveal{
+  opacity: 1;
+  transform: none;
+}
+html.reveal-js .reveal{
   opacity: 0;
   transform: translateY(24px);
   transition: opacity var(--dur-md) var(--ease), transform var(--dur-md) var(--ease);
 }
-.reveal.in-view{ opacity: 1; transform: translateY(0); }
+html.reveal-js .reveal.in-view{ opacity: 1; transform: translateY(0); }
 .hero-title span:nth-child(1){ transition-delay: 0s; }
 
 /* reusable masked-line reveal — an overflow-hidden strip with its text
    sliding up from below, used for the hero heading and any other headline
    that should "unmask" rather than just fade (How I Think intro, Contact
-   heading). Staggered by script.js when the containing .reveal enters. */
+   heading). Staggered by script.js when the containing .reveal enters.
+   Same no-JS-safe default as .reveal above. */
 .mask-line{ display: block; overflow: hidden; }
-.mask-line > span{
-  display: block;
+.mask-line > span{ display: block; transform: none; opacity: 1; }
+html.reveal-js .mask-line > span{
   transform: translateY(100%);
   opacity: 0;
   transition: transform var(--dur-md) var(--ease), opacity var(--dur-md) var(--ease);
 }
-.mask-line.in-view > span{ transform: translateY(0); opacity: 1; }
+html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; }
 
 @media (prefers-reduced-motion: reduce){
-  .reveal{ opacity: 1; transform: none; filter: none; transition: none; }
+  /* html.reveal-js .reveal (2 classes + html) is more specific than the
+     plain .reveal used elsewhere, so the reduced-motion override has to
+     match that same specificity to actually win here — otherwise reduced-
+     motion visitors with JS enabled would still get the hidden starting
+     state with no transition to ever bring it to opacity 1. */
+  .reveal, html.reveal-js .reveal{ opacity: 1; transform: none; filter: none; transition: none; }
   .timeline-card, .toolkit-card, .skill-card{ opacity: 1; transform: none; filter: none; transition: none; }
-  .mask-line > span{ opacity: 1; transform: none; transition: none; }
+  .mask-line > span, html.reveal-js .mask-line > span{ opacity: 1; transform: none; transition: none; }
   html{ scroll-behavior: auto; }
 }
 
@@ -1859,7 +1899,7 @@ body.nav-open{ overflow: hidden; }
   border-bottom: 1px solid var(--line);
 }
 .think-inner{ max-width: 880px; margin: 0 auto; }
-.think-head{ margin-bottom: 56px; border-top: none; padding-top: 0; }
+.think-head{ margin-bottom: 56px; border-top: none; padding-top: 28px; }
 .think-head p{ max-width: 620px; font-size: 17px; }
 .think-lines .mask-line{ margin-bottom: 2px; }
 .think-lines .mask-line:last-child{ margin-bottom: 0; }

@@ -184,15 +184,27 @@ if (intro){
 }
 
 // ---------- scroll reveal (everything outside the hero) ----------
-// fires as soon as a section's top edge reaches the lower ~18% of the
-// viewport, rather than waiting for 15% of the element itself to be
-// visible — a tall section could otherwise need a lot of extra scrolling
-// before it started revealing, leaving a visibly empty gap. Shrinking the
-// observed root from the top by 82% means only that bottom sliver counts,
-// so threshold:0 (any overlap at all) fires right at the moment it's
-// wanted. Each block still only plays once (unobserve on first trigger),
-// and reveals never block scrolling or interaction — they're purely CSS
-// opacity/transform transitions running alongside it.
+// Fires as soon as a section enters the viewport, rather than waiting for
+// 15% of the element itself to be visible — a tall section could otherwise
+// need a lot of extra scrolling before it started revealing, leaving a
+// visibly empty gap. threshold:0 means any overlap at all counts; the -10%
+// bottom margin just means the very first sliver of a pixel crossing the
+// bottom edge doesn't count as "arrived" yet.
+//
+// An earlier version shrank the zone much more aggressively (root margin
+// -82% from the top, leaving only an ~18%-tall band near the bottom of the
+// screen) to delay the reveal until a section was more prominently in
+// view. That turned out to be genuinely unsafe: it can only ever be
+// crossed by continuous, frame-by-frame scrolling. Any instant jump that
+// lands a section already inside the viewport without passing through
+// that thin band — a deep link straight to a lower section, a nav click,
+// the browser restoring a previous scroll position — leaves it stuck at
+// its hidden starting opacity forever, fully on screen and invisible, with
+// no further scrolling able to fix it. That's what real-device reports of
+// "this section disappeared" / "the photo doesn't show" turned out to be.
+// A near-full-viewport zone like this one is essentially impossible to
+// jump clean over for anything adjacent to what's already on screen, so it
+// keeps the "reveal as it arrives" feel without that failure mode.
 const revealEls = document.querySelectorAll('.reveal:not(#top .reveal)');
 const io = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -208,8 +220,31 @@ const io = new IntersectionObserver((entries) => {
       io.unobserve(entry.target);
     }
   });
-}, { threshold: 0, rootMargin: '-82% 0px 0px 0px' });
+}, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
 revealEls.forEach(el => io.observe(el));
+
+// belt-and-braces safety net on top of the above: whatever the trigger
+// zone, catch anything that's already on screen (fully OR partially — an
+// instant jump can land an element mid-viewport without ever crossing an
+// observer boundary) right after the very first layout, and reveal it
+// immediately with no animation. This is what actually guarantees nothing
+// can render permanently invisible, independent of how the zone above is
+// tuned.
+function revealIfOnScreen(){
+  const vh = window.innerHeight;
+  revealEls.forEach(el => {
+    if (el.classList.contains('in-view')) return;
+    const rect = el.getBoundingClientRect();
+    const onScreenOrPast = rect.top < vh && rect.bottom > 0 ? true : rect.bottom <= 0;
+    if (onScreenOrPast){
+      el.classList.add('in-view');
+      el.querySelectorAll('.mask-line').forEach(line => line.classList.add('in-view'));
+      io.unobserve(el);
+    }
+  });
+}
+requestAnimationFrame(revealIfOnScreen);
+window.addEventListener('load', revealIfOnScreen);
 
 // ---------- stat counters ----------
 const statEls = document.querySelectorAll('.stat-number');
@@ -534,7 +569,7 @@ if (toolkitSection && toolkitPanels.length){
         toolkitIO.unobserve(entry.target);
       }
     });
-  }, { threshold: 0, rootMargin: '-82% 0px 0px 0px' });
+  }, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
   toolkitIO.observe(toolkitCardGrid);
 }
 
@@ -694,12 +729,26 @@ if (workShowcase && workTrack && workCards.length){
   const workTotal = workCards.length;
   if (workIndexTotalEl) workIndexTotalEl.textContent = String(workTotal).padStart(2, '0');
 
+  // Tapping/clicking a control button normally focuses it, and mobile
+  // Chrome/Safari then auto-scrolls the page to bring that newly-focused
+  // element into view — even when it was already fully on screen. On this
+  // carousel that showed up as the page suddenly jumping and the (usually
+  // hidden-on-idle) mobile scrollbar flashing back on every single arrow
+  // tap. Blocking focus on pointerdown (while still letting the click
+  // itself fire normally on pointerup) stops that scroll-jump for mouse/
+  // touch users; keyboard users tabbing to the control are unaffected,
+  // since Tab doesn't dispatch a pointerdown.
+  function preventFocusScroll(el){
+    if (el) el.addEventListener('pointerdown', (e) => e.preventDefault());
+  }
+
   const workDots = workCards.map((_, i) => {
     const dot = document.createElement('button');
     dot.type = 'button';
     dot.className = 'work-dot';
     dot.setAttribute('aria-label', `Go to project ${i + 1}`);
     dot.addEventListener('click', () => goToWork(i));
+    preventFocusScroll(dot);
     if (workDotsWrap) workDotsWrap.appendChild(dot);
     return dot;
   });
@@ -768,10 +817,13 @@ if (workShowcase && workTrack && workCards.length){
       if (i === workIndex) openProjectModal(card);
       else goToWork(i);
     });
+    preventFocusScroll(card);
   });
 
   if (workPrevBtn) workPrevBtn.addEventListener('click', () => goToWork(workIndex - 1));
   if (workNextBtn) workNextBtn.addEventListener('click', () => goToWork(workIndex + 1));
+  preventFocusScroll(workPrevBtn);
+  preventFocusScroll(workNextBtn);
 
   workShowcase.addEventListener('keydown', (e) => {
     if (e.target !== workShowcase) return; // don't hijack arrow keys while a card itself has focus
