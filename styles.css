@@ -724,6 +724,72 @@ html.reveal-js .about-photo.in-view .about-photo-clip{ clip-path: inset(0 0 0% 0
 }
 .chain-list li:hover{ border-color: var(--accent); color: var(--accent); }
 
+/* ---------- faq ----------
+   built on native <details>/<summary> rather than a custom JS accordion —
+   it works with zero JS (keyboard, screen readers and no-JS visitors all
+   get a fully functional accordion for free), and the shared `name="faq"`
+   attribute on each <details> makes the group mutually-exclusive (opening
+   one closes the others) using nothing but native HTML in every current
+   browser, with older browsers just falling back to allowing more than one
+   open at once — never broken, just slightly less tidy. */
+.faq-list{ display: flex; flex-direction: column; }
+.faq-item{
+  border-top: 1px solid var(--line);
+}
+.faq-list .faq-item:last-child{ border-bottom: 1px solid var(--line); }
+.faq-question{
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 26px 0;
+  cursor: pointer;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.faq-question::-webkit-details-marker{ display: none; }
+.faq-question:focus-visible{ outline: 2px solid var(--accent-text); outline-offset: 6px; border-radius: 4px; }
+.faq-index{
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+}
+.faq-question-text{
+  flex: 1 1 auto;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: clamp(18px, 2.4vw, 24px);
+  line-height: 1.25;
+}
+.faq-icon{
+  flex: 0 0 auto;
+  position: relative;
+  width: 44px; height: 44px;
+  margin: -12px -12px -12px 0;
+}
+.faq-icon::before, .faq-icon::after{
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  background: var(--ink);
+  transition: transform var(--dur-xs) var(--ease);
+}
+.faq-icon::before{ width: 14px; height: 1.5px; transform: translate(-50%, -50%); }
+.faq-icon::after{ width: 1.5px; height: 14px; transform: translate(-50%, -50%); }
+.faq-item[open] .faq-icon::after{ transform: translate(-50%, -50%) rotate(90deg); opacity: 0; }
+.faq-item:hover .faq-icon::before, .faq-item:hover .faq-icon::after{ background: var(--accent); }
+@media (prefers-reduced-motion: reduce){
+  .faq-icon::before, .faq-icon::after{ transition: none; }
+}
+.faq-answer{ padding: 0 0 28px; padding-right: 68px; }
+.faq-answer p{ margin: 0; color: var(--ink-soft); font-size: 16px; line-height: 1.6; max-width: 620px; }
+@media (max-width: 640px){
+  .faq-question{ gap: 16px; padding: 22px 0; }
+  .faq-answer{ padding-right: 0; padding-bottom: 24px; }
+}
+
 /* ---------- contact: redesigned ---------- */
 .contact{
   position: relative;

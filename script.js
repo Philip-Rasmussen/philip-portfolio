@@ -41,7 +41,7 @@ function rafThrottle(fn){
   const SECTION_TO_NAV = {
     work: 'work', 'field-work': 'work', stats: 'work', quote: 'work',
     about: 'about', toolkit: 'about', journey: 'about',
-    contact: 'contact',
+    faq: 'contact', contact: 'contact',
   };
   const navLinks = Array.from(document.querySelectorAll('.nav a[href^="#"], .nav-mobile a[href^="#"]'))
     .filter(a => a.getAttribute('href') !== '#contact' || !a.classList.contains('nav-mobile-cta'));
