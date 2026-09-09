@@ -128,49 +128,6 @@ if (intro){
   drawSquiggle();
 }
 
-// ---------- quote: word-by-word blur reveal, Apple-UI style ----------
-const quoteTextEl = document.getElementById('quoteText');
-if (quoteTextEl){
-  let quoteWordIndex = 0;
-  function wrapQuoteWords(node){
-    Array.from(node.childNodes).forEach(child => {
-      if (child.nodeType === Node.TEXT_NODE){
-        const frag = document.createDocumentFragment();
-        child.textContent.split(/(\s+)/).forEach(part => {
-          if (part === '') return;
-          if (/^\s+$/.test(part)){
-            frag.appendChild(document.createTextNode(part));
-          } else {
-            const span = document.createElement('span');
-            span.className = 'q-word';
-            span.style.setProperty('--i', String(quoteWordIndex++));
-            span.textContent = part;
-            frag.appendChild(span);
-          }
-        });
-        node.replaceChild(frag, child);
-      } else if (child.nodeType === Node.ELEMENT_NODE){
-        wrapQuoteWords(child); // recurse so the highlighted phrase animates word-by-word too
-      }
-    });
-  }
-  wrapQuoteWords(quoteTextEl);
-
-  if (reducedMotion){
-    quoteTextEl.classList.add('words-in');
-  } else {
-    const quoteIO = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting){
-          quoteTextEl.classList.add('words-in');
-          quoteIO.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.4, rootMargin: '0px 0px -60px 0px' });
-    quoteIO.observe(quoteTextEl);
-  }
-}
-
 // ---------- scroll reveal (everything outside the hero) ----------
 const revealEls = document.querySelectorAll('.reveal:not(#top .reveal)');
 const io = new IntersectionObserver((entries) => {
@@ -193,6 +150,10 @@ const statsIO = new IntersectionObserver((entries) => {
     const target = parseFloat(el.dataset.target);
     const suffix = el.dataset.suffix || '';
     if (!target){ return; }
+    if (reducedMotion){
+      el.textContent = target.toLocaleString() + suffix;
+      return;
+    }
     const duration = 1400;
     const start = performance.now();
     function tick(now){
@@ -392,6 +353,19 @@ if (toolkitSection && toolkitPanels.length){
 
   function runToolkitChoreography(panel){
     const cards = Array.from(panel.querySelectorAll('.toolkit-card, .skill-card'));
+
+    if (reducedMotion){
+      cards.forEach(card => {
+        card.classList.add('in-view');
+        const level = card.querySelector('.toolkit-level');
+        if (level){
+          const fill = parseInt(level.dataset.fill, 10) || 0;
+          Array.from(level.children).slice(0, fill).forEach(dot => dot.classList.add('filled'));
+        }
+      });
+      return;
+    }
+
     cards.forEach((card, i) => {
       card.classList.remove('in-view');
       // reset any previously-filled level dots so the meter can replay
@@ -743,12 +717,16 @@ if (workShowcase && workTrack && workCards.length){
   renderWork();
 }
 
-// ---------- work card hover-preview video ----------
-document.querySelectorAll('.work-card video').forEach(video => {
-  const card = video.closest('.work-card');
-  card.addEventListener('mouseenter', () => video.play().catch(() => {}));
-  card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-});
+// ---------- work card hover-preview video (hover-capable devices only —
+// on touch devices there is no hover, so the poster/fallback cover is what
+// shows and a tap opens the case directly) ----------
+if (canHover){
+  document.querySelectorAll('.work-card video').forEach(video => {
+    const card = video.closest('.work-card');
+    card.addEventListener('mouseenter', () => video.play().catch(() => {}));
+    card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+  });
+}
 
 // ---------- project case-study modal ----------
 const modal = document.getElementById('projectModal');
@@ -760,8 +738,11 @@ if (modal){
   const clientEl = modal.querySelector('.project-modal-client');
   const briefEl = modal.querySelector('.project-modal-brief');
   const processEl = modal.querySelector('.project-modal-process');
+  const processChainEl = modal.querySelector('.process-chain');
   const outcomeEl = modal.querySelector('.project-modal-outcome');
   const resultEl = modal.querySelector('.result-badge');
+  const linksBlock = modal.querySelector('.project-modal-links');
+  const linksListEl = modal.querySelector('.project-modal-links-list');
   let lastFocused = null;
 
   function openModal(card){
@@ -779,14 +760,47 @@ if (modal){
       tagsEl.appendChild(span);
     });
 
+    // the "process chain" pills double as a compact breakdown of this
+    // project's actual role/responsibilities, driven by data-role
+    processChainEl.innerHTML = '';
+    (card.dataset.role || '').split('·').map(r => r.trim()).filter(Boolean).forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r;
+      processChainEl.appendChild(li);
+    });
+
+    // optional external links (real case URLs) — "Label|https://url" pairs
+    // separated by ";;". Only rendered when a card actually provides one.
+    linksListEl.innerHTML = '';
+    const rawLinks = (card.dataset.links || '').split(';;').map(s => s.trim()).filter(Boolean);
+    if (rawLinks.length){
+      rawLinks.forEach(pair => {
+        const [label, url] = pair.split('|').map(s => (s || '').trim());
+        if (!url) return;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = label || url;
+        li.appendChild(a);
+        linksListEl.appendChild(li);
+      });
+      linksBlock.hidden = false;
+    } else {
+      linksBlock.hidden = true;
+    }
+
     coverWrap.classList.remove('no-cover');
     coverImg.style.display = 'none';
     coverImg.removeAttribute('src');
     const coverSrc = card.dataset.cover;
     if (coverSrc){
-      coverImg.onload = () => { coverImg.style.display = 'block'; };
-      coverImg.onerror = () => { coverImg.style.display = 'none'; };
+      coverImg.onload = () => { coverImg.style.display = 'block'; coverWrap.classList.add('has-photo'); };
+      coverImg.onerror = () => { coverImg.style.display = 'none'; coverWrap.classList.remove('has-photo'); };
       coverImg.src = coverSrc;
+    } else {
+      coverWrap.classList.remove('has-photo');
     }
 
     lastFocused = document.activeElement;
@@ -819,13 +833,16 @@ const navMobile = document.getElementById('navMobile');
 if (navBurger && navMobile){
   function closeMobileNav(){
     navBurger.setAttribute('aria-expanded', 'false');
+    navBurger.setAttribute('aria-label', 'Open menu');
     navMobile.classList.remove('open');
     document.body.classList.remove('nav-open');
   }
   function toggleMobileNav(){
     const open = navMobile.classList.toggle('open');
     navBurger.setAttribute('aria-expanded', String(open));
+    navBurger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     document.body.classList.toggle('nav-open', open);
+    if (open) navMobile.querySelector('a')?.focus();
   }
   navBurger.addEventListener('click', toggleMobileNav);
   navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Philip — Video Editor, Designer & Content Creator</title>
-<meta name="description" content="Philip is a video editor, graphic designer, and content creator based in Denmark. Editing, design, cinematography, and storytelling for brands.">
+<title>Philip Rasmussen — Video Editor &amp; Graphic Designer in Aarhus</title>
+<meta name="description" content="Portfolio of Philip Rasmussen, a video editor, graphic designer and content creator based in Aarhus. Selected work in short-form video, motion graphics, colour grading and campaign design.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,7 @@
       <a href="#contact">Contact</a>
     </nav>
     <a href="#contact" class="nav-cta magnetic">Let's talk</a>
-    <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+    <button type="button" class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false" aria-controls="navMobile">
       <span></span><span></span>
     </button>
   </div>
@@ -45,44 +45,47 @@
   <a href="#work">Work</a>
   <a href="#about">About</a>
   <a href="#contact">Contact</a>
+  <a href="#contact" class="nav-mobile-cta">Let's talk</a>
 </div>
 
 <main>
 
   <section id="top" class="hero">
     <p class="eyebrow reveal">
-      Video editor, designer &amp; content creator — Aarhus, Denmark
-      <span class="status-pill"><span class="status-dot"></span>Open to full-time &amp; freelance</span>
+      Video editor · Graphic designer · Content creator — Aarhus, Denmark
+      <span class="status-pill"><span class="status-dot"></span>Available for freelance · Full-time from December 2026</span>
     </p>
     <h1 class="hero-title">
       <span class="reveal">I'm Philip.</span>
       <span class="reveal hero-title-accent">
-        I edit video and design for brands.
+        I shoot, edit and design content.
         <svg class="squiggle" id="squiggle" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true">
           <path d="M2 16 C 40 4, 70 26, 105 14 S 170 2, 205 15 S 270 26, 305 13 S 370 3, 398 15" />
         </svg>
       </span>
     </h1>
     <p class="hero-sub reveal">
-      Four years in the Adobe Suite, professional for the last two — currently a media
-      graphics apprentice at BET25 in Aarhus.
+      I work across short-form video, campaign design and motion — from the first idea and camera
+      setup to pacing, sound, colour and final delivery.
     </p>
     <ul class="hero-skills reveal" aria-label="What I do">
       <li>Video Editing</li>
-      <li>Colour Grading</li>
+      <li>Content Production</li>
       <li>Motion Graphics</li>
       <li>Graphic Design</li>
     </ul>
     <div class="hero-actions reveal">
-      <a href="#work" class="btn btn-primary magnetic">See the work</a>
+      <a href="#work" class="btn btn-primary magnetic">View selected work</a>
       <a href="#contact" class="btn btn-ghost magnetic">Get in touch</a>
     </div>
 
+    <!-- Showreel: no finished reel yet. When one is ready, swap .hero-reel-media--empty
+         for a muted <video poster="..."> with a play control, reusing .play-btn /
+         .reel-tag from the site's earlier markup for that exact treatment. -->
     <div class="hero-reel reveal" data-parallax="0.06">
-      <span class="reel-tag">watch</span>
-      <div class="hero-reel-media placeholder-media">
-        <span class="play-btn" aria-hidden="true">▶</span>
-        <span class="placeholder-label">Showreel — drop in your best cuts here</span>
+      <div class="hero-reel-media hero-reel-media--empty">
+        <span class="hero-reel-heading">Showreel in progress</span>
+        <span class="hero-reel-copy">A new reel is currently in the edit. Until then, the selected cases below show how I work.</span>
       </div>
     </div>
   </section>
@@ -99,7 +102,7 @@
     <div class="section-head reveal">
       <span class="section-num">01</span>
       <h2>Selected work</h2>
-      <p>One project at a time — click through with the arrows, or click the frame for the brief, the process, and the outcome.</p>
+      <p>Four projects showing how I work across content, editing and campaign design. Open a case to see my role, process and result.</p>
     </div>
 
     <div class="work-showcase reveal" id="workShowcase" tabindex="0" aria-label="Selected work — use arrow keys or the buttons to browse">
@@ -112,59 +115,79 @@
 
         <div class="work-track" id="workTrack">
 
-          <article class="work-card" role="button"
-            data-cover="assets/img/work/project-1-cover.jpg"
-            data-title="Project title"
-            data-tags="Short-form · Brand campaign"
-            data-client="Add client name"
-            data-brief="What the client needed and why — add this once the project's real."
-            data-process="How you approached it: capture, structure, edit, sound, colour."
-            data-outcome="What happened — the result, the number, the reaction."
-            data-result="Add a headline result, e.g. 250K views in week one">
-            <div class="work-media placeholder-media">
-              <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+          <article class="work-card" role="button" tabindex="-1"
+            aria-label="Top Comfy — Artist interviews and event content. View case study."
+            data-cover="assets/img/work/top-comfy-cover.jpg"
+            data-title="Artist interviews &amp; event content"
+            data-tags="Short-form · Interviews · Event coverage"
+            data-client="Top Comfy"
+            data-role="Planning · Camera · Audio · Editing · Subtitles · Colour"
+            data-brief="Build a recognisable short-form format for artist interviews and event coverage that feels quick, natural and native to TikTok and Instagram."
+            data-process="I work across most of the production process: planning with the team, camera and audio setup, filming, selecting the strongest moments, editing, subtitles, sound and colour. Many of the newer productions are filmed using my DJI Pocket 3 and wireless microphones. I grade the footage from a log profile and prepare the final videos for social platforms."
+            data-outcome="The Top Comfy content I have produced has received more than 540,000 organic views across TikTok and Instagram. One interview with Danish artist Maluda reached more than 94,000 views."
+            data-result="540K+ organic views"
+            data-links="Artigeardit interview|https://www.instagram.com/reel/DKouWe9sh-u/;;Distortion 2026|https://www.instagram.com/reel/DZQKGb0sGTg/;;Maluda interview|https://www.tiktok.com/@top.comfy/video/7585545766647844099">
+            <div class="work-media">
+              <img src="assets/img/work/top-comfy-cover.jpg" alt="" loading="lazy" style="display:none" onload="this.style.display='block'; this.closest('.work-media').classList.add('has-photo')" onerror="this.remove()">
+              <span class="work-media-mark">Top Comfy</span>
+              <span class="work-media-viewcase">View case</span>
             </div>
           </article>
 
-          <article class="work-card" role="button"
-            data-cover="assets/img/work/project-2-cover.jpg"
-            data-title="Project title"
-            data-tags="Cinematography · Colour"
-            data-client="Add client name"
-            data-brief="What the client needed and why — add this once the project's real."
-            data-process="How you approached it: capture, structure, edit, sound, colour."
-            data-outcome="What happened — the result, the number, the reaction."
-            data-result="Add a headline result, e.g. 250K views in week one">
-            <div class="work-media placeholder-media">
-              <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+          <article class="work-card" role="button" tabindex="-1"
+            aria-label="Naples — a cinematic travel edit. Personal project. View case study."
+            data-cover="assets/img/work/naples-cover.jpg"
+            data-title="Naples — a cinematic travel edit"
+            data-tags="Cinematography · Editing · Colour"
+            data-client="Personal project"
+            data-role="Concept · Camera · Editing · Sound · Colour"
+            data-brief="Create a short travel film that captures the atmosphere of Naples through movement, details and everyday moments instead of making a traditional travel montage."
+            data-process="I filmed the footage on my DJI Pocket 3 and built the edit around movement, rhythm and visual transitions. Sound design and colour were used to give the piece a more cinematic and consistent feeling."
+            data-outcome="A self-initiated project that demonstrates how I approach filming, pacing, sound design and colour when I control the entire process."
+            data-result=""
+            data-links="View the edit on Instagram|https://www.instagram.com/p/Db4_NittKTO/">
+            <div class="work-media">
+              <img src="assets/img/work/naples-cover.jpg" alt="" loading="lazy" style="display:none" onload="this.style.display='block'; this.closest('.work-media').classList.add('has-photo')" onerror="this.remove()">
+              <span class="work-media-mark">Naples</span>
+              <span class="work-media-viewcase">View case</span>
             </div>
           </article>
 
-          <article class="work-card" role="button"
-            data-cover="assets/img/work/project-3-cover.jpg"
-            data-title="Project title"
-            data-tags="Edit · Sound design"
-            data-client="Add client name"
-            data-brief="What the client needed and why — add this once the project's real."
-            data-process="How you approached it: capture, structure, edit, sound, colour."
-            data-outcome="What happened — the result, the number, the reaction."
-            data-result="Add a headline result, e.g. 250K views in week one">
-            <div class="work-media placeholder-media">
-              <span class="placeholder-label">Add thumbnail / hover-preview clip</span>
+          <article class="work-card" role="button" tabindex="-1"
+            aria-label="A 3D world inside a talking-head edit. Personal brand. View case study."
+            data-cover="assets/img/work/personal-brand-cover.jpg"
+            data-title="A 3D world inside a talking-head edit"
+            data-tags="Short-form · Motion · 3D"
+            data-client="Personal brand"
+            data-role="Concept · Editing · 3D · Compositing · Sound"
+            data-brief="Create a talking-head video that goes beyond basic captions and B-roll while keeping the message clear and easy to follow."
+            data-process="I developed the visual concept, edited the main story and created a custom 3D environment for the video. The 3D sequence, compositing, sound and pacing were built to support the point of the video rather than distract from it."
+            data-outcome="A personal short-form project combining direct communication with custom visual work. It shows how I use motion and effects when they add something to the story."
+            data-result=""
+            data-links="View on Instagram|https://www.instagram.com/p/Da2vfPINM11/;;Additional work — Instagram carousel|https://www.instagram.com/p/DcgvMwVjVPQ/">
+            <div class="work-media">
+              <img src="assets/img/work/personal-brand-cover.jpg" alt="" loading="lazy" style="display:none" onload="this.style.display='block'; this.closest('.work-media').classList.add('has-photo')" onerror="this.remove()">
+              <span class="work-media-mark">Personal Brand</span>
+              <span class="work-media-viewcase">View case</span>
             </div>
           </article>
 
-          <article class="work-card" role="button"
-            data-cover="assets/img/work/project-4-cover.jpg"
-            data-title="Project title"
-            data-tags="Graphic design · Brand identity"
-            data-client="Add client name"
-            data-brief="What the client needed and why — add this once the project's real."
-            data-process="How you approached it: concept, layout, type, colour, delivery."
-            data-outcome="What happened — the result, the number, the reaction."
-            data-result="Add a headline result, e.g. 250K views in week one">
-            <div class="work-media placeholder-media">
-              <span class="placeholder-label">Add thumbnail / cover image</span>
+          <!-- TODO: swap in the real Hedebølge campaign cover imagery once Philip provides final assets (assets/img/work/bet25-hedebolge-cover.jpg) -->
+          <article class="work-card" role="button" tabindex="-1"
+            aria-label="Hedebølge — summer campaign. BET25. View case study."
+            data-cover="assets/img/work/bet25-hedebolge-cover.jpg"
+            data-title="Hedebølge — summer campaign"
+            data-tags="Campaign design · Motion · Paid media"
+            data-client="BET25"
+            data-role="Visual direction · Design · Motion · Delivery"
+            data-brief="Develop the visual direction for Hedebølge, one of BET25's larger seasonal campaigns, based on a brief from the marketing team."
+            data-process="I developed the campaign look, headline lock-up, graphic system and animation direction. I then produced the final assets for YouTube advertising and other digital marketing placements."
+            data-outcome="The campaign was launched as paid marketing and shown to thousands of customers. The project demonstrates how I take ownership of a professional campaign from brief and visual direction to animation and final delivery."
+            data-result="">
+            <div class="work-media">
+              <img src="assets/img/work/bet25-hedebolge-cover.jpg" alt="" loading="lazy" style="display:none" onload="this.style.display='block'; this.closest('.work-media').classList.add('has-photo')" onerror="this.remove()">
+              <span class="work-media-mark">BET25</span>
+              <span class="work-media-viewcase">View case</span>
             </div>
           </article>
 
@@ -186,21 +209,26 @@
     </div>
   </section>
 
-  <section id="press" class="press">
+  <section id="field-work" class="press">
     <div class="section-head reveal">
       <span class="section-num">02</span>
-      <h2>Companies I've worked with</h2>
-      <p>Press access, not paid client work — but proof I show up when it's real.</p>
+      <h2>Field work</h2>
+      <p>Some of the best content happens when there is no second take.</p>
     </div>
     <div class="press-feature reveal">
+      <span class="press-feature-label">Red Bull event coverage</span>
       <div class="press-feature-brand">Red Bull</div>
       <p class="press-feature-copy">
-        Invited as press through Red Bull — backstage access, artist interviews, on-site coverage at two of Denmark's biggest events.
+        Through Top Comfy, our team was invited by Red Bull to cover Distortion in 2025 and 2026,
+        as well as Red Bull SoundClash in 2026. My work included filming artists at close range,
+        handling production equipment and creating social content in a fast-moving event environment
+        with backstage access.
       </p>
       <div class="press-feature-events">
-        <span class="press-event-label">Covered as press at</span>
-        <span class="press-event">DISTORTION</span>
-        <span class="press-event">Soundclash</span>
+        <span class="press-event-label">Covered</span>
+        <span class="press-event">Distortion 2025</span>
+        <span class="press-event">SoundClash 2026</span>
+        <span class="press-event">Distortion 2026</span>
       </div>
     </div>
   </section>
@@ -209,30 +237,56 @@
     <div class="stats-grid">
       <div class="stat-item reveal">
         <span class="stat-number" data-target="4" data-suffix="+">—</span>
-        <span class="stat-label">Years in Adobe Suite</span>
+        <span class="stat-label">Years using Adobe tools</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="25" data-suffix="+">—</span>
-        <span class="stat-label">Projects shipped</span>
+        <span class="stat-number" data-target="580" data-suffix="K+">—</span>
+        <span class="stat-label">Organic views</span>
+        <span class="stat-sublabel">Across Top Comfy and personal content</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="550" data-suffix="K+">—</span>
-        <span class="stat-label">Views generated</span>
+        <span class="stat-number" data-target="94" data-suffix="K+">—</span>
+        <span class="stat-label">On one interview</span>
+        <span class="stat-sublabel">Maluda interview on TikTok</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="509" data-suffix="">—</span>
-        <span class="stat-label">Followers (IG + TikTok)</span>
+        <span class="stat-number" data-target="3" data-suffix="">—</span>
+        <span class="stat-label">Red Bull events covered</span>
       </div>
     </div>
   </section>
 
-  <section id="quote" class="quote-section">
-    <div class="quote-inner">
-      <p class="quote-text" id="quoteText">
-        “<span class="quote-highlight">Drop in a line</span> from a manager, client, or teammate —
-        something short and specific beats a generic compliment.”
-      </p>
-      <span class="quote-attribution reveal">Name — role, company <span class="quote-tbd">(swap in once confirmed)</span></span>
+  <section id="quote" class="quote-section how-i-think">
+    <div class="think-inner">
+      <div class="section-head reveal think-head">
+        <h2>How I think</h2>
+        <p>A strong edit starts before the timeline. I look for the moment that makes people care,
+          build the pace around it and use sound, colour and motion to make it land.</p>
+      </div>
+
+      <div class="think-list" id="thinkList">
+        <div class="think-item reveal">
+          <span class="think-index">01</span>
+          <div class="think-copy">
+            <h3>Find the moment</h3>
+            <p>The strongest answer, image or movement becomes the centre of the edit.</p>
+          </div>
+        </div>
+        <div class="think-item reveal">
+          <span class="think-index">02</span>
+          <div class="think-copy">
+            <h3>Build the rhythm</h3>
+            <p>Pacing, sound and timing decide whether people keep watching.</p>
+          </div>
+        </div>
+        <div class="think-item reveal">
+          <span class="think-index">03</span>
+          <div class="think-copy">
+            <h3>Finish the feeling</h3>
+            <p>Colour, typography and motion should support the story, not compete with it.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -244,38 +298,37 @@
 
     <div class="about-grid">
       <div class="about-photo reveal">
-        <img src="assets/img/philip-placeholder.jpg" alt="Philip" onerror="this.parentElement.classList.add('no-photo')">
+        <img src="assets/img/philip-placeholder.jpg" alt="Portrait of Philip Rasmussen" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
         <span class="no-photo-label">Drop your photo in<br>assets/img/philip-placeholder.jpg</span>
       </div>
 
       <div class="about-copy reveal">
         <p class="about-lede">
-          I'm Philip — <strong>22, based in Denmark</strong>. I edit and design short-form and
-          campaign content, and I care about the whole chain: hook, pacing, sound, colour,
-          layout — not just cutting clips together.
+          I'm Philip, a 22-year-old video editor and graphic designer based in Aarhus. I'm
+          currently completing my Graphic Designer education while working as a Graphic Designer
+          Apprentice at BET25.
         </p>
 
         <div class="about-steps" id="aboutSteps">
           <div class="about-steps-track"><div class="about-steps-fill" id="aboutStepsFill"></div></div>
           <div class="about-steps-list">
             <p class="about-step">
-              I've been in the Adobe Suite for <strong>about four years</strong> — Premiere, After
-              Effects, Photoshop, DaVinci Resolve. The last year or two has been
-              <strong>professional</strong>: real briefs, real deadlines, real clients.
+              At work, I turn real briefs into campaign graphics, motion and finished marketing
+              assets. Outside work, I film and edit artist content with Top Comfy and build
+              projects under my own name.
             </p>
             <p class="about-step">
-              Currently a <strong>media graphics apprentice at BET25</strong> in Aarhus, alongside my
-              own projects. I've got real output, a visual point of view, and a track record of
-              content that actually performs.
+              I like being involved in the full process — shaping the idea, planning the visuals,
+              filming, editing, sound, colour and the details that make the final piece feel
+              intentional.
             </p>
             <p class="about-step">
-              I come at this from a <strong>design and dev background</strong> too, not just editing —
-              so I think about layout, type, and structure as much as I think about cuts. Give me a
-              rough idea and I'll come back with something sharper than you pitched.
+              I originally trained as a web developer. That background still influences how I
+              work: I think about structure, layout and the person using the final result, not
+              only how it looks in the timeline.
             </p>
             <p class="about-step">
-              Outside of work I'm usually at the gym or out for a run — turns out I don't like sitting
-              still, on a timeline or off it.
+              When I'm not working, I'm usually training or out for a run.
             </p>
           </div>
         </div>
@@ -287,7 +340,7 @@
     <div class="section-head reveal">
       <span class="section-num">04</span>
       <h2>Toolkit</h2>
-      <p>What I actually build with — four years in, comfortable across a real stack.</p>
+      <p>The tools and skills I use to take work from rough idea to finished delivery.</p>
     </div>
 
     <div class="toolkit-switcher reveal">
@@ -306,7 +359,7 @@
             <div class="toolkit-card" style="--brand-dark:#523A5C; --brand-bright:#DB76FA;">
               <span class="toolkit-badge">Pr</span>
               <h3>Premiere Pro</h3>
-              <p>Editing, structure, pacing — where most of the work happens.</p>
+              <p>Editing, structure, pacing and final delivery.</p>
               <span class="toolkit-level" data-fill="6">
                 <span></span><span></span><span></span><span></span><span></span><span></span>
               </span>
@@ -314,15 +367,7 @@
             <div class="toolkit-card" style="--brand-dark:#00005B; --brand-bright:#9999FF;">
               <span class="toolkit-badge">Ae</span>
               <h3>After Effects</h3>
-              <p>Motion graphics, titles, small VFX touches.</p>
-              <span class="toolkit-level" data-fill="5">
-                <span></span><span></span><span></span><span></span><span></span><span></span>
-              </span>
-            </div>
-            <div class="toolkit-card" style="--brand-dark:#001E36; --brand-bright:#31A8FF;">
-              <span class="toolkit-badge">Ps</span>
-              <h3>Photoshop</h3>
-              <p>Thumbnails, retouching, graphic design work.</p>
+              <p>Motion graphics, compositing and custom visual sequences.</p>
               <span class="toolkit-level" data-fill="5">
                 <span></span><span></span><span></span><span></span><span></span><span></span>
               </span>
@@ -330,24 +375,32 @@
             <div class="toolkit-card" style="--brand-dark:#231F20; --brand-bright:#F1651F;">
               <span class="toolkit-badge">Dr</span>
               <h3>DaVinci Resolve</h3>
-              <p>Colour grading and finishing — giving an edit its final look.</p>
-              <span class="toolkit-level" data-fill="4">
+              <p>Colour grading and finishing from log footage.</p>
+              <span class="toolkit-level" data-fill="5">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+              </span>
+            </div>
+            <div class="toolkit-card" style="--brand-dark:#001E36; --brand-bright:#31A8FF;">
+              <span class="toolkit-badge">Ps</span>
+              <h3>Photoshop</h3>
+              <p>Campaign visuals, retouching and social assets.</p>
+              <span class="toolkit-level" data-fill="5">
                 <span></span><span></span><span></span><span></span><span></span><span></span>
               </span>
             </div>
             <div class="toolkit-card" style="--brand-dark:#49021F; --brand-bright:#FF3366;">
               <span class="toolkit-badge">Id</span>
               <h3>InDesign</h3>
-              <p>Layout and print-ready design work, multi-page and structured.</p>
+              <p>Structured layouts and print-ready design.</p>
               <span class="toolkit-level" data-fill="4">
                 <span></span><span></span><span></span><span></span><span></span><span></span>
               </span>
             </div>
-            <div class="toolkit-card" style="--brand-dark:#330000; --brand-bright:#FF9A00;">
-              <span class="toolkit-badge">Ai</span>
-              <h3>Illustrator</h3>
-              <p>Logos, icons, vector graphics.</p>
-              <span class="toolkit-level" data-fill="3">
+            <div class="toolkit-card" style="--brand-dark:#0A0A0A; --brand-bright:#A259FF;">
+              <span class="toolkit-badge">Fi</span>
+              <h3>Figma</h3>
+              <p>Concepts, layouts and early visual direction.</p>
+              <span class="toolkit-level" data-fill="4">
                 <span></span><span></span><span></span><span></span><span></span><span></span>
               </span>
             </div>
@@ -358,33 +411,33 @@
           <div class="skills-grid" id="skillsGrid">
             <div class="skill-card">
               <span class="skill-tag">Premiere Pro</span>
-              <h3>Video Editing</h3>
-              <p>Idea to final cut — structure, pacing, and sound working together.</p>
+              <h3>Short-Form Editing</h3>
+              <p>Hooks, structure and pacing for social content.</p>
             </div>
             <div class="skill-card">
-              <span class="skill-tag">DaVinci Resolve</span>
-              <h3>Colour Grading</h3>
-              <p>Giving footage a consistent, intentional look.</p>
+              <span class="skill-tag">DJI Pocket 3 · Audio</span>
+              <h3>Camera &amp; Audio</h3>
+              <p>DJI Pocket 3, wireless microphones and B-roll.</p>
             </div>
             <div class="skill-card">
               <span class="skill-tag">Video &amp; content</span>
               <h3>Storytelling</h3>
-              <p>Hooks and pacing that keep people watching past the first three seconds.</p>
+              <p>Turning interviews and raw footage into clear narratives.</p>
+            </div>
+            <div class="skill-card">
+              <span class="skill-tag">DaVinci Resolve</span>
+              <h3>Colour Grading</h3>
+              <p>Building mood and consistency from log footage.</p>
             </div>
             <div class="skill-card">
               <span class="skill-tag">After Effects</span>
               <h3>Motion Graphics</h3>
-              <p>Titles, transitions, small VFX touches that sell an edit.</p>
+              <p>Typography, animation, compositing and visual effects.</p>
             </div>
             <div class="skill-card">
-              <span class="skill-tag">Illustrator · InDesign</span>
-              <h3>Brand &amp; Identity Design</h3>
-              <p>Logos, layout, and visual systems that hold together.</p>
-            </div>
-            <div class="skill-card">
-              <span class="skill-tag">Social &amp; short-form</span>
-              <h3>Short-Form Content</h3>
-              <p>Built for the scroll — hook first, no dead air.</p>
+              <span class="skill-tag">Photoshop · InDesign</span>
+              <h3>Campaign Design</h3>
+              <p>From initial brief and visual direction to final assets.</p>
             </div>
           </div>
         </div>
@@ -400,7 +453,7 @@
     <div class="section-head reveal">
       <span class="section-num">05</span>
       <h2>My journey</h2>
-      <p>The short version of how I got here — a new milestone every few months.</p>
+      <p>The short version of how development, design and content came together.</p>
     </div>
 
     <div class="timeline-wrap" id="timelineWrap">
@@ -413,44 +466,51 @@
           <span class="timeline-dot"></span>
           <div class="timeline-card">
             <span class="timeline-index">01</span>
-            <span class="timeline-title">Web Developer education</span>
-            <p>Started out studying web development — learned how to build before I learned how to
-              edit. That structured, technical thinking still shows in how I plan a cut.</p>
+            <span class="timeline-date">Dec 2020 – Oct 2022</span>
+            <span class="timeline-title">Web development</span>
+            <p>Completed my Web Developer education at Viden Djurs in Grenaa after studying at
+              Hansenberg and TECHCOLLEGE Aalborg. It gave me a foundation in digital structure,
+              layout and user experience.</p>
           </div>
         </li>
         <li class="timeline-item">
           <span class="timeline-dot"></span>
           <div class="timeline-card">
             <span class="timeline-index">02</span>
-            <span class="timeline-title">Graphic Designer education <em>— finishing this November</em></span>
-            <p>Currently wrapping up a Graphic Designer education. A good edit is also about
-              typography, layout, and colour — not just the timeline.</p>
+            <span class="timeline-date">2023 – 2026</span>
+            <span class="timeline-title">Graphic Designer apprenticeship</span>
+            <p>Studying at Aarhus Tech while working as a Graphic Designer Apprentice at BET25.
+              The education finishes in October 2026 and the apprenticeship ends in November 2026.</p>
           </div>
         </li>
         <li class="timeline-item">
           <span class="timeline-dot"></span>
           <div class="timeline-card">
             <span class="timeline-index">03</span>
-            <span class="timeline-title">Started with Top Comfy <em>— about a year ago</em></span>
-            <p>My first real step into professional content work, outside of school.</p>
+            <span class="timeline-date">May 2025</span>
+            <span class="timeline-title">Top Comfy</span>
+            <p>Started producing artist interviews, festival coverage and short-form content for
+              TikTok and Instagram.</p>
           </div>
         </li>
         <li class="timeline-item">
           <span class="timeline-dot"></span>
           <div class="timeline-card">
             <span class="timeline-index">04</span>
-            <span class="timeline-title">Launched my personal brand <em>— 4–5 months ago</em></span>
-            <p>Started building and publishing under my own name — sharing the process, not just
-              the output.</p>
+            <span class="timeline-date">2026</span>
+            <span class="timeline-title">Personal content</span>
+            <p>Started publishing work under my own name to explore storytelling,
+              cinematography, motion and more experimental editing.</p>
           </div>
         </li>
         <li class="timeline-item timeline-item-now">
           <span class="timeline-dot"></span>
           <div class="timeline-card">
             <span class="timeline-index">05</span>
-            <span class="timeline-title">Now: media graphics apprentice at BET25</span>
-            <p>Bringing design, development, and content together — day to day work on video and
-              graphics for a real brand.</p>
+            <span class="timeline-date">December 2026</span>
+            <span class="timeline-title">Available for what's next</span>
+            <p>Available for full-time opportunities while continuing to take on selected
+              freelance projects.</p>
           </div>
         </li>
       </ol>
@@ -468,8 +528,9 @@
 
       <div class="contact-grid">
         <div class="contact-main">
-          <h2>Got a project<br>in mind?</h2>
-          <p>I'm open to freelance and full-time editing work. Reach out — I reply fast.</p>
+          <h2>Need an editor<br>or designer?</h2>
+          <p>I'm available for freelance projects and open to full-time opportunities from
+            December 2026. If you have a role, a project or even a rough idea, send me a message.</p>
           <a href="mailto:philip.ronge@gmail.com" class="contact-email-btn magnetic">
             <span>philip.ronge@gmail.com</span>
             <span class="contact-email-arrow" aria-hidden="true">↗</span>
@@ -477,17 +538,17 @@
         </div>
 
         <div class="contact-socials">
-          <a href="#" target="_blank" rel="noopener" class="contact-social-row magnetic">
+          <a href="https://www.instagram.com/philip.rasmussen/" target="_blank" rel="noopener noreferrer" class="contact-social-row magnetic">
             <span class="contact-social-index">01</span>
             <span class="contact-social-name">Instagram</span>
             <span class="contact-social-arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="#" target="_blank" rel="noopener" class="contact-social-row magnetic">
+          <a href="https://www.tiktok.com/@philip.rasmussen" target="_blank" rel="noopener noreferrer" class="contact-social-row magnetic">
             <span class="contact-social-index">02</span>
             <span class="contact-social-name">TikTok</span>
             <span class="contact-social-arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="#" target="_blank" rel="noopener" class="contact-social-row magnetic">
+          <a href="https://www.linkedin.com/in/philiprongerasmussen/" target="_blank" rel="noopener noreferrer" class="contact-social-row magnetic">
             <span class="contact-social-index">03</span>
             <span class="contact-social-name">LinkedIn</span>
             <span class="contact-social-arrow" aria-hidden="true">↗</span>
@@ -500,21 +561,20 @@
 </main>
 
 <footer class="site-footer">
-  <span>© <span id="year"></span> Philip — built by hand, no template.</span>
+  <span>© <span id="year"></span> Philip Rasmussen · Aarhus, Denmark</span>
   <a href="#top">Back to top ↑</a>
 </footer>
 
 <div class="project-modal" id="projectModal" aria-hidden="true">
   <div class="project-modal-backdrop" data-close></div>
-  <div class="project-modal-panel" role="dialog" aria-modal="true">
-    <button class="project-modal-close" data-close aria-label="Close">✕</button>
+  <div class="project-modal-panel" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+    <button type="button" class="project-modal-close" data-close aria-label="Close case study">✕</button>
 
-    <div class="project-modal-cover placeholder-media">
-      <img class="project-modal-cover-img" alt="">
-      <span class="placeholder-label">Add a cover image/clip</span>
+    <div class="project-modal-cover">
+      <img class="project-modal-cover-img" alt="" loading="lazy">
       <div class="project-modal-cover-scrim">
         <span class="project-modal-client"></span>
-        <h3 class="project-modal-title"></h3>
+        <h3 class="project-modal-title" id="projectModalTitle"></h3>
       </div>
     </div>
 
@@ -528,22 +588,19 @@
 
       <div class="project-modal-block">
         <h4>The process</h4>
-        <ul class="process-chain">
-          <li>Capture</li><li>Structure</li><li>Edit</li><li>Sound</li><li>Colour</li>
-        </ul>
+        <ul class="process-chain"></ul>
         <p class="project-modal-process"></p>
-      </div>
-
-      <div class="project-modal-gallery">
-        <div class="gallery-slot placeholder-media"><span class="placeholder-label">Add a still</span></div>
-        <div class="gallery-slot placeholder-media"><span class="placeholder-label">Add a still</span></div>
-        <div class="gallery-slot placeholder-media"><span class="placeholder-label">Add a still</span></div>
       </div>
 
       <div class="project-modal-block">
         <h4>The outcome</h4>
         <p class="project-modal-outcome"></p>
         <span class="result-badge"></span>
+      </div>
+
+      <div class="project-modal-block project-modal-links" hidden>
+        <h4>See it live</h4>
+        <ul class="project-modal-links-list"></ul>
       </div>
 
       <a href="#contact" class="modal-cta" data-close>Want something like this? Let's talk →</a>
