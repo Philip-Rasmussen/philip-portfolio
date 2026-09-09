@@ -297,21 +297,17 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .work-showcase{
   position: relative;
   margin-top: 12px;
-  /* the overlapping stack intentionally translates its peeking cards past
-     the track's own edges (see --offset below) — on narrow viewports that
-     bleed was wide enough to push the whole page into horizontal scroll.
-     Clipping it here, at the component that actually causes the overflow,
-     keeps the peek effect but stops it from ever widening the page.
-     IMPORTANT: this must be `overflow-x: clip`, not `hidden`. Per the CSS
-     overflow spec, pairing an explicit `hidden` on one axis with `visible`
-     on the other silently turns the "visible" axis into `auto` (the UA has
-     to make it scrollable so nothing is unreachably clipped) — that's what
-     was creating a real, independently-scrollable box here, on top of the
-     page's own scroll: the "I can still scroll inside the section" /
-     "scroll bar comes back" bug. `clip` doesn't establish a scroll
-     container at all, so the other axis stays genuinely visible/static. */
+  /* .work-track-viewport below does the actual visible clipping/fading of
+     peeking cards, but it reaches its extra bleed room via a negative
+     margin — which only lets its OWN rendered box exceed its flex-
+     allocated space, it doesn't stop that expanded box from then
+     overflowing ITS OWN ancestors. On narrow viewports, where that fixed
+     negative-margin amount is a much bigger fraction of the available
+     width, that was enough to push the whole page into horizontal scroll.
+     This is the safety net that actually contains it — see the longer
+     `overflow-x: clip` (not `hidden`) explanation on .work-track-viewport,
+     the same reasoning applies here. */
   overflow-x: clip;
-  overflow-y: visible;
 }
 .work-showcase:focus-visible{ outline: none; }
 .work-showcase-glow{
@@ -348,10 +344,39 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   align-items: center;
   gap: 18px;
 }
-.work-track{
+/* the overlapping stack intentionally translates its peeking cards past the
+   track's own edges (see --offset on .work-card below) — on narrow
+   viewports that bleed was wide enough to push the whole page into
+   horizontal scroll, and clipped hard with no transition it read as the
+   cards getting "cut off" rather than fading out of view. This wrapper is
+   what actually clips the bleed, sized wider than .work-track itself (the
+   negative margin/positive padding pair below) so peeking cards can still
+   spill into that extra space, with a mask fading them out across it
+   instead of a hard edge — and it's a separate element from the arrow
+   buttons (siblings inside .work-showcase-frame, not descendants of this
+   wrapper) specifically so the fade/clip never touches the arrows
+   themselves, which need to stay fully visible and tappable.
+   IMPORTANT: this must be `overflow-x: clip`, not `hidden`. Per the CSS
+   overflow spec, pairing an explicit `hidden` on one axis with `visible` on
+   the other silently turns the "visible" axis into `auto` (the UA has to
+   make it scrollable so nothing is unreachably clipped) — that's what
+   previously created a real, independently-scrollable box here, on top of
+   the page's own scroll: the "I can still scroll inside the section" /
+   "scroll bar comes back" bug. `clip` doesn't establish a scroll container
+   at all, so the other axis stays genuinely visible/static. */
+.work-track-viewport{
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
+  overflow-x: clip;
+  overflow-y: visible;
+  margin: 0 -64px;
+  padding: 0 64px;
+  mask-image: linear-gradient(to right, transparent 0, black 64px, black calc(100% - 64px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 64px, black calc(100% - 64px), transparent 100%);
+}
+.work-track{
+  position: relative;
   height: clamp(320px, 62vh, 640px);
 }
 @media (max-width: 720px){
@@ -361,6 +386,20 @@ section{ padding-top: 120px; padding-bottom: 56px; }
      predictable at any phone height while still showing enough of the
      image to be worth looking at */
   .work-track{ height: auto; aspect-ratio: 4 / 5; max-height: 62vh; }
+  .work-track-viewport{
+    margin: 0 -40px;
+    padding: 0 40px;
+    mask-image: linear-gradient(to right, transparent 0, black 40px, black calc(100% - 40px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 40px, black calc(100% - 40px), transparent 100%);
+  }
+}
+@media (max-width: 480px){
+  .work-track-viewport{
+    margin: 0 -28px;
+    padding: 0 28px;
+    mask-image: linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+  }
 }
 /* overlapping card stack — each card's position is driven by --offset
    (its signed distance from the active card) and --dist (that distance's
@@ -768,27 +807,43 @@ html.reveal-js .about-photo.in-view .about-photo-clip{ clip-path: inset(0 0 0% 0
   position: relative;
   width: 44px; height: 44px;
   margin: -12px -12px -12px 0;
+  transition: transform var(--dur-sm) var(--ease);
 }
 .faq-icon::before, .faq-icon::after{
   content: "";
   position: absolute;
   top: 50%; left: 50%;
   background: var(--ink);
-  transition: transform var(--dur-xs) var(--ease);
+  transition: transform var(--dur-xs) var(--ease), background var(--dur-xs) var(--ease);
 }
 .faq-icon::before{ width: 14px; height: 1.5px; transform: translate(-50%, -50%); }
 .faq-icon::after{ width: 1.5px; height: 14px; transform: translate(-50%, -50%); }
-.faq-item[open] .faq-icon::after{ transform: translate(-50%, -50%) rotate(90deg); opacity: 0; }
+/* .is-open-visual mirrors [open] instantly, decoupled from when the JS
+   accordion below actually finishes closing (which happens after its
+   shrink animation plays, not the moment you click) — the icon and the
+   native `open` state can be a beat apart and still both be correct */
+.faq-item[open] .faq-icon::after, .faq-item.is-open-visual .faq-icon::after{ transform: translate(-50%, -50%) rotate(90deg); opacity: 0; }
+.faq-item[open] .faq-icon::before, .faq-item.is-open-visual .faq-icon::before,
+.faq-item[open] .faq-icon::after, .faq-item.is-open-visual .faq-icon::after{ background: var(--accent); }
 .faq-item:hover .faq-icon::before, .faq-item:hover .faq-icon::after{ background: var(--accent); }
 @media (prefers-reduced-motion: reduce){
-  .faq-icon::before, .faq-icon::after{ transition: none; }
+  .faq-icon, .faq-icon::before, .faq-icon::after{ transition: none; }
 }
-.faq-answer{ padding: 0 0 28px; padding-right: 68px; }
+.faq-answer{ padding: 0 0 28px; padding-right: 68px; overflow: hidden; }
 .faq-answer p{ margin: 0; color: var(--ink-soft); font-size: 16px; line-height: 1.6; max-width: 620px; }
 @media (max-width: 640px){
   .faq-question{ gap: 16px; padding: 22px 0; }
   .faq-answer{ padding-right: 0; padding-bottom: 24px; }
 }
+
+/* scroll-in reveal for the FAQ rows themselves, matching the rest of the
+   site's motion language (see the .reveal block earlier in this file —
+   same no-JS-safe default, same IntersectionObserver in script.js, no
+   special-casing needed here beyond the class and a stagger) */
+.faq-list .faq-item:nth-child(1){ transition-delay: 0s; }
+.faq-list .faq-item:nth-child(2){ transition-delay: .08s; }
+.faq-list .faq-item:nth-child(3){ transition-delay: .16s; }
+.faq-list .faq-item:nth-child(4){ transition-delay: .24s; }
 
 /* ---------- contact: redesigned ---------- */
 .contact{

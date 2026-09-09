@@ -998,3 +998,112 @@ if (canHover && cursor){
     });
   });
 }
+
+// ---------- faq: animated open/close ----------
+// The <details>/<summary> markup itself is what makes this keyboard-
+// accessible and fully functional with no JS at all (see the CSS comment
+// above .faq-list) — native toggling is instant, which is a perfectly
+// good baseline. This block is a pure enhancement layer on top: when JS
+// *is* available, clicks are intercepted so the height and the answer's
+// fade-in can be animated instead of snapping open, using the Web
+// Animations API rather than a transition on `height` (which can't
+// transition to/from `auto`, the only sane target height for text that
+// wraps differently at every viewport width). If anything here throws —
+// an older browser missing `.animate()`, say — the native instant
+// behaviour underneath is untouched, so the accordion never breaks.
+if (!reducedMotion && typeof Element !== 'undefined' && typeof Element.prototype.animate === 'function'){
+  document.querySelectorAll('.faq-item').forEach(details => {
+    const summary = details.querySelector('summary');
+    const answer = details.querySelector('.faq-answer');
+    const icon = details.querySelector('.faq-icon');
+    if (!summary || !answer) return;
+    let animation = null;
+    let isClosing = false;
+    let isExpanding = false;
+
+    summary.addEventListener('click', (e) => {
+      e.preventDefault();
+      details.style.overflow = 'hidden';
+      if (isClosing || !details.open){
+        openDetails();
+      } else if (isExpanding || details.open){
+        shrink();
+      }
+    });
+
+    function shrink(){
+      isClosing = true;
+      details.classList.remove('is-open-visual');
+      const startHeight = `${details.offsetHeight}px`;
+      const endHeight = `${summary.offsetHeight}px`;
+      if (animation) animation.cancel();
+      animation = details.animate(
+        { height: [startHeight, endHeight] },
+        { duration: 320, easing: 'cubic-bezier(.4,0,.2,1)' }
+      );
+      answer.animate(
+        { opacity: [1, 0], transform: ['translateY(0)', 'translateY(-6px)'] },
+        { duration: 200, easing: 'ease' }
+      );
+      animation.onfinish = () => onAnimationFinish(false);
+      animation.oncancel = () => { isClosing = false; };
+    }
+
+    function openDetails(){
+      // opening a named <details> natively closes any other member of the
+      // same group (see the `name="faq"` attribute in the HTML) — setting
+      // .open here is what triggers that, exactly as a native click would
+      details.style.height = `${details.offsetHeight}px`;
+      details.classList.add('is-open-visual');
+      details.open = true;
+      // the plus-to-minus bar swap (CSS, keyed off .is-open-visual above)
+      // already reads clearly on its own — this adds a small spring pop on
+      // top, the same overshoot feel as the work-card stack elsewhere on
+      // the site, so opening one actually feels like a satisfying "click"
+      // rather than just a colour change.
+      if (icon) icon.animate(
+        { transform: ['scale(1)', 'scale(1.25)', 'scale(1)'] },
+        { duration: 420, easing: 'cubic-bezier(.32,1.85,.6,1)' }
+      );
+      requestAnimationFrame(() => requestAnimationFrame(expand));
+    }
+
+    function expand(){
+      isExpanding = true;
+      const startHeight = `${details.offsetHeight}px`;
+      const endHeight = `${summary.offsetHeight + answer.offsetHeight}px`;
+      if (animation) animation.cancel();
+      animation = details.animate(
+        { height: [startHeight, endHeight] },
+        { duration: 340, easing: 'cubic-bezier(.16,1,.3,1)' }
+      );
+      answer.animate(
+        { opacity: [0, 1], transform: ['translateY(-6px)', 'translateY(0)'] },
+        { duration: 320, delay: 60, easing: 'ease', fill: 'backwards' }
+      );
+      animation.onfinish = () => onAnimationFinish(true);
+      animation.oncancel = () => { isExpanding = false; };
+    }
+
+    function onAnimationFinish(open){
+      details.open = open;
+      details.classList.toggle('is-open-visual', open);
+      animation = null;
+      isClosing = false;
+      isExpanding = false;
+      details.style.height = '';
+      details.style.overflow = '';
+    }
+
+    // a same-group sibling closing natively (because this one just opened)
+    // never fires our own click handler, so it would otherwise skip the
+    // shrink animation and just snap shut — catch that via the native
+    // `toggle` event instead, only acting when we weren't already the one
+    // animating this element ourselves.
+    details.addEventListener('toggle', () => {
+      if (!details.open && !isClosing && !animation){
+        details.classList.remove('is-open-visual');
+      }
+    });
+  });
+}
