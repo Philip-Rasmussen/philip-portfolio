@@ -12,6 +12,9 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+// parallax and other "nice to have" motion is skipped below this width —
+// smaller/touch devices get the lighter opacity+transform-only treatment
+const isSmallViewport = window.matchMedia('(max-width: 720px)').matches;
 
 // batches a scroll handler to run at most once per animation frame — native
 // 'scroll' events can fire faster than the display refreshes, and re-running
@@ -46,10 +49,36 @@ if (squiggle){
   drawSquiggle = () => { path.style.strokeDashoffset = 0; };
 }
 
+// ---------- hero opening sequence ----------
+// a fixed, hand-timed sequence rather than a uniform stagger: eyebrow, then
+// each headline line un-masking, then the underline drawing on, then the
+// supporting copy/tags, the CTAs, and the showreel panel last. Quick and
+// confident — the whole thing lands well under a second so nothing blocks
+// the visitor from scrolling/clicking immediately.
+const HERO_SEQUENCE = [
+  { sel: '[data-hero-step="eyebrow"]', delay: 0 },
+  { sel: '[data-hero-step="line1"]', delay: 80 },
+  { sel: '[data-hero-step="line2"]', delay: 200 },
+  { sel: '[data-hero-step="sub"]', delay: 460 },
+  { sel: '[data-hero-step="tags"]', delay: 540 },
+  { sel: '[data-hero-step="cta"]', delay: 620 },
+  { sel: '[data-hero-step="reel"]', delay: 740 },
+];
+function runHeroSequence(instant){
+  HERO_SEQUENCE.forEach(step => {
+    const el = document.querySelector(step.sel);
+    if (!el) return;
+    const apply = () => el.classList.add('in-view');
+    if (instant) apply();
+    else setTimeout(apply, step.delay);
+  });
+  if (instant) drawSquiggle();
+  else setTimeout(drawSquiggle, 520);
+}
+
 // ---------- intro entrance: pixel-tile dissolve ----------
 const intro = document.getElementById('intro');
 const introGrid = document.getElementById('introGrid');
-const heroReveals = Array.from(document.querySelectorAll('#top .reveal'));
 const introMark = document.getElementById('introMark');
 const introCounter = document.getElementById('introCounter');
 const introBarFill = document.getElementById('introBarFill');
@@ -70,8 +99,7 @@ if (introMark){
 if (intro){
   if (reducedMotion){
     intro.remove();
-    staggerIn(heroReveals, 0);
-    drawSquiggle();
+    runHeroSequence(true);
   } else {
     document.body.classList.add('intro-lock');
 
@@ -108,8 +136,7 @@ if (intro){
     setTimeout(() => {
       intro.classList.add('hide');
       document.body.classList.remove('intro-lock');
-      staggerIn(heroReveals, 100);
-      setTimeout(drawSquiggle, 550);
+      runHeroSequence(false);
 
       // dissolve the tiles in a diagonal wave, with a touch of randomness per tile
       const maxWave = cols + rows;
@@ -125,7 +152,7 @@ if (intro){
     }, 1080);
   }
 } else {
-  drawSquiggle();
+  runHeroSequence(reducedMotion);
 }
 
 // ---------- scroll reveal (everything outside the hero) ----------
@@ -134,6 +161,13 @@ const io = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting){
       entry.target.classList.add('in-view');
+      // any masked-line headline inside this block (How I Think's opening
+      // statement, the Contact heading) unmasks line by line right after
+      const maskLines = entry.target.querySelectorAll('.mask-line');
+      maskLines.forEach((line, i) => {
+        if (reducedMotion) line.classList.add('in-view');
+        else setTimeout(() => line.classList.add('in-view'), i * 110);
+      });
       io.unobserve(entry.target);
     }
   });
@@ -207,6 +241,15 @@ function ensureSeamlessMarquee(track, speedPxPerSec){
 }
 ensureSeamlessMarquee(document.getElementById('marqueeTrack'), 55);
 ensureSeamlessMarquee(document.getElementById('contactMarqueeTrack'), 28);
+
+// pause each marquee's scroll while it's outside the viewport
+const marqueeWraps = document.querySelectorAll('.marquee, .contact-marquee');
+if (marqueeWraps.length){
+  const marqueeIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => entry.target.classList.toggle('is-paused', !entry.isIntersecting));
+  }, { threshold: 0 });
+  marqueeWraps.forEach(el => marqueeIO.observe(el));
+}
 
 // ---------- journey timeline: zigzag path connecting each milestone, drawn in
 // as you scroll, plus a rolling odometer step number per card ----------
@@ -341,6 +384,7 @@ if (aboutSteps && aboutStepsFill && aboutStepEls.length){
 // ---------- toolkit: programs / skills switcher + staggered reveal ----------
 const toolkitSection = document.getElementById('toolkit');
 const toolkitPanels = toolkitSection ? Array.from(toolkitSection.querySelectorAll('.toolkit-panel')) : [];
+const toolkitPanelsWrap = toolkitSection ? toolkitSection.querySelector('.toolkit-panels') : null;
 const toolkitTabs = toolkitSection ? Array.from(toolkitSection.querySelectorAll('.toolkit-tab')) : [];
 const toolkitPrev = document.getElementById('toolkitPrev');
 const toolkitNext = document.getElementById('toolkitNext');
@@ -406,6 +450,14 @@ if (toolkitSection && toolkitPanels.length){
     const currentPanel = toolkitPanels[activeIndex];
     const nextPanel = toolkitPanels[nextIndex];
 
+    // lock the container to its current height, swap panels, then animate
+    // to the incoming panel's natural height — Programs and Skills happen
+    // to be nearly the same height already, but this makes sure a future
+    // edit to either list never jumps the rest of the page around
+    if (toolkitPanelsWrap && !reducedMotion){
+      toolkitPanelsWrap.style.height = toolkitPanelsWrap.getBoundingClientRect().height + 'px';
+    }
+
     currentPanel.classList.remove('is-active');
     nextPanel.style.setProperty('--enter-x', direction === 'prev' ? '-26px' : '26px');
     nextPanel.classList.add('is-active', 'is-entering');
@@ -413,6 +465,14 @@ if (toolkitSection && toolkitPanels.length){
       nextPanel.classList.remove('is-entering');
       nextPanel.removeEventListener('animationend', handler);
     });
+
+    if (toolkitPanelsWrap && !reducedMotion){
+      requestAnimationFrame(() => {
+        const nextHeight = nextPanel.getBoundingClientRect().height;
+        toolkitPanelsWrap.style.height = nextHeight + 'px';
+        setTimeout(() => { toolkitPanelsWrap.style.height = ''; }, 420);
+      });
+    }
 
     toolkitTabs.forEach(tab => tab.classList.toggle('is-active', tab.dataset.panel === nextPanelName));
     activeIndex = nextIndex;
@@ -522,8 +582,11 @@ if (canHover){
 }
 
 // ---------- light parallax (only once an element has revealed) ----------
+// skipped on small/touch viewports — this is exactly the kind of scroll-tied
+// transform work that's cheap on a desktop compositor and not worth the risk
+// of jank on a phone
 const parallaxEls = document.querySelectorAll('[data-parallax]');
-if (parallaxEls.length && !reducedMotion){
+if (parallaxEls.length && !reducedMotion && !isSmallViewport){
   function onScrollParallax(){
     const vh = window.innerHeight;
     parallaxEls.forEach(el => {
@@ -537,6 +600,36 @@ if (parallaxEls.length && !reducedMotion){
   window.addEventListener('scroll', rafThrottle(onScrollParallax), { passive: true });
   const warmup = setInterval(onScrollParallax, 300);
   setTimeout(() => clearInterval(warmup), 4000);
+}
+
+// ---------- about photo: a very subtle scroll-tied zoom ----------
+// pure scale, no translate, transform-origin anchored near the face (see
+// styles.css) so the crop never drifts away from him while it happens
+const aboutPhotoImg = document.querySelector('.about-photo img');
+if (aboutPhotoImg && !reducedMotion && !isSmallViewport){
+  function onAboutPhotoScroll(){
+    const container = aboutPhotoImg.parentElement;
+    const rect = container.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const progress = Math.min(Math.max((vh - rect.top) / (vh + rect.height), 0), 1);
+    aboutPhotoImg.style.transform = `scale(${1 + progress * 0.06})`;
+  }
+  window.addEventListener('scroll', rafThrottle(onAboutPhotoScroll), { passive: true });
+  onAboutPhotoScroll();
+}
+
+// ---------- hero headline: a whisper of scroll depth ----------
+// deliberately tiny and capped so the big red headline never drifts far
+// enough to hurt legibility; skipped on touch/small screens + reduced motion
+const heroTitleEl = document.getElementById('heroTitle');
+if (heroTitleEl && !reducedMotion && !isSmallViewport){
+  const HERO_PARALLAX_SPEED = 0.035;
+  const HERO_PARALLAX_MAX = 22;
+  function onHeroParallax(){
+    const y = Math.min(window.scrollY * HERO_PARALLAX_SPEED, HERO_PARALLAX_MAX);
+    heroTitleEl.style.transform = `translateY(${y}px)`;
+  }
+  window.addEventListener('scroll', rafThrottle(onHeroParallax), { passive: true });
 }
 
 // ---------- smooth scroll controller ----------
@@ -658,6 +751,9 @@ if (workShowcase && workTrack && workCards.length){
     return diff;
   }
 
+  const workMetaInfo = document.querySelector('.work-showcase-info');
+  let workFirstRender = true;
+
   function renderWork(){
     workCards.forEach((card, i) => {
       const offset = circularOffset(i, workIndex, workTotal);
@@ -670,9 +766,25 @@ if (workShowcase && workTrack && workCards.length){
     });
     workDots.forEach((dot, i) => dot.classList.toggle('is-active', i === workIndex));
     const active = workCards[workIndex];
-    if (workIndexCurrentEl) workIndexCurrentEl.textContent = String(workIndex + 1).padStart(2, '0');
-    if (workActiveTitleEl) workActiveTitleEl.textContent = active.dataset.title || '';
-    if (workActiveTagsEl) workActiveTagsEl.textContent = active.dataset.tags || '';
+
+    // the project number/title/categories swap with a quick fade+shift
+    // rather than snapping instantly — but not on the very first render,
+    // where it would just flash the HTML's placeholder text first
+    function applyMeta(){
+      if (workIndexCurrentEl) workIndexCurrentEl.textContent = String(workIndex + 1).padStart(2, '0');
+      if (workActiveTitleEl) workActiveTitleEl.textContent = active.dataset.title || '';
+      if (workActiveTagsEl) workActiveTagsEl.textContent = active.dataset.tags || '';
+    }
+    if (workFirstRender || reducedMotion || !workMetaInfo){
+      applyMeta();
+      workFirstRender = false;
+    } else {
+      workMetaInfo.classList.add('is-swapping');
+      setTimeout(() => {
+        applyMeta();
+        workMetaInfo.classList.remove('is-swapping');
+      }, 160);
+    }
   }
 
   function goToWork(i){

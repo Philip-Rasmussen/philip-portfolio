@@ -51,30 +51,30 @@
 <main>
 
   <section id="top" class="hero">
-    <p class="eyebrow reveal">
+    <p class="eyebrow reveal" data-hero-step="eyebrow">
       Video editor · Graphic designer · Content creator — Aarhus, Denmark
       <span class="status-pill"><span class="status-dot"></span>Available for freelance · Full-time from December 2026</span>
     </p>
-    <h1 class="hero-title">
-      <span class="reveal">I'm Philip.</span>
-      <span class="reveal hero-title-accent">
+    <h1 class="hero-title" id="heroTitle">
+      <span class="line-mask" data-hero-step="line1"><span class="line-content">I'm Philip.</span></span>
+      <span class="line-mask" data-hero-step="line2"><span class="line-content hero-title-accent">
         I shoot, edit and design content.
         <svg class="squiggle" id="squiggle" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true">
           <path d="M2 16 C 40 4, 70 26, 105 14 S 170 2, 205 15 S 270 26, 305 13 S 370 3, 398 15" />
         </svg>
-      </span>
+      </span></span>
     </h1>
-    <p class="hero-sub reveal">
+    <p class="hero-sub reveal" data-hero-step="sub">
       I work across short-form video, campaign design and motion — from the first idea and camera
       setup to pacing, sound, colour and final delivery.
     </p>
-    <ul class="hero-skills reveal" aria-label="What I do">
+    <ul class="hero-skills reveal" data-hero-step="tags" aria-label="What I do">
       <li>Video Editing</li>
       <li>Content Production</li>
       <li>Motion Graphics</li>
       <li>Graphic Design</li>
     </ul>
-    <div class="hero-actions reveal">
+    <div class="hero-actions reveal" data-hero-step="cta">
       <a href="#work" class="btn btn-primary magnetic">View selected work</a>
       <a href="#contact" class="btn btn-ghost magnetic">Get in touch</a>
     </div>
@@ -82,7 +82,7 @@
     <!-- Showreel: no finished reel yet. When one is ready, swap .hero-reel-media--empty
          for a muted <video poster="..."> with a play control, reusing .play-btn /
          .reel-tag from the site's earlier markup for that exact treatment. -->
-    <div class="hero-reel reveal" data-parallax="0.06">
+    <div class="hero-reel reveal" data-hero-step="reel" data-parallax="0.06">
       <div class="hero-reel-media hero-reel-media--empty">
         <span class="hero-reel-heading">Showreel in progress</span>
         <span class="hero-reel-copy">A new reel is currently in the edit. Until then, the selected cases below show how I work.</span>
@@ -236,21 +236,21 @@
   <section id="stats" class="stats">
     <div class="stats-grid">
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="4" data-suffix="+">—</span>
+        <span class="stat-number" data-target="4" data-suffix="+">4+</span>
         <span class="stat-label">Years using Adobe tools</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="580" data-suffix="K+">—</span>
+        <span class="stat-number" data-target="580" data-suffix="K+">580K+</span>
         <span class="stat-label">Organic views</span>
         <span class="stat-sublabel">Across Top Comfy and personal content</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="94" data-suffix="K+">—</span>
+        <span class="stat-number" data-target="94" data-suffix="K+">94K+</span>
         <span class="stat-label">On one interview</span>
         <span class="stat-sublabel">Maluda interview on TikTok</span>
       </div>
       <div class="stat-item reveal">
-        <span class="stat-number" data-target="3" data-suffix="">—</span>
+        <span class="stat-number" data-target="3" data-suffix="">3</span>
         <span class="stat-label">Red Bull events covered</span>
       </div>
     </div>
@@ -260,8 +260,11 @@
     <div class="think-inner">
       <div class="section-head reveal think-head">
         <h2>How I think</h2>
-        <p>A strong edit starts before the timeline. I look for the moment that makes people care,
-          build the pace around it and use sound, colour and motion to make it land.</p>
+        <p class="think-lines">
+          <span class="mask-line"><span>A strong edit starts before the timeline.</span></span>
+          <span class="mask-line"><span>I look for the moment that makes people care, build the pace
+            around it and use sound, colour and motion to make it land.</span></span>
+        </p>
       </div>
 
       <div class="think-list" id="thinkList">
@@ -298,34 +301,37 @@
 
     <div class="about-grid">
       <div class="about-photo reveal">
-        <img src="assets/img/philip-placeholder.jpg" alt="Portrait of Philip Rasmussen" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+        <div class="about-photo-clip">
+          <img src="assets/img/philip-placeholder.jpg" alt="Portrait of Philip Rasmussen" loading="lazy" onerror="this.closest('.about-photo').classList.add('no-photo')">
+        </div>
         <span class="no-photo-label">Drop your photo in<br>assets/img/philip-placeholder.jpg</span>
       </div>
 
       <div class="about-copy reveal">
         <p class="about-lede">
-          I'm Philip, a 22-year-old video editor and graphic designer based in Aarhus. I'm
-          currently completing my Graphic Designer education while working as a Graphic Designer
-          Apprentice at BET25.
+          I'm Philip — a 22-year-old <strong>video editor and graphic designer</strong> based in
+          Aarhus. I like being close to the whole process, from the rough idea to the final export.
         </p>
 
         <div class="about-steps" id="aboutSteps">
           <div class="about-steps-track"><div class="about-steps-fill" id="aboutStepsFill"></div></div>
           <div class="about-steps-list">
             <p class="about-step">
-              At work, I turn real briefs into campaign graphics, motion and finished marketing
-              assets. Outside work, I film and edit artist content with Top Comfy and build
-              projects under my own name.
+              During the day, I work as a <strong>Graphic Designer Apprentice at BET25</strong>,
+              where I turn real briefs into campaign graphics, motion and finished marketing
+              assets. It has taught me how to work with real deadlines, feedback and campaign
+              rollouts.
             </p>
             <p class="about-step">
-              I like being involved in the full process — shaping the idea, planning the visuals,
-              filming, editing, sound, colour and the details that make the final piece feel
-              intentional.
+              Outside BET25, I produce artist interviews and event content with
+              <strong>Top Comfy</strong> and experiment with storytelling, cinematography and
+              motion under my own name. Across those projects, I work through most of the
+              production process: planning, filming, audio, editing, sound, subtitles and colour.
             </p>
             <p class="about-step">
-              I originally trained as a web developer. That background still influences how I
-              work: I think about structure, layout and the person using the final result, not
-              only how it looks in the timeline.
+              I originally trained in <strong>web development</strong>. That still shapes how I
+              work: I think about structure, layout and the person using the final result, as
+              well as how the edit looks and feels.
             </p>
             <p class="about-step">
               When I'm not working, I'm usually training or out for a run.
@@ -528,7 +534,7 @@
 
       <div class="contact-grid">
         <div class="contact-main">
-          <h2>Need an editor<br>or designer?</h2>
+          <h2><span class="mask-line"><span>Need an editor</span></span><span class="mask-line"><span>or designer?</span></span></h2>
           <p>I'm available for freelance projects and open to full-time opportunities from
             December 2026. If you have a role, a project or even a rough idea, send me a message.</p>
           <a href="mailto:philip.ronge@gmail.com" class="contact-email-btn magnetic">
