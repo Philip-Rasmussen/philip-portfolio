@@ -32,6 +32,34 @@ function rafThrottle(fn){
   };
 }
 
+// ---------- nav: highlight the current section while scrolling ----------
+// the header only links to #work / #about / #contact, but there are several
+// sections in between each of those — each section maps to whichever nav
+// anchor it conceptually belongs under, so the right link stays lit for the
+// whole stretch rather than only for the exact section that has the id.
+(function initNavActiveState(){
+  const SECTION_TO_NAV = {
+    work: 'work', 'field-work': 'work', stats: 'work', quote: 'work',
+    about: 'about', toolkit: 'about', journey: 'about',
+    contact: 'contact',
+  };
+  const navLinks = Array.from(document.querySelectorAll('.nav a[href^="#"], .nav-mobile a[href^="#"]'))
+    .filter(a => a.getAttribute('href') !== '#contact' || !a.classList.contains('nav-mobile-cta'));
+  const sections = Array.from(document.querySelectorAll('main > section[id]')).filter(s => SECTION_TO_NAV[s.id]);
+  if (!navLinks.length || !sections.length) return;
+
+  function setActive(navId){
+    navLinks.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === `#${navId}`));
+  }
+
+  const navIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) setActive(SECTION_TO_NAV[entry.target.id]);
+    });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+  sections.forEach(s => navIO.observe(s));
+})();
+
 function staggerIn(els, gap){
   els.forEach((el, i) => {
     setTimeout(() => el.classList.add('in-view'), i * gap);
@@ -156,6 +184,15 @@ if (intro){
 }
 
 // ---------- scroll reveal (everything outside the hero) ----------
+// fires as soon as a section's top edge reaches the lower ~18% of the
+// viewport, rather than waiting for 15% of the element itself to be
+// visible — a tall section could otherwise need a lot of extra scrolling
+// before it started revealing, leaving a visibly empty gap. Shrinking the
+// observed root from the top by 82% means only that bottom sliver counts,
+// so threshold:0 (any overlap at all) fires right at the moment it's
+// wanted. Each block still only plays once (unobserve on first trigger),
+// and reveals never block scrolling or interaction — they're purely CSS
+// opacity/transform transitions running alongside it.
 const revealEls = document.querySelectorAll('.reveal:not(#top .reveal)');
 const io = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -171,7 +208,7 @@ const io = new IntersectionObserver((entries) => {
       io.unobserve(entry.target);
     }
   });
-}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+}, { threshold: 0, rootMargin: '-82% 0px 0px 0px' });
 revealEls.forEach(el => io.observe(el));
 
 // ---------- stat counters ----------
@@ -386,8 +423,6 @@ const toolkitSection = document.getElementById('toolkit');
 const toolkitPanels = toolkitSection ? Array.from(toolkitSection.querySelectorAll('.toolkit-panel')) : [];
 const toolkitPanelsWrap = toolkitSection ? toolkitSection.querySelector('.toolkit-panels') : null;
 const toolkitTabs = toolkitSection ? Array.from(toolkitSection.querySelectorAll('.toolkit-tab')) : [];
-const toolkitPrev = document.getElementById('toolkitPrev');
-const toolkitNext = document.getElementById('toolkitNext');
 
 if (toolkitSection && toolkitPanels.length){
   const panelOrder = toolkitPanels.map(p => p.dataset.panel);
@@ -479,8 +514,6 @@ if (toolkitSection && toolkitPanels.length){
     runToolkitChoreography(nextPanel);
   }
 
-  if (toolkitPrev) toolkitPrev.addEventListener('click', () => showPanel(activeIndex - 1, 'prev'));
-  if (toolkitNext) toolkitNext.addEventListener('click', () => showPanel(activeIndex + 1, 'next'));
   toolkitTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const targetIndex = panelOrder.indexOf(tab.dataset.panel);
@@ -501,7 +534,7 @@ if (toolkitSection && toolkitPanels.length){
         toolkitIO.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  }, { threshold: 0, rootMargin: '-82% 0px 0px 0px' });
   toolkitIO.observe(toolkitCardGrid);
 }
 
@@ -540,31 +573,16 @@ if (canHover && cursor){
   }
   loop();
 
+  // only real links/buttons grow the cursor, and only as a plain dot — no
+  // text label. The work-card "VIEW" label and hero-reel "PLAY" label used
+  // to grow a 42px ring directly over the project title / showreel copy,
+  // which could sit on top of and obscure that text while hovering (and, on
+  // the showreel, implied a playable control that doesn't exist yet). The
+  // active card's "View case" tag and the showreel's own placeholder copy
+  // already communicate the same thing without covering anything up.
   document.querySelectorAll('a, button').forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
     el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
-  });
-
-  document.querySelectorAll('.work-card').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.classList.add('grow');
-      if (cursorLabel) cursorLabel.textContent = 'VIEW';
-    });
-    el.addEventListener('mouseleave', () => {
-      cursor.classList.remove('grow');
-      if (cursorLabel) cursorLabel.textContent = '';
-    });
-  });
-
-  document.querySelectorAll('.hero-reel').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.classList.add('grow');
-      if (cursorLabel) cursorLabel.textContent = 'PLAY';
-    });
-    el.addEventListener('mouseleave', () => {
-      cursor.classList.remove('grow');
-      if (cursorLabel) cursorLabel.textContent = '';
-    });
   });
 }
 
@@ -633,68 +651,14 @@ if (heroTitleEl && !reducedMotion && !isSmallViewport){
 }
 
 // ---------- smooth scroll controller ----------
-// one shared eased-glide engine drives both the desktop wheel feel and every
-// in-page anchor link (nav, hero CTAs, footer "back to top"), so scrolling
-// feels the same everywhere instead of switching between a custom glide for
-// wheel input and the browser's own (differently-timed) smooth scroll for
-// link clicks.
-const smoothScroll = (() => {
-  if (reducedMotion) return null;
-  let targetY = window.scrollY;
-  let currentY = window.scrollY;
-  let raf = null;
-  const ease = 0.12;
-
-  function maxScroll(){
-    return document.documentElement.scrollHeight - window.innerHeight;
-  }
-
-  function frame(){
-    const dist = targetY - currentY;
-    if (Math.abs(dist) < 0.5){
-      currentY = targetY;
-      window.scrollTo(0, currentY);
-      raf = null;
-      return;
-    }
-    currentY += dist * ease;
-    window.scrollTo(0, currentY);
-    raf = requestAnimationFrame(frame);
-  }
-
-  function start(){ if (!raf) raf = requestAnimationFrame(frame); }
-
-  return {
-    nudge(delta){
-      targetY = Math.min(Math.max(targetY + delta, 0), maxScroll());
-      start();
-    },
-    scrollTo(y){
-      targetY = Math.min(Math.max(y, 0), maxScroll());
-      start();
-    },
-    syncToNative(){
-      if (!raf){ targetY = window.scrollY; currentY = window.scrollY; }
-    },
-    isGliding(){ return !!raf; }
-  };
-})();
-
-if (canHover && smoothScroll){
-  window.addEventListener('wheel', (e) => {
-    if (e.ctrlKey) return; // let pinch-zoom behave natively
-    if (document.querySelector('.project-modal.open')) return; // let the open case-study modal scroll natively
-    e.preventDefault();
-    smoothScroll.nudge(e.deltaY);
-  }, { passive: false });
-
-  // keep target in sync with keyboard / scrollbar-drag scrolling
-  window.addEventListener('scroll', smoothScroll.syncToNative, { passive: true });
-}
-
-// route every in-page anchor link through the same smooth-scroll engine,
-// landing a fixed distance below the fixed header instead of flush against it
-const HEADER_OFFSET = 90;
+// Anchor links (nav, hero CTAs, footer "back to top") get a smooth landing a
+// fixed distance below the sticky header instead of flush against it. This
+// uses the browser's own native smooth scroll — there is no wheel/scroll
+// hijacking on this site: normal mouse-wheel and trackpad scrolling is left
+// completely untouched everywhere, including over the Selected Work and
+// Toolkit sections, so the page always scrolls exactly the way the visitor
+// expects.
+const HEADER_OFFSET = 116; // keep in sync with the scroll-margin-top on main > section[id] in styles.css
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   const id = link.getAttribute('href').slice(1);
   if (!id) return;
@@ -703,8 +667,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     if (!target) return;
     e.preventDefault();
     const y = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-    if (smoothScroll) smoothScroll.scrollTo(y);
-    else window.scrollTo({ top: y, behavior: reducedMotion ? 'auto' : 'smooth' });
+    window.scrollTo({ top: y, behavior: reducedMotion ? 'auto' : 'smooth' });
     if (history.pushState) history.pushState(null, '', `#${id}`);
   });
 });
@@ -960,6 +923,13 @@ if (navBurger && navMobile){
   navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && navMobile.classList.contains('open')) closeMobileNav();
+  });
+  // tapping anywhere outside the open menu (and outside the burger button
+  // itself, which has its own toggle handler) closes it
+  document.addEventListener('pointerdown', (e) => {
+    if (!navMobile.classList.contains('open')) return;
+    if (navMobile.contains(e.target) || navBurger.contains(e.target)) return;
+    closeMobileNav();
   });
 }
 

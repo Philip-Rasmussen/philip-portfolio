@@ -12,11 +12,12 @@
   --accent: #FF4E32;
   --accent-ink: #17140F;
   --line: rgba(23,20,15,0.12);
-  /* deeper shade of the accent hue, used any time the accent colours actual
-     text on the bone background — the bright --accent fails WCAG AA
-     (~2.85:1) for text; this variant holds ~5:1 while still reading as the
-     same red/orange */
-  --accent-text: #B8391F;
+  /* Philip's call: the bright --accent is the brand colour and should read
+     as vivid orange everywhere it appears, including on text — a previous
+     pass introduced a darkened WCAG-safe variant here (~5:1 vs bone) for
+     text contrast, but it read as muddy brown/red instead of orange, so
+     --accent-text is now just an alias back to the true bright accent. */
+  --accent-text: var(--accent);
 
   --font-display: "Anton", Impact, sans-serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -76,6 +77,13 @@ main > section, .site-footer{
   padding-left: var(--pad);
   padding-right: var(--pad);
 }
+/* the sticky header sits ~98px tall — without this, jumping straight to an
+   anchor (typing a #hash URL, a browser back/forward restore, or any native
+   fragment navigation that doesn't go through script.js's own JS-computed
+   offset) lands the section flush under the header and its heading gets
+   covered. This keeps every anchor target landing correctly with or
+   without JS. */
+main > section[id]{ scroll-margin-top: 116px; }
 
 /* ---------- header ---------- */
 /* full-bleed sticky band so the background/blur covers the whole viewport
@@ -103,6 +111,12 @@ main > section, .site-footer{
   font-family: var(--font-display);
   font-size: 22px;
   letter-spacing: 0.02em;
+  /* pad the tap target up to 44px tall without shifting the header's own
+     layout — the compensating negative margin cancels the added padding */
+  display: inline-flex;
+  align-items: center;
+  padding: 11px 0;
+  margin: -11px 0;
 }
 .logo .dot{ color: var(--accent-text); }
 .nav{ display: flex; gap: 32px; }
@@ -123,7 +137,9 @@ main > section, .site-footer{
   background: var(--accent);
   transition: right .25s ease;
 }
-.nav a:hover::after{ right: 0; }
+.nav a:hover::after,
+.nav a.is-active::after{ right: 0; }
+.nav a.is-active{ color: var(--accent-text); }
 .nav-cta{
   font-size: 13px;
   font-weight: 700;
@@ -330,6 +346,14 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   min-width: 0;
   height: clamp(320px, 62vh, 640px);
 }
+@media (max-width: 720px){
+  /* a viewport-height-driven track can end up taller than the screen on a
+     short phone, pushing the title and controls below the fold — a fixed
+     4:5 portrait ratio (capped so it can never eat the whole viewport) is
+     predictable at any phone height while still showing enough of the
+     image to be worth looking at */
+  .work-track{ height: auto; aspect-ratio: 4 / 5; max-height: 62vh; }
+}
 /* overlapping card stack — each card's position is driven by --offset
    (its signed distance from the active card) and --dist (that distance's
    absolute value), both set from script.js on every navigation */
@@ -461,8 +485,9 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .work-arrow svg{ width: 20px; height: 20px; }
 .work-arrow:hover{ background: var(--ink); color: var(--bone); border-color: var(--ink); transform: scale(1.08); }
 @media (max-width: 720px){
-  .work-arrow{ width: 38px; height: 38px; }
-  .work-arrow svg{ width: 16px; height: 16px; }
+  /* 44x44 minimum touch target, even on mobile */
+  .work-arrow{ width: 44px; height: 44px; }
+  .work-arrow svg{ width: 17px; height: 17px; }
   .work-showcase-frame{ gap: 10px; }
 }
 
@@ -477,7 +502,18 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   padding: 0 68px;
 }
 @media (max-width: 720px){
-  .work-showcase-meta{ padding: 0; flex-direction: column; align-items: flex-start; gap: 14px; }
+  /* on mobile the title needs to sit ABOVE the media (so it's visible
+     without scrolling past a tall image first), while the dots read better
+     as pagination below it — two different final positions for what's one
+     paired row on desktop. display:contents unwraps .work-showcase-meta so
+     its two children (.work-showcase-info / .work-showcase-dots) become
+     direct flex items of .work-showcase itself, alongside .work-showcase-
+     frame, and can each get their own `order`. */
+  .work-showcase{ display: flex; flex-direction: column; }
+  .work-showcase-meta{ display: contents; }
+  .work-showcase-info{ order: -1; margin-bottom: 16px; }
+  .work-showcase-frame{ order: 0; }
+  .work-showcase-dots{ order: 1; margin-top: 16px; align-self: center; }
 }
 .work-showcase-index{
   display: block;
@@ -506,34 +542,44 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   color: var(--ink-soft);
   font-size: 14px;
 }
-.work-showcase-dots{ display: flex; gap: 8px; }
+.work-showcase-dots{ display: flex; }
+/* each dot is a real 44x44px hit target (WCAG target-size) that sits flush
+   against its neighbours with no gap, so the invisible tap areas tile
+   edge-to-edge instead of overlapping — a previous version used a small
+   button with a large negative-inset pseudo-element to fake a bigger target,
+   but with dots only 8px apart those inflated hit zones overlapped each
+   other and could register a click on the wrong project. The visible pip
+   stays small and centred inside the real button. */
 .work-dot{
   position: relative;
-  width: 8px; height: 8px;
-  border-radius: 999px;
+  width: 44px; height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   padding: 0;
-  background: var(--line);
+  background: transparent;
   cursor: pointer;
+}
+.work-dot::after{
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  background: var(--line);
   transition: width var(--dur-xs) var(--ease), background var(--dur-xs) var(--ease), box-shadow var(--dur-xs) var(--ease);
 }
-/* expand the tappable area well past the visible dot (WCAG target-size)
-   without changing how big the dot itself looks */
-.work-dot::before{
-  content: "";
-  position: absolute;
-  inset: -13px;
-}
-.work-dot:hover{ background: var(--ink-soft); }
+.work-dot:hover::after{ background: var(--ink-soft); }
 /* the active dot grows into a short pill rather than just scaling — a
    clearer, more deliberate "you are here" than a bigger circle */
-.work-dot.is-active{ width: 22px; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
+.work-dot.is-active::after{ width: 22px; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
 @media (prefers-reduced-motion: reduce){
-  .work-dot{ transition: none; }
+  .work-dot::after{ transition: none; }
+}
+@media (max-width: 720px){
+  .work-showcase-dots{ margin-left: -10px; }
 }
 .work-dot:focus-visible,
 .work-arrow:focus-visible,
-.toolkit-arrow:focus-visible,
 .toolkit-tab:focus-visible,
 .nav-burger:focus-visible,
 .contact-social-row:focus-visible,
@@ -751,6 +797,7 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   color: var(--ink);
   transform: translate(3px, -3px) rotate(45deg);
 }
+.contact-email-btn:active{ transform: translateY(0) scale(0.98); box-shadow: none; }
 @media (prefers-reduced-motion: reduce){
   .contact-email-btn, .contact-email-arrow{ transition: color .15s ease, background .15s ease; }
   .contact-email-btn:hover{ transform: none; box-shadow: none; }
@@ -796,6 +843,7 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .contact-social-row:hover{ padding-left: 14px; color: var(--accent-text); }
 .contact-social-row:hover .contact-social-name{ color: var(--accent-text); }
 .contact-social-row:hover .contact-social-arrow{ color: var(--accent-text); transform: translate(3px,-3px); }
+.contact-social-row:active{ padding-left: 10px; background: var(--bone-dim); }
 
 @media (max-width: 820px){
   .contact-grid{ grid-template-columns: 1fr; gap: 48px; align-items: start; }
@@ -809,30 +857,28 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .site-footer{
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding-top: 28px;
   padding-bottom: 28px;
   border-top: 1px solid var(--line);
   font-size: 13px;
   color: var(--ink-soft);
 }
+.site-footer a{ display: inline-flex; align-items: center; padding: 12px 0; margin: -12px 0; }
 
-/* ---------- scroll reveal ---------- */
+/* ---------- scroll reveal ----------
+   opacity + translate only — an earlier version also blurred text in on
+   entry, which could leave headings and paragraphs genuinely hard to read
+   for a beat during normal scrolling, and filter animation is expensive to
+   composite on top of that. Plain opacity/transform reads just as
+   intentional and never costs legibility. */
 .reveal{
   opacity: 0;
-  transform: translateY(32px);
-  filter: blur(6px);
-  transition: opacity var(--dur-md) var(--ease), transform var(--dur-md) var(--ease), filter var(--dur-md) var(--ease);
+  transform: translateY(24px);
+  transition: opacity var(--dur-md) var(--ease), transform var(--dur-md) var(--ease);
 }
-.reveal.in-view{ opacity: 1; transform: translateY(0); filter: blur(0); }
+.reveal.in-view{ opacity: 1; transform: translateY(0); }
 .hero-title span:nth-child(1){ transition-delay: 0s; }
-
-/* blurred-in text can momentarily be harder to read and filter animation is
-   comparatively expensive to composite — keep it for the calmer desktop
-   experience but drop it on smaller/touch viewports in favour of a plain
-   opacity+transform reveal (still on-brand, just cheaper to run) */
-@media (max-width: 720px){
-  .reveal{ filter: none; transform: translateY(24px); }
-}
 
 /* reusable masked-line reveal — an overflow-hidden strip with its text
    sliding up from below, used for the hero heading and any other headline
@@ -906,9 +952,12 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 }
 /* the play control and "watch" tag return once a finished reel exists —
    drop a <video poster="..."> into .hero-reel-media, remove
-   .hero-reel-media--empty, and re-add .play-btn / .reel-tag markup */
+   .hero-reel-media--empty, and re-add .play-btn / .reel-tag markup.
+   Deliberately shorter than a real showreel would be (a finished reel would
+   likely run 16:9 or taller) — this is a placeholder, not a scaled-down
+   preview of the real thing, so it should take up noticeably less room. */
 @media (max-width: 720px){
-  .hero-reel-media{ aspect-ratio: 4 / 5; }
+  .hero-reel-media{ aspect-ratio: 16 / 10; padding: 20px; }
 }
 
 /* ---------- personality bits ---------- */
@@ -1250,41 +1299,11 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 @media (prefers-reduced-motion: reduce){
   .project-modal-panel{ transition: none; }
 }
-.project-modal-close{
-  position: absolute;
-  top: 20px; right: 20px;
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  border: 1.5px solid var(--line);
-  background: transparent;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background .2s ease, color .2s ease, border-color .2s ease;
-}
-.project-modal-close:hover{ background: var(--ink); color: var(--bone); border-color: var(--ink); }
-.project-modal-client{
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--accent-text);
-  margin-bottom: 10px;
-}
-.project-modal-title{
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 400;
-  font-size: clamp(28px, 4vw, 40px);
-  margin: 0 0 8px;
-  line-height: 1.05;
-}
 .project-modal-tags{
   font-size: 13px;
   color: var(--ink-soft);
   margin: 0 0 32px;
 }
-.project-modal-body{ display: flex; flex-direction: column; gap: 24px; }
 .project-modal-block h4{
   font-size: 12px;
   text-transform: uppercase;
@@ -1341,9 +1360,13 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 }
 .project-modal-close{
   position: absolute;
-  top: 18px; right: 18px;
+  top: 14px; right: 14px;
   z-index: 3;
-  width: 36px; height: 36px;
+  /* real 44x44 hit target (WCAG target-size) — it used to be 36px */
+  width: 44px; height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
   border: none;
   background: rgba(23,20,15,0.55);
@@ -1623,10 +1646,9 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .timeline-card{
   opacity: 0;
   transform: translateY(54px) scale(0.92);
-  filter: blur(10px);
-  transition: opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.34,1.56,.64,1), filter .75s cubic-bezier(.16,1,.3,1);
+  transition: opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.34,1.56,.64,1);
 }
-.timeline-item.active .timeline-card{ opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+.timeline-item.active .timeline-card{ opacity: 1; transform: translateY(0) scale(1); }
 
 .timeline-dot{
   position: absolute;
@@ -1742,8 +1764,8 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1894,39 +1916,15 @@ body.nav-open{ overflow: hidden; }
   .quote-section{ padding-top: 64px; padding-bottom: 64px; }
 }
 
-/* ---------- toolkit: programs / skills switcher ---------- */
+/* ---------- toolkit: programs / skills switcher ----------
+   the two panels (Programs / Skills) are switched with the labelled tabs
+   only — a previous version also had prev/next arrows doing the exact same
+   job as unlabelled buttons, which was a confusing duplicate control for
+   just two options. The tabs stay the single, clearer way to switch. */
 .toolkit-switcher{
   position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
 }
-.toolkit-arrow{
-  flex: 0 0 auto;
-  width: 46px;
-  height: 46px;
-  margin-top: 6px;
-  border-radius: 50%;
-  border: 1.5px solid var(--line);
-  background: var(--bone);
-  color: var(--ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: background .25s ease, border-color .25s ease, color .25s ease, transform .25s cubic-bezier(.34,1.56,.64,1);
-}
-.toolkit-arrow svg{ width: 18px; height: 18px; }
-.toolkit-arrow:hover{ background: var(--ink); border-color: var(--ink); color: var(--bone); transform: scale(1.1); }
-.toolkit-arrow:active{ transform: scale(0.94); }
-@media (max-width: 640px){
-  .toolkit-switcher{ gap: 8px; }
-  .toolkit-arrow{ width: 38px; height: 38px; }
-  .toolkit-arrow svg{ width: 15px; height: 15px; }
-}
-
-.toolkit-panels{ flex: 1; min-width: 0; overflow: hidden; transition: height var(--dur-sm) var(--ease); }
+.toolkit-panels{ min-width: 0; overflow: hidden; transition: height var(--dur-sm) var(--ease); }
 @media (prefers-reduced-motion: reduce){
   .toolkit-panels{ transition: none; height: auto !important; }
 }
@@ -1937,6 +1935,12 @@ body.nav-open{ overflow: hidden; }
   margin-bottom: 30px;
 }
 .toolkit-tab{
+  /* min-height + bottom-aligned content gives a real 44px touch target
+     without moving the visible label/underline, which stay pinned to the
+     bottom of the box exactly where they always were */
+  display: inline-flex;
+  align-items: flex-end;
+  min-height: 44px;
   background: none;
   border: none;
   padding: 0 0 9px;
@@ -1993,10 +1997,9 @@ body.nav-open{ overflow: hidden; }
   background: var(--bone-dim);
   opacity: 0;
   transform: translateY(38px) scale(0.9);
-  filter: blur(8px);
-  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.34,1.56,.64,1), filter .6s cubic-bezier(.16,1,.3,1), border-color .3s ease, box-shadow .3s ease;
+  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.34,1.56,.64,1), border-color .3s ease, box-shadow .3s ease;
 }
-.toolkit-card.in-view{ opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+.toolkit-card.in-view{ opacity: 1; transform: translateY(0) scale(1); }
 .toolkit-card:hover{
   transform: translateY(-4px);
   border-color: var(--brand-bright, var(--accent));
@@ -2053,10 +2056,9 @@ body.nav-open{ overflow: hidden; }
   background: var(--bone-dim);
   opacity: 0;
   transform: translateY(38px) scale(0.9);
-  filter: blur(8px);
-  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.34,1.56,.64,1), filter .6s cubic-bezier(.16,1,.3,1), border-color .3s ease;
+  transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.34,1.56,.64,1), border-color .3s ease;
 }
-.skill-card.in-view{ opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+.skill-card.in-view{ opacity: 1; transform: translateY(0) scale(1); }
 .skill-card:hover{ transform: translateY(-4px); border-color: var(--accent); }
 .skill-tag{
   display: inline-block;
