@@ -1690,14 +1690,6 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   position: fixed;
   inset: 0;
   z-index: 500;
-  /* The tile grid below has no gap set, but 1fr tracks over a non-round
-     viewport size still round to sub-pixel widths in some browsers, which
-     can leave hairline gaps between tiles. Since .intro-grid itself has no
-     background, those hairline gaps let whatever is behind it (the page's
-     --bone background) show through as a faint light grid. Painting .intro
-     itself the same ink color as the tiles means any such gap is invisible
-     instead of showing through to a lighter color. */
-  background: var(--ink);
 }
 .intro.done{ display: none; }
 
@@ -1711,6 +1703,19 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 }
 .intro-tile{
   background: var(--ink);
+  /* The grid above has no gap set, but 1fr tracks over a non-round viewport
+     width still round to sub-pixel sizes in some browsers, leaving hairline
+     gaps between tiles that let the page underneath show through as a faint
+     light grid. A background on .intro-grid or .intro itself would "fix"
+     that, but it would also become the permanent floor behind every tile —
+     so once a tile dissolves away it would reveal that solid floor instead
+     of the actual page content, killing the whole point of this dissolve
+     (each tile is supposed to reveal the real page behind it). Instead,
+     bleed each tile's own ink color 1px past its edges with a box-shadow:
+     box-shadow doesn't affect layout, so it just closes the hairline gap
+     between neighbors, and — because it's painted as part of the tile —
+     it scales and fades away together with it, leaving nothing behind.  */
+  box-shadow: 0 0 0 1px var(--ink);
   transform: scale(1);
   opacity: 1;
   transition: transform .5s cubic-bezier(.6,0,.4,1), opacity .45s ease;
