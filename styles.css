@@ -1690,6 +1690,14 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   position: fixed;
   inset: 0;
   z-index: 500;
+  /* The tile grid below has no gap set, but 1fr tracks over a non-round
+     viewport size still round to sub-pixel widths in some browsers, which
+     can leave hairline gaps between tiles. Since .intro-grid itself has no
+     background, those hairline gaps let whatever is behind it (the page's
+     --bone background) show through as a faint light grid. Painting .intro
+     itself the same ink color as the tiles means any such gap is invisible
+     instead of showing through to a lighter color. */
+  background: var(--ink);
 }
 .intro.done{ display: none; }
 
