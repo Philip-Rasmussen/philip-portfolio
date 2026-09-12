@@ -469,47 +469,18 @@ if (toolkitSection && toolkitPanels.length){
     const cards = Array.from(panel.querySelectorAll('.toolkit-card, .skill-card'));
 
     if (reducedMotion){
-      cards.forEach(card => {
-        card.classList.add('in-view');
-        const level = card.querySelector('.toolkit-level');
-        if (level){
-          const fill = parseInt(level.dataset.fill, 10) || 0;
-          Array.from(level.children).slice(0, fill).forEach(dot => dot.classList.add('filled'));
-        }
-      });
+      cards.forEach(card => card.classList.add('in-view'));
       return;
     }
 
-    cards.forEach((card, i) => {
-      card.classList.remove('in-view');
-      // reset any previously-filled level dots so the meter can replay
-      card.querySelectorAll('.toolkit-level span.filled').forEach(s => {
-        s.classList.remove('filled');
-        s.style.transitionDelay = '';
-      });
-    });
-    // force a reflow so the removed classes actually register before we
-    // re-add them — otherwise the browser coalesces it into a no-op
+    cards.forEach(card => card.classList.remove('in-view'));
+    // force a reflow so the removed class actually registers before we
+    // re-add it — otherwise the browser coalesces it into a no-op
     void panel.offsetWidth;
 
     const CARD_STAGGER = 90; // ms between each card starting its entrance
-    const CARD_DURATION = 500; // matches the .toolkit-card / .skill-card transition
     cards.forEach((card, i) => {
-      setTimeout(() => {
-        card.classList.add('in-view');
-        const level = card.querySelector('.toolkit-level');
-        if (level){
-          const fill = parseInt(level.dataset.fill, 10) || 0;
-          const dots = Array.from(level.children);
-          // bar starts filling only once the card has finished popping in
-          setTimeout(() => {
-            dots.slice(0, fill).forEach((dot, di) => {
-              dot.style.transitionDelay = (di * 70) + 'ms';
-              dot.classList.add('filled');
-            });
-          }, CARD_DURATION * 0.5);
-        }
-      }, i * CARD_STAGGER);
+      setTimeout(() => card.classList.add('in-view'), i * CARD_STAGGER);
     });
   }
 
