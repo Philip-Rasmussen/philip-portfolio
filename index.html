@@ -163,7 +163,12 @@
             data-result=""
             data-links="View the edit on Instagram|https://www.instagram.com/p/Db4_NittKTO/">
             <div class="work-media">
-              <img src="assets/img/work/naples-cover.jpg" alt="" loading="lazy" style="display:none" onload="this.style.display='block'; this.closest('.work-media').classList.add('has-photo')" onerror="this.remove()">
+              <video class="work-cover-video" id="naplesCoverVideo" poster="assets/img/work/naples-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
+                onloadeddata="this.closest('.work-media').classList.add('has-photo')"
+                onerror="const m=this.closest('.work-media'); if(m) m.classList.remove('has-photo'); this.remove()">
+                <source src="assets/video/naples-loop.webm" type="video/webm">
+                <source src="assets/video/naples-loop.mp4" type="video/mp4">
+              </video>
               <span class="work-media-mark">Naples</span>
               <span class="work-media-viewcase">View case</span>
             </div>
@@ -182,13 +187,17 @@
             data-result=""
             data-links="View on Instagram|https://www.instagram.com/p/Da2vfPINM11/;;Additional work — Instagram carousel|https://www.instagram.com/p/DcgvMwVjVPQ/">
             <div class="work-media">
-              <img src="assets/img/work/personal-brand-cover.jpg" alt="" loading="lazy" style="display:none" onload="this.style.display='block'; this.closest('.work-media').classList.add('has-photo')" onerror="this.remove()">
+              <video class="work-cover-video" id="personalBrandCoverVideo" poster="assets/img/work/personal-brand-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
+                onloadeddata="this.closest('.work-media').classList.add('has-photo')"
+                onerror="const m=this.closest('.work-media'); if(m) m.classList.remove('has-photo'); this.remove()">
+                <source src="assets/video/personal-brand-loop.webm" type="video/webm">
+                <source src="assets/video/personal-brand-loop.mp4" type="video/mp4">
+              </video>
               <span class="work-media-mark">Personal Brand</span>
               <span class="work-media-viewcase">View case</span>
             </div>
           </article>
 
-          <!-- TODO: swap in the real Hedebølge campaign cover imagery once Philip provides final assets (assets/img/work/bet25-hedebolge-cover.jpg) -->
           <article class="work-card" role="button" tabindex="-1"
             aria-label="Hedebølge — summer campaign. BET25. View case study."
             data-cover="assets/img/work/bet25-hedebolge-cover.jpg"
@@ -201,7 +210,12 @@
             data-outcome="The campaign was launched as paid marketing and shown to thousands of customers. The project demonstrates how I take ownership of a professional campaign from brief and visual direction to animation and final delivery."
             data-result="">
             <div class="work-media">
-              <img src="assets/img/work/bet25-hedebolge-cover.jpg" alt="" loading="lazy" style="display:none" onload="this.style.display='block'; this.closest('.work-media').classList.add('has-photo')" onerror="this.remove()">
+              <video class="work-cover-video" id="bet25CoverVideo" poster="assets/img/work/bet25-hedebolge-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
+                onloadeddata="this.closest('.work-media').classList.add('has-photo')"
+                onerror="const m=this.closest('.work-media'); if(m) m.classList.remove('has-photo'); this.remove()">
+                <source src="assets/video/bet25-hedebolge-loop.webm" type="video/webm">
+                <source src="assets/video/bet25-hedebolge-loop.mp4" type="video/mp4">
+              </video>
               <span class="work-media-mark">BET25</span>
               <span class="work-media-viewcase">View case</span>
             </div>
