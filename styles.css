@@ -306,8 +306,13 @@ section{ padding-top: 120px; padding-bottom: 56px; }
      width, that was enough to push the whole page into horizontal scroll.
      This is the safety net that actually contains it — see the longer
      `overflow-x: clip` (not `hidden`) explanation on .work-track-viewport,
-     the same reasoning applies here. */
+     the same reasoning applies here. overflow-y is spelled out explicitly
+     (rather than left to its initial value of `visible`) so there's no
+     ambiguity for a UA whose `overflow: clip` support doesn't fully match
+     spec — some Safari versions have shown exactly that kind of gap,
+     clipping the vertical axis too when only overflow-x was set. */
   overflow-x: clip;
+  overflow-y: visible;
 }
 .work-showcase:focus-visible{ outline: none; }
 .work-showcase-glow{
@@ -437,6 +442,13 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   align-items: center;
   justify-content: center;
   transition: transform .5s cubic-bezier(.65,0,.35,1), box-shadow .5s cubic-bezier(.65,0,.35,1), border-color .3s ease;
+  /* promotes this element to its own compositing layer ahead of time,
+     rather than only once the hover transform kicks in. Without it, some
+     Safari versions have been seen mis-recomputing the mask/clip on the
+     ancestor .work-track-viewport while this element's transform is mid-
+     transition, showing up as the card getting clipped top and bottom for
+     a moment on hover. */
+  will-change: transform;
   /* branded fallback cover — used until a real thumbnail/clip is dropped in
      at the card's data-cover path (see script.js openModal / the inline
      onload handler on the <img> below, which swaps this out automatically) */
@@ -528,6 +540,10 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   cursor: pointer;
   color: var(--ink);
   transition: transform .2s cubic-bezier(.2,.8,.2,1), background .2s ease, color .2s ease, border-color .2s ease;
+  /* same reasoning as .work-media's will-change above: keeps this button
+     on its own layer so its hover scale never gets caught up in the
+     neighboring .work-track-viewport's mask/clip recomputation. */
+  will-change: transform;
 }
 .work-arrow svg{ width: 20px; height: 20px; }
 .work-arrow:hover{ background: var(--ink); color: var(--bone); border-color: var(--ink); transform: scale(1.08); }
@@ -2098,7 +2114,19 @@ body.nav-open{ overflow: hidden; }
 .toolkit-switcher{
   position: relative;
 }
-.toolkit-panels{ min-width: 0; overflow: hidden; transition: height var(--dur-sm) var(--ease); }
+/* overflow:hidden here is load-bearing — it's what hides the taller of
+   Programs/Skills spilling out while the container crossfades between
+   their two heights on tab switch (see showPanel in script.js). But every
+   .toolkit-card/.skill-card starts its entrance pop-in offset by
+   translateY(38px) — pushing it, visually, 38px below its own grid cell
+   while it animates in — and for the bottom row that overshoot landed
+   right on this container's clip edge, visibly clipping the bottom of
+   those cards for the ~600ms the reveal/replay animation was running.
+   overflow-clip-margin extends how far a child can paint past the box
+   before actually getting clipped, without changing the box's own
+   measured height (which the crossfade above depends on) — so it fixes
+   the clipped-card overshoot without touching the height logic at all. */
+.toolkit-panels{ min-width: 0; overflow: hidden; overflow-clip-margin: 48px; transition: height var(--dur-sm) var(--ease); }
 @media (prefers-reduced-motion: reduce){
   .toolkit-panels{ transition: none; height: auto !important; }
 }
@@ -2210,9 +2238,18 @@ body.nav-open{ overflow: hidden; }
   color: var(--ink-soft);
   font-size: 14px;
   line-height: 1.55;
-  margin: 0;
+  margin: 0 0 18px;
   min-height: 44px;
 }
+.toolkit-level{ display: flex; gap: 5px; }
+.toolkit-level span{
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  transition: background .4s ease;
+}
+.toolkit-level span.filled{ background: var(--brand-bright, var(--accent)); }
 
 .skill-card{
   border: 1px solid var(--line);

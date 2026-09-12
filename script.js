@@ -746,6 +746,33 @@ if (workShowcase && workTrack && workCards.length){
       card.classList.toggle('is-active', i === workIndex);
       card.setAttribute('tabindex', i === workIndex ? '0' : '-1');
       card.setAttribute('aria-hidden', i === workIndex ? 'false' : 'true');
+
+      // any card with a looping cover video (currently just Top Comfy)
+      // plays only while it's the active/selected card — restarting from
+      // the top each time you arrive at it — and stays paused and rewound
+      // otherwise, so it isn't quietly burning battery/CPU off-screen.
+      // IMPORTANT: only touch .currentTime when the video actually has
+      // data loaded (readyState > 0). Setting it on a still-unloaded,
+      // preload="none" video interrupts the fetch .play() itself just
+      // kicked off, aborting that request before any data ever arrives —
+      // the video would silently never play at all. A freshly-loaded
+      // video already starts at time 0 anyway, so there's nothing to
+      // reset until it's actually played some.
+      const video = card.querySelector('.work-cover-video');
+      if (video){
+        if (i === workIndex){
+          if (video.readyState > 0 && video.currentTime > 0){
+            try { video.currentTime = 0; } catch (err) {}
+          }
+          const playPromise = video.play();
+          if (playPromise && playPromise.catch) playPromise.catch(() => {});
+        } else {
+          video.pause();
+          if (video.readyState > 0 && video.currentTime > 0){
+            try { video.currentTime = 0; } catch (err) {}
+          }
+        }
+      }
     });
     workDots.forEach((dot, i) => dot.classList.toggle('is-active', i === workIndex));
     const active = workCards[workIndex];
@@ -818,11 +845,25 @@ if (workShowcase && workTrack && workCards.length){
 // ---------- work card hover-preview video (hover-capable devices only —
 // on touch devices there is no hover, so the poster/fallback cover is what
 // shows and a tap opens the case directly) ----------
+// The active/selected card's video already plays on its own (see the
+// is-active handling in renderWork above) for as long as it stays
+// selected, regardless of hover — that's what makes it loop when you
+// "come to that card" rather than only while the mouse happens to be over
+// it. So this listener only takes over for a card that's just peeking in
+// the stack (not yet selected): hovering one previews it, and leaving
+// stops it — without fighting the active card's own always-on loop.
 if (canHover){
   document.querySelectorAll('.work-card video').forEach(video => {
     const card = video.closest('.work-card');
-    card.addEventListener('mouseenter', () => video.play().catch(() => {}));
-    card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+    card.addEventListener('mouseenter', () => {
+      if (!card.classList.contains('is-active')) video.play().catch(() => {});
+    });
+    card.addEventListener('mouseleave', () => {
+      if (!card.classList.contains('is-active')){
+        video.pause();
+        if (video.readyState > 0) video.currentTime = 0;
+      }
+    });
   });
 }
 

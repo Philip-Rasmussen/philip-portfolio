@@ -139,7 +139,12 @@
             data-result="540K+ organic views"
             data-links="Artigeardit interview|https://www.instagram.com/reel/DKouWe9sh-u/;;Distortion 2026|https://www.instagram.com/reel/DZQKGb0sGTg/;;Maluda interview|https://www.tiktok.com/@top.comfy/video/7585545766647844099">
             <div class="work-media">
-              <img src="assets/img/work/top-comfy-cover.jpg" alt="" loading="lazy" style="display:none" onload="this.style.display='block'; this.closest('.work-media').classList.add('has-photo')" onerror="this.remove()">
+              <video class="work-cover-video" id="topComfyCoverVideo" poster="assets/img/work/top-comfy-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
+                onloadeddata="this.closest('.work-media').classList.add('has-photo')"
+                onerror="const m=this.closest('.work-media'); if(m) m.classList.remove('has-photo'); this.remove()">
+                <source src="assets/video/top-comfy-loop.webm" type="video/webm">
+                <source src="assets/video/top-comfy-loop.mp4" type="video/mp4">
+              </video>
               <span class="work-media-mark">Top Comfy</span>
               <span class="work-media-viewcase">View case</span>
             </div>
