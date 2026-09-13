@@ -1032,6 +1032,14 @@ html.reveal-js .about-step.in-focus{ opacity: 1; color: var(--ink); }
   max-width: 420px;
   margin: 0 0 40px;
 }
+/* wraps the email button and the CV download button together — a plain
+   flex row on desktop, stacking to one full-width button per line once
+   space gets tight (see the 820px override below) */
+.contact-btn-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
 .contact-email-btn{
   display: inline-flex;
   align-items: center;
@@ -1116,6 +1124,7 @@ html.reveal-js .about-step.in-focus{ opacity: 1; color: var(--ink); }
 
 @media (max-width: 820px){
   .contact-grid{ grid-template-columns: 1fr; gap: 48px; align-items: start; }
+  .contact-btn-row{ flex-direction: column; align-items: stretch; }
   .contact-email-btn{ width: 100%; justify-content: space-between; }
 }
 @media (max-width: 720px){
@@ -1766,7 +1775,7 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
    rather than in the links list */
 .project-modal-watch-tag{
   position: absolute;
-  right: 14px; bottom: 14px;
+  right: 14px; top: 14px;
   z-index: 2;
   font-size: 11px;
   font-weight: 700;
