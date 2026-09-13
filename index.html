@@ -89,13 +89,15 @@
       <a href="#contact" class="btn btn-ghost magnetic">Get in touch</a>
     </div>
 
-    <!-- Showreel: no finished reel yet. Kept as a compact strip so it never
-         delays access to Selected Work below. When a real reel is ready,
-         swap .hero-reel-media--empty for a muted <video poster="..."> with
-         a play control, reusing .play-btn / .reel-tag from the site's
-         earlier markup for that exact treatment — the larger reel component
-         can return then. -->
-    <div class="hero-reel hero-reel--compact reveal" data-hero-step="reel">
+    <!-- Showreel: hidden for now (no finished reel yet, and the compact
+         "in progress" strip was more than we want visible while there's
+         nothing to watch). Left in place with `hidden` — not deleted — so
+         it's a one-line change to bring back: remove the `hidden` attribute
+         below. When a real reel is ready, also swap .hero-reel-media--empty
+         for a muted <video poster="..."> with a play control, reusing
+         .play-btn / .reel-tag from the site's earlier markup for that exact
+         treatment. -->
+    <div class="hero-reel hero-reel--compact reveal" data-hero-step="reel" hidden>
       <div class="hero-reel-media hero-reel-media--empty">
         <span class="hero-reel-rec" aria-hidden="true"></span>
         <span class="hero-reel-heading">Showreel in progress</span>
@@ -138,11 +140,12 @@
             data-tags="Short-form · Interviews · Event coverage"
             data-client="Top Comfy"
             data-role="Camera · Audio · Editing · Subtitles · Sound · Colour"
-            data-brief="Build a recognisable short-form format for artist interviews and event coverage that feels quick, natural and native to TikTok and Instagram."
-            data-process="I work across planning, camera, audio, editing, subtitles, sound and colour. On newer productions, I also handle the Pocket 3 setup and grade the footage from a log profile."
-            data-outcome="The Top Comfy content I have produced has received more than 540,000 organic views across TikTok and Instagram. One interview with Danish artist Maluda reached more than 94,000 views."
+            data-context="Top Comfy creates artist interviews and event content for TikTok and Instagram. The challenge is turning fast, often unpredictable conversations into short videos that feel natural and hold attention."
+            data-work="I handle the production side of most videos — from camera and audio setup to editing, subtitles, sound and colour. I also contribute to planning and finding the strongest moments from each interview.%%Newer productions are filmed using a DJI Pocket 3 and wireless microphones. I edit for a vertical format and grade the footage from a log profile before delivery."
+            data-result-text="The Top Comfy videos I have worked on have generated more than 540,000 organic views across TikTok and Instagram. The Maluda interview reached 105K+ views across TikTok &amp; Instagram."
             data-result="540K+ organic views"
-            data-links="Artigeardit interview|https://www.instagram.com/reel/DKouWe9sh-u/;;Distortion 2026|https://www.instagram.com/reel/DZQKGb0sGTg/;;Maluda interview|https://www.tiktok.com/@top.comfy/video/7585545766647844099">
+            data-watch-heading="Watch the work"
+            data-links="Artigeardit interview|https://www.instagram.com/reel/DKouWe9sh-u/;;Distortion 2026|https://www.instagram.com/reel/DZQKGb0sGTg/;;Maluda interview · 94.4K views|https://www.tiktok.com/@top.comfy/video/7585545766647844099">
             <div class="work-media">
               <video class="work-cover-video" id="topComfyCoverVideo" poster="assets/img/work/top-comfy-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
                 onloadeddata="this.closest('.work-media').classList.add('has-photo')"
@@ -162,11 +165,12 @@
             data-title="Hedebølge — summer campaign"
             data-tags="Campaign design · Motion · Paid media"
             data-client="BET25"
-            data-role="Visual Direction · Campaign Design · Motion · Delivery"
-            data-brief="Develop the visual direction for Hedebølge, one of BET25's larger seasonal campaigns, based on a brief from the marketing team."
-            data-process="I developed the campaign look, headline lock-up, graphic system and animation direction, then produced the final assets for delivery."
-            data-outcome="The campaign ran across BET25's paid digital marketing, including YouTube. I owned the visual direction and delivery from the initial brief through design and animation."
-            data-result="">
+            data-role="Visual Direction · Campaign Design · Typography · Motion · Delivery"
+            data-context="Hedebølge was one of BET25's main summer campaigns, built around an animated ice cream truck and daily prizes. I received the initial brief from the marketing team and was responsible for developing the campaign's visual direction."
+            data-work="I developed the campaign look, designed the main artwork and headline lock-up, and created the animation used across YouTube advertising and other digital placements.%%I handled the project from the initial marketing brief through feedback, animation and final exports."
+            data-result-text="Hedebølge launched across BET25's paid digital marketing, including YouTube. The campaign is a strong example of my professional work with visual direction, campaign design and motion from brief to final delivery."
+            data-result="YouTube + paid digital"
+            data-watch-tag="Watch campaign clip">
             <div class="work-media">
               <video class="work-cover-video" id="bet25CoverVideo" poster="assets/img/work/bet25-hedebolge-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
                 onloadeddata="this.closest('.work-media').classList.add('has-photo')"
@@ -180,18 +184,19 @@
           </article>
 
           <article class="work-card" role="button" tabindex="-1"
-            aria-label="Naples — a cinematic travel edit. Personal project. View case study."
+            aria-label="Naples — a cinematic edit. Personal project. View case study."
             data-cover="assets/img/work/naples-cover.jpg"
             data-video="assets/video/naples-loop.webm"
-            data-title="Naples — a cinematic travel edit"
-            data-tags="Cinematography · Editing · Colour"
+            data-title="Naples — a cinematic edit"
+            data-tags="Cinematography · Editing · Sound · Colour"
             data-client="Personal project"
             data-role="Concept · Camera · Editing · Sound · Colour"
-            data-brief="Create a short travel film that captures the atmosphere of Naples through movement, details and everyday moments instead of making a traditional travel montage."
-            data-process="I filmed the footage on my DJI Pocket 3 and built the edit around movement, rhythm and visual transitions. Sound design and colour were used to give the piece a more cinematic and consistent feeling."
-            data-outcome="A self-initiated piece showing my approach to camera movement, pacing, sound and colour."
-            data-result=""
-            data-links="View the edit on Instagram|https://www.instagram.com/p/Db4_NittKTO/">
+            data-context="I wanted to turn footage from a trip to Naples into a short piece that felt like the city rather than a standard travel montage."
+            data-work="I filmed the footage on a DJI Pocket 3 and selected shots based on movement, atmosphere and small details from the streets.%%I then shaped the pacing through visual transitions and sound design before grading the log footage for a consistent cinematic look."
+            data-result-text="A self-initiated edit that shows how I approach camera movement, pacing, sound and colour from the first shot to the final export."
+            data-result="Shot on DJI Pocket 3"
+            data-watch-heading="Watch the edit"
+            data-links="Watch the edit|https://www.instagram.com/p/Db4_NittKTO/">
             <div class="work-media">
               <video class="work-cover-video" id="naplesCoverVideo" poster="assets/img/work/naples-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
                 onloadeddata="this.closest('.work-media').classList.add('has-photo')"
@@ -209,14 +214,15 @@
             data-cover="assets/img/work/personal-brand-cover.jpg"
             data-video="assets/video/personal-brand-loop.webm"
             data-title="3D talking-head edit"
-            data-tags="Short-form · Motion · 3D"
+            data-tags="Short-form · Motion · 3D · Compositing"
             data-client="Personal brand"
             data-role="Concept · Editing · 3D · Compositing · Sound"
-            data-brief="Create a talking-head video that goes beyond basic captions and B-roll while keeping the message clear and easy to follow."
-            data-process="I developed the visual concept, edited the main story and created a custom 3D environment for the video. The 3D sequence, compositing, sound and pacing were built to support the point of the video rather than distract from it."
-            data-outcome="A short-form edit combining direct communication with a custom 3D sequence and compositing."
-            data-result=""
-            data-links="View on Instagram|https://www.instagram.com/p/Da2vfPINM11/;;Additional work — Instagram carousel|https://www.instagram.com/p/DcgvMwVjVPQ/">
+            data-context="I wanted to make a talking-head video feel visually bigger than the original setup without letting the effect take over the message."
+            data-work="I cut the spoken story first, then built a custom 3D environment and composited it into the edit.%%The animation, timing and sound were developed around the message so the visual sequence felt like part of the story."
+            data-result-text="The finished video combines direct-to-camera storytelling with a custom 3D sequence and compositing. It shows how I use effects when they have a clear reason to be there."
+            data-result="Custom 3D sequence"
+            data-watch-heading="Watch the video"
+            data-links="Watch the video|https://www.instagram.com/p/Da2vfPINM11/;;View related carousel|https://www.instagram.com/p/DcgvMwVjVPQ/">
             <div class="work-media">
               <video class="work-cover-video" id="personalBrandCoverVideo" poster="assets/img/work/personal-brand-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
                 onloadeddata="this.closest('.work-media').classList.add('has-photo')"
@@ -324,19 +330,23 @@
           <div class="about-steps-track"><div class="about-steps-fill" id="aboutStepsFill"></div></div>
           <div class="about-steps-list">
             <p class="about-step">
-              At BET25, I work with real briefs, deadlines and campaign rollouts as a
-              <strong>Graphic Designer Apprentice</strong>. Outside work, I produce artist
-              interviews and event content with <strong>Top Comfy</strong> and build video
-              projects under my own name.
+              At <strong>BET25</strong>, I work with graphic design, motion graphics and campaign
+              production as part of an in-house marketing team.
             </p>
             <p class="about-step">
-              I'm usually involved throughout the production: planning, filming, audio, editing,
-              subtitles, sound and colour. My background in <strong>web development</strong> also
-              means I think about structure and the person using the final result — not only how
-              it looks.
+              Alongside that, I produce artist interviews and event content with
+              <strong>Top Comfy</strong> and build short-form video projects under my own name.
             </p>
             <p class="about-step">
-              Away from the screen, I'm usually at the gym or out for a run.
+              I'm usually involved across the process — planning, filming, audio, editing, sound
+              design and colour grading. My background in <strong>web development</strong> also
+              means I naturally think about structure, usability and how the final work is
+              experienced — not only how it looks.
+            </p>
+            <p class="about-step">
+              I spend a lot of time experimenting, learning new techniques and trying to make the
+              next project better than the last. Away from the screen, I'm usually working out,
+              running or doing something active.
             </p>
           </div>
         </div>
@@ -360,7 +370,7 @@
 
         <div class="toolkit-panel is-active" data-panel="programs" id="toolkitPanelPrograms" role="tabpanel" aria-labelledby="toolkitTabPrograms">
           <div class="toolkit-grid" id="toolkitGrid">
-            <div class="toolkit-card" style="--brand-dark:#523A5C; --brand-bright:#DB76FA;">
+            <div class="toolkit-card" style="--brand-dark:#26101F; --brand-bright:#EA77FF;">
               <span class="toolkit-badge">Pr</span>
               <h3>Premiere Pro</h3>
               <p>Editing, structure, pacing and final delivery.</p>
@@ -604,6 +614,7 @@
         <button type="button" class="project-modal-play-toggle" aria-label="Play video" hidden>
           <span class="project-modal-play-icon" aria-hidden="true"></span>
         </button>
+        <span class="project-modal-watch-tag" hidden></span>
       </div>
     </div>
 
@@ -611,24 +622,28 @@
       <div class="project-modal-tags"></div>
 
       <div class="project-modal-block">
-        <h4>The brief</h4>
-        <p class="project-modal-brief"></p>
+        <h4>Context</h4>
+        <p class="project-modal-context"></p>
       </div>
 
-      <div class="project-modal-block">
-        <h4>The process</h4>
+      <div class="project-modal-block project-modal-role-block">
+        <h4>My role</h4>
         <ul class="process-chain"></ul>
-        <p class="project-modal-process"></p>
       </div>
 
       <div class="project-modal-block">
-        <h4>The outcome</h4>
-        <p class="project-modal-outcome"></p>
+        <h4>The work</h4>
+        <div class="project-modal-work"></div>
+      </div>
+
+      <div class="project-modal-block">
+        <h4>Result</h4>
+        <p class="project-modal-result-text"></p>
         <span class="result-badge"></span>
       </div>
 
       <div class="project-modal-block project-modal-links" hidden>
-        <h4>See it live</h4>
+        <h4>Watch the work</h4>
         <ul class="project-modal-links-list"></ul>
       </div>
 

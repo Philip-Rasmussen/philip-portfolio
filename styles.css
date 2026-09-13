@@ -1662,6 +1662,24 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   background: var(--bone);
   box-shadow: 8px 0 0 var(--bone);
 }
+/* small non-link caption for a case whose "watch" moment is the inline clip
+   itself — no external URL to send visitors to, so it sits on the media
+   rather than in the links list */
+.project-modal-watch-tag{
+  position: absolute;
+  right: 14px; bottom: 14px;
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bone);
+  background: rgba(23,20,15,0.55);
+  border-radius: 999px;
+  padding: 8px 14px;
+}
+.project-modal-work p{ margin: 0 0 12px; }
+.project-modal-work p:last-child{ margin-bottom: 0; }
 .project-modal-close{
   position: absolute;
   top: 14px; right: 14px;
@@ -1700,6 +1718,7 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 .project-modal-content > *:nth-child(4){ transition-delay: 290ms; }
 .project-modal-content > *:nth-child(5){ transition-delay: 360ms; }
 .project-modal-content > *:nth-child(6){ transition-delay: 420ms; }
+.project-modal-content > *:nth-child(7){ transition-delay: 480ms; }
 @media (prefers-reduced-motion: reduce){
   .project-modal-cover-scrim > *,
   .project-modal-content > *{ opacity: 1; transform: none; transition: none; }
@@ -2265,7 +2284,7 @@ body.nav-open{ overflow: hidden; }
    before actually getting clipped, without changing the box's own
    measured height (which the crossfade above depends on) — so it fixes
    the clipped-card overshoot without touching the height logic at all. */
-.toolkit-panels{ min-width: 0; overflow: hidden; overflow-clip-margin: 48px; transition: height var(--dur-sm) var(--ease); }
+.toolkit-panels{ min-width: 0; overflow: clip; overflow-clip-margin: 48px; transition: height var(--dur-sm) var(--ease); }
 @media (prefers-reduced-motion: reduce){
   .toolkit-panels{ transition: none; height: auto !important; }
 }

@@ -971,21 +971,35 @@ if (modal){
   const titleEl = modal.querySelector('.project-modal-title');
   const tagsEl = modal.querySelector('.project-modal-tags');
   const clientEl = modal.querySelector('.project-modal-client');
-  const briefEl = modal.querySelector('.project-modal-brief');
-  const processEl = modal.querySelector('.project-modal-process');
+  const contextEl = modal.querySelector('.project-modal-context');
+  const workEl = modal.querySelector('.project-modal-work');
   const processChainEl = modal.querySelector('.process-chain');
-  const outcomeEl = modal.querySelector('.project-modal-outcome');
+  const resultTextEl = modal.querySelector('.project-modal-result-text');
   const resultEl = modal.querySelector('.result-badge');
   const linksBlock = modal.querySelector('.project-modal-links');
+  const linksHeadingEl = linksBlock.querySelector('h4');
   const linksListEl = modal.querySelector('.project-modal-links-list');
+  const watchTagEl = modal.querySelector('.project-modal-watch-tag');
   let lastFocused = null;
+
+  // a data-* value may hold more than one short paragraph, separated by
+  // "%%" (kept out of the visible copy) — used for "The work", where every
+  // case reads as two brief beats rather than one dense paragraph
+  function renderParagraphs(container, raw){
+    container.innerHTML = '';
+    (raw || '').split('%%').map(s => s.trim()).filter(Boolean).forEach(text => {
+      const p = document.createElement('p');
+      p.textContent = text;
+      container.appendChild(p);
+    });
+  }
 
   function openModal(card){
     titleEl.textContent = card.dataset.title || '';
     clientEl.textContent = card.dataset.client || '';
-    briefEl.textContent = card.dataset.brief || '';
-    processEl.textContent = card.dataset.process || '';
-    outcomeEl.textContent = card.dataset.outcome || '';
+    contextEl.textContent = card.dataset.context || '';
+    renderParagraphs(workEl, card.dataset.work);
+    resultTextEl.textContent = (card.dataset.resultText || '').split('%%').map(s => s.trim()).filter(Boolean).join(' ');
     resultEl.textContent = card.dataset.result || '';
 
     tagsEl.innerHTML = '';
@@ -995,8 +1009,10 @@ if (modal){
       tagsEl.appendChild(span);
     });
 
-    // the "process chain" pills double as a compact breakdown of this
-    // project's actual role/responsibilities, driven by data-role
+    // "My role" pills — a compact, clearly-labelled breakdown of this
+    // project's actual responsibilities, driven by data-role. Kept as its
+    // own block (not folded into The Work) so a recruiter can see exactly
+    // what Philip did before reading how he did it.
     processChainEl.innerHTML = '';
     (card.dataset.role || '').split('·').map(r => r.trim()).filter(Boolean).forEach(r => {
       const li = document.createElement('li');
@@ -1004,8 +1020,16 @@ if (modal){
       processChainEl.appendChild(li);
     });
 
+    // optional non-link caption shown near the video (e.g. a case whose
+    // "watch" moment is the inline clip itself, with no external URL to
+    // send visitors to)
+    const watchTag = card.dataset.watchTag || '';
+    watchTagEl.textContent = watchTag;
+    watchTagEl.hidden = !watchTag;
+
     // optional external links (real case URLs) — "Label|https://url" pairs
     // separated by ";;". Only rendered when a card actually provides one.
+    linksHeadingEl.textContent = card.dataset.watchHeading || 'Watch the work';
     linksListEl.innerHTML = '';
     const rawLinks = (card.dataset.links || '').split(';;').map(s => s.trim()).filter(Boolean);
     if (rawLinks.length){
