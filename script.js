@@ -1003,6 +1003,13 @@ if (modal){
   function openModal(card){
     titleEl.textContent = card.dataset.title || '';
     clientEl.textContent = card.dataset.client || '';
+    // some case covers (BET25's Hedebølge campaign asset) already have their
+    // own bold headline baked into the artwork itself — overlaying our own
+    // white title text on top of that on desktop just doubled up as visual
+    // noise. data-cover-has-text opts a specific case back into the plain
+    // "title sits above the media" layout (the same one every case already
+    // uses on mobile) instead of the desktop image-overlay treatment.
+    coverWrap.classList.toggle('no-cover-overlay', card.dataset.coverHasText === 'true');
     contextEl.innerHTML = card.dataset.context || '';
     renderParagraphs(workEl, card.dataset.work);
     resultTextEl.innerHTML = (card.dataset.resultText || '').split('%%').map(s => s.trim()).filter(Boolean).join(' ');

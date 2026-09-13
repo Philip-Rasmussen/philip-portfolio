@@ -1811,6 +1811,31 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   }
   .project-modal-title{ color: var(--bone); }
   .project-modal-content{ flex: 1 1 60%; padding: 52px 60px; }
+
+  /* opt-out for a case whose cover art already carries its own baked-in
+     headline (see openModal's data-cover-has-text handling in script.js) —
+     falls back to the same plain "title above the media" layout every case
+     uses on mobile, instead of stacking our white title text on top of the
+     image's own. Keeps the same 40% column width as the overlay treatment,
+     but sizes its height to its own (title + media) content — align-self
+     overrides the row's default stretch, which would otherwise pull this
+     column down to match its taller sibling and leave empty space below
+     the image. */
+  .project-modal-cover.no-cover-overlay{
+    flex: 0 0 40%;
+    align-self: flex-start;
+    aspect-ratio: auto;
+    height: auto;
+  }
+  .project-modal-cover.no-cover-overlay .project-modal-cover-media{
+    position: relative; inset: auto; aspect-ratio: 16/9; height: auto;
+  }
+  .project-modal-cover.no-cover-overlay .project-modal-cover-scrim{
+    position: static;
+    padding: 22px 22px 10px;
+    background: none;
+  }
+  .project-modal-cover.no-cover-overlay .project-modal-title{ color: var(--ink); }
 }
 @media (min-width: 1200px){
   .project-modal-content{ padding: 64px 76px; }
