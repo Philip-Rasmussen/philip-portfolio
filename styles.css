@@ -51,6 +51,18 @@ body{
 img{ max-width: 100%; display: block; }
 a{ color: inherit; text-decoration: none; }
 
+/* ---------- orphan/widow control ----------
+   at narrow (phone) widths, ordinary reflow can strand a single short word
+   alone on its own last line — text-wrap:pretty (paragraphs) and
+   text-wrap:balance (headings) are exactly the browser-native tools for
+   this: unsupported browsers just ignore the property and keep normal
+   wrapping, so this is a pure enhancement with no fallback needed. */
+p{ text-wrap: pretty; }
+h1, h2, h3,
+.faq-question-text,
+.modal-cta,
+.timeline-title{ text-wrap: balance; }
+
 /* custom cursor (desktop only) */
 .cursor-dot{
   position: fixed;
@@ -230,12 +242,30 @@ main > section[id]{ scroll-margin-top: 116px; }
 
 @media (max-width: 720px){
   /* the eyebrow line and the availability pill sit in one flowing
-     paragraph on desktop, where there's room for both on one line — on a
-     phone the pill wraps onto its own line but kept desktop's inline
-     margin, so it landed with almost no vertical gap under the eyebrow
-     text. Making it a block with its own top margin gives it room to
-     breathe instead of reading as crowded. */
-  .status-pill{ display: inline-flex; margin-left: 0; margin-top: 12px; }
+     paragraph on desktop, where there's room for both on one line. Keeping
+     the pill inline-flex on a phone left it in the paragraph's inline flow:
+     it wrapped onto its own visual line but was still an inline-level box,
+     so it could render squeezed and pushed toward the right instead of
+     starting flush at the left edge. A real block-level box (display:flex,
+     sized to its own content) forces a hard line break and pins it to the
+     left margin every time, with generous internal padding/line-height so
+     its own two-line text never looks squished. */
+  /* .eyebrow .status-pill (rather than a bare .status-pill) so this beats
+     the later, equally-unqualified base `.status-pill` rule further down
+     this file (in the "personality bits" section) — two selectors of equal
+     specificity resolve by source order, and that base rule sits after
+     this media block, so it was silently winning back to inline-flex at
+     every width without the extra qualifier here. */
+  .eyebrow .status-pill{
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    margin: 14px 0 0;
+    padding: 8px 14px 8px 11px;
+    line-height: 1.45;
+    white-space: normal;
+    text-align: left;
+  }
   /* a little more air around the headline and intro paragraph, and a
      touch looser line-height on the paragraph specifically — tight
      leading that reads fine on a big desktop display feels cramped at
@@ -403,10 +433,27 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   min-width: 0;
   overflow-x: clip;
   overflow-y: visible;
-  /* Philip's call: no fade-to-transparent at the edges — it read as hazy/
-     unfinished rather than "peeking". A neighbouring card now just sits at
-     full opacity right up to a plain hard clip, like a real card tucked
-     partly behind the active one. */
+  /* Philip's call (revised): peeking cards now fade out toward the edges
+     instead of ending in a hard clip. This box's own negative-margin bleed
+     (below) is what makes it wider than the track's "resting" slot in the
+     first place — the flex layout hands the extra space straight to this
+     item's own border box, so the box's true rendered edges (0%/100% of
+     ITS width, not some inner offset) are exactly where a peeking card
+     currently gets cut off hard. Fading from those real edges is what
+     actually shows up on screen. */
+  --edge-fade: 90px;
+  -webkit-mask-image: linear-gradient(to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(to right,
+    transparent 0,
+    #000 var(--edge-fade),
+    #000 calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
   margin: 0 -90px;
   padding: 0 90px;
   /* gives the rotateY on .work-card below an actual vanishing point, so the
@@ -426,12 +473,14 @@ section{ padding-top: 120px; padding-bottom: 56px; }
      image to be worth looking at */
   .work-track{ height: auto; aspect-ratio: 4 / 5; max-height: 62vh; }
   .work-track-viewport{
+    --edge-fade: 70px;
     margin: 0 -100px;
     padding: 0 100px;
   }
 }
 @media (max-width: 480px){
   .work-track-viewport{
+    --edge-fade: 60px;
     margin: 0 -88px;
     padding: 0 88px;
   }
@@ -782,7 +831,17 @@ html.reveal-js .about-photo.in-view .about-photo-clip{ clip-path: inset(0 0 0% 0
 .about-photo.no-photo .no-photo-label{ display: flex; }
 
 .about-lede{ font-size: 20px; margin: 0 0 36px; }
-.about-lede strong, .about-step strong{ font-weight: 700; color: inherit; }
+
+/* ---------- shared inline copy emphasis ----------
+   one class, reused by every hand-picked bold phrase across the site's body
+   copy (hero, case studies, field work, about, FAQ, contact). Stays fully
+   inline, inherits the surrounding colour and font, and only changes
+   weight — never size, colour or text-decoration — so it can never shift
+   layout or read as a link. */
+.copy-emphasis{
+  font-weight: 700;
+  color: inherit;
+}
 
 /* progressive "guided journey" reveal — same scroll-progress technique as
    the Journey timeline, scaled down to a thin reading-progress rail */
@@ -1875,6 +1934,11 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   transition: color .2s ease;
 }
 .modal-cta:hover{ color: var(--accent-text); }
+/* "Let's talk →" needs to move and wrap as one unit — without this, narrow
+   widths could wrap mid-phrase and stranded just "talk →" alone on the
+   last line. Keeping it nowrap means the whole phrase either fits on the
+   current line or drops to a new one together. */
+.modal-cta-nowrap{ white-space: nowrap; }
 
 /* ---------- intro: pixel-tile dissolve with counter ---------- */
 .intro{
