@@ -764,14 +764,16 @@ if (workShowcase && workTrack && workCards.length){
     return dot;
   });
 
-  // shortest signed circular distance from card i to the active card — with
-  // 4 cards and index 0 active, card 3 sits at -1 (just behind, to the left)
-  // rather than +3 (all the way around the other side)
+  // plain linear distance from card i to the active card — deliberately NOT
+  // wrapped around (a 4-card deck used to treat card 3 as "-1, just behind
+  // card 0" whenever card 0 was active, which put an oversized, asymmetric
+  // gap on the other side and made that far card's extreme transform clip
+  // in odd ways). Cards are simply laid out 1→2→3→4 left to right; jumping
+  // from the last card back to the first still works (goToWork wraps the
+  // index), it just animates across the deck instead of the short way
+  // around — a small trade worth it for a deck that never clips.
   function circularOffset(i, active, total){
-    let diff = i - active;
-    if (diff > total / 2) diff -= total;
-    if (diff < -total / 2) diff += total;
-    return diff;
+    return i - active;
   }
 
   const workMetaInfo = document.querySelector('.work-showcase-info');
@@ -984,12 +986,16 @@ if (modal){
 
   // a data-* value may hold more than one short paragraph, separated by
   // "%%" (kept out of the visible copy) — used for "The work", where every
-  // case reads as two brief beats rather than one dense paragraph
+  // case reads as two brief beats rather than one dense paragraph. Values
+  // are set via innerHTML rather than textContent because the case copy
+  // below deliberately carries a few <strong> tags around the key facts
+  // (numbers, brand names, tools) — this content is all hand-authored in
+  // index.html, never user input, so that's safe.
   function renderParagraphs(container, raw){
     container.innerHTML = '';
     (raw || '').split('%%').map(s => s.trim()).filter(Boolean).forEach(text => {
       const p = document.createElement('p');
-      p.textContent = text;
+      p.innerHTML = text;
       container.appendChild(p);
     });
   }
@@ -997,9 +1003,9 @@ if (modal){
   function openModal(card){
     titleEl.textContent = card.dataset.title || '';
     clientEl.textContent = card.dataset.client || '';
-    contextEl.textContent = card.dataset.context || '';
+    contextEl.innerHTML = card.dataset.context || '';
     renderParagraphs(workEl, card.dataset.work);
-    resultTextEl.textContent = (card.dataset.resultText || '').split('%%').map(s => s.trim()).filter(Boolean).join(' ');
+    resultTextEl.innerHTML = (card.dataset.resultText || '').split('%%').map(s => s.trim()).filter(Boolean).join(' ');
     resultEl.textContent = card.dataset.result || '';
 
     tagsEl.innerHTML = '';

@@ -228,6 +228,23 @@ main > section[id]{ scroll-margin-top: 116px; }
 }
 .hero-actions{ display: flex; gap: 16px; flex-wrap: wrap; }
 
+@media (max-width: 720px){
+  /* the eyebrow line and the availability pill sit in one flowing
+     paragraph on desktop, where there's room for both on one line — on a
+     phone the pill wraps onto its own line but kept desktop's inline
+     margin, so it landed with almost no vertical gap under the eyebrow
+     text. Making it a block with its own top margin gives it room to
+     breathe instead of reading as crowded. */
+  .status-pill{ display: inline-flex; margin-left: 0; margin-top: 12px; }
+  /* a little more air around the headline and intro paragraph, and a
+     touch looser line-height on the paragraph specifically — tight
+     leading that reads fine on a big desktop display feels cramped at
+     phone width and line length */
+  .hero-title{ margin-bottom: 22px; }
+  .hero-sub{ line-height: 1.55; margin-bottom: 24px; }
+  .hero-skills{ margin-bottom: 28px; }
+}
+
 .btn{
   display: inline-flex;
   align-items: center;
@@ -255,6 +272,9 @@ main > section[id]{ scroll-margin-top: 116px; }
   border-top: 1px solid var(--line);
   padding-top: 20px;
 }
+@media (max-width: 720px){
+  .section-head{ margin-bottom: 36px; }
+}
 .section-num{
   font-size: 13px;
   font-weight: 700;
@@ -276,6 +296,14 @@ main > section[id]{ scroll-margin-top: 116px; }
 }
 
 section{ padding-top: 120px; padding-bottom: 56px; }
+@media (max-width: 720px){
+  /* 120px of top padding on every section was tuned for desktop's larger
+     scroll distances — on a ~390px-wide phone the same gap reads as an
+     oversized empty band before each section starts. Scaling it down here
+     keeps the same visual rhythm without so much dead space between
+     sections that already have their own internal spacing. */
+  section{ padding-top: 72px; padding-bottom: 40px; }
+}
 
 /* ---------- work: one-project-at-a-time showcase ---------- */
 .placeholder-media{
@@ -667,27 +695,6 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .project-modal-close:focus-visible{
   outline: 2px solid var(--accent-text);
   outline-offset: 3px;
-}
-
-/* compact statement replacing the old standalone "How I think" section —
-   a single editorial line, not another full feature block. Reuses the
-   site's existing .mask-line/.reveal unmask mechanics (see the generic
-   IntersectionObserver wiring in script.js), so no JS changes were needed
-   for this to animate in. */
-.work-statement{
-  max-width: 760px;
-  margin: 56px auto 0;
-  padding: 0 8px;
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 400;
-  font-size: clamp(19px, 2.6vw, 27px);
-  line-height: 1.35;
-  text-align: center;
-  color: var(--ink);
-}
-@media (max-width: 720px){
-  .work-statement{ margin-top: 40px; font-size: clamp(17px, 4.4vw, 21px); }
 }
 
 /* ---------- about ---------- */
@@ -1289,7 +1296,6 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   border-top: 2px solid var(--accent);
   background: var(--ink);
   padding: 20px 0;
-  transform: rotate(-0.6deg);
   margin: 56px 0 0;
 }
 .marquee-track{
@@ -1655,12 +1661,15 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   margin-left: 2px;
 }
 .project-modal-play-toggle.is-playing .project-modal-play-icon{
-  width: 4px; height: 14px;
+  /* two bars drawn as one gradient block, sized to its own full visual
+     width — a background + box-shadow pair here would only be centered
+     on its own (narrower) box, leaving the shadow copy visibly off to one
+     side, which is what made this read as off-centre */
+  width: 12px; height: 14px;
   border-style: none;
   border-width: 0;
   margin-left: 0;
-  background: var(--bone);
-  box-shadow: 8px 0 0 var(--bone);
+  background: linear-gradient(to right, var(--bone) 0 4px, transparent 4px 8px, var(--bone) 8px 12px);
 }
 /* small non-link caption for a case whose "watch" moment is the inline clip
    itself — no external URL to send visitors to, so it sits on the media
@@ -1780,7 +1789,8 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0;
+  row-gap: 8px;
+  column-gap: 14px;
   margin: 0 0 14px;
   padding: 0;
 }
@@ -1790,11 +1800,18 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--ink-soft);
-  padding-right: 16px;
-  margin-right: 16px;
-  border-right: 1px solid var(--line);
+  white-space: nowrap;
 }
-.process-chain li:last-child{ border-right: none; padding-right: 0; margin-right: 0; color: var(--accent-text); }
+/* a middot glued to each item (instead of a border-right divider hanging
+   off the row) moves with the text when the list wraps, so a wrap never
+   leaves a stray divider stranded at the end of a line with nothing after
+   it — a plain flex-wrap + gap layout still reads as one connected chain */
+.process-chain li:not(:last-child)::after{
+  content: "·";
+  margin-left: 14px;
+  color: var(--line);
+}
+.process-chain li:last-child{ color: var(--accent-text); }
 
 .project-modal-gallery{
   display: grid;
@@ -2179,6 +2196,9 @@ body.nav-open{ overflow: hidden; }
 
 /* ---------- journey section ---------- */
 .journey{ padding-bottom: 90px; }
+@media (max-width: 720px){
+  .journey{ padding-bottom: 48px; }
+}
 
 /* ---------- section-head: draw-on accent line per section ---------- */
 .section-head{ position: relative; }
