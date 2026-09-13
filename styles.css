@@ -1624,13 +1624,25 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   width: 100%;
   max-height: 86vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 44px;
   transform: translateY(14px) scale(0.97);
   opacity: 0;
   transition: transform var(--dur-md) var(--ease), opacity var(--dur-sm) var(--ease);
 }
+/* transform: none (not translateY(0) scale(1)) once open — a non-"none"
+   transform value, even one that's visually the identity, still makes the
+   element establish its own containing block, and on iOS Safari that's a
+   well-known cause of overflow:auto silently refusing to scroll by touch.
+   Since .project-modal-panel is now the element that actually scrolls on
+   mobile (see its overflow-y:auto above), leaving the open state on a
+   literal transform broke touch-scrolling there — visitors could see the
+   scrollbar move in a desktop browser (this session's own QA is Chromium,
+   which doesn't have the bug) but a real iPhone just wouldn't scroll past
+   a tall cover, so the clip's own on-screen text stayed out of reach.
+   "none" still transitions smoothly from the closed state's transform. */
 .project-modal.open .project-modal-panel{
-  transform: translateY(0) scale(1);
+  transform: none;
   opacity: 1;
 }
 @media (prefers-reduced-motion: reduce){
