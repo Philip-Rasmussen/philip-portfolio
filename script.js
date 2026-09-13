@@ -1148,7 +1148,16 @@ if (modal){
     document.body.style.top = '';
     document.body.style.left = '';
     document.body.style.right = '';
-    window.scrollTo(0, modalScrollLockY);
+    // the site sets `html{ scroll-behavior: smooth }` globally, and a plain
+    // window.scrollTo(x, y) with no explicit behavior defers to that CSS —
+    // so this restore was itself animating, visibly scrolling from the top
+    // of the page down to Selected Work instead of snapping back instantly
+    // to right where you'd been. Forcing behavior:'auto' on this one call
+    // bypasses the CSS and jumps straight there with no visible motion.
+    const prevScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo({ top: modalScrollLockY, left: 0, behavior: 'auto' });
+    document.documentElement.style.scrollBehavior = prevScrollBehavior;
     coverVideo.pause();
     if (lastFocused) lastFocused.focus();
   }

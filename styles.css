@@ -1667,6 +1667,16 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
     linear-gradient(135deg, transparent 0%, transparent 46%, color-mix(in srgb, var(--accent) 55%, transparent) 46.5%, transparent 47.5%, transparent 100%),
     linear-gradient(155deg, var(--ink) 0%, #2a2419 100%);
 }
+/* BET25's cover asset (poster image and clip alike) is a square 1080x1080
+   render, not the usual 16:9 — cropping it into the standard 16:9 box was
+   zooming in and cutting off the sides of the frame ("the format is still
+   messed up"). Matching the box to the asset's real aspect ratio shows the
+   whole frame, uncropped, at every width (this applies unconditionally, not
+   just inside the desktop no-cover-overlay override below, since mobile
+   already uses this same "title above media" layout by default). */
+.project-modal-cover.no-cover-overlay .project-modal-cover-media{
+  aspect-ratio: 1 / 1;
+}
 .project-modal-cover-img,
 .project-modal-cover-video{
   position: absolute; inset: 0;
@@ -1828,7 +1838,7 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
     height: auto;
   }
   .project-modal-cover.no-cover-overlay .project-modal-cover-media{
-    position: relative; inset: auto; aspect-ratio: 16/9; height: auto;
+    position: relative; inset: auto; aspect-ratio: 1 / 1; height: auto;
   }
   .project-modal-cover.no-cover-overlay .project-modal-cover-scrim{
     position: static;
