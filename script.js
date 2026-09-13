@@ -438,19 +438,33 @@ const aboutSteps = document.getElementById('aboutSteps');
 const aboutStepsFill = document.getElementById('aboutStepsFill');
 const aboutStepEls = aboutSteps ? Array.from(aboutSteps.querySelectorAll('.about-step')) : [];
 if (aboutSteps && aboutStepsFill && aboutStepEls.length){
-  function updateAboutSteps(){
-    const rect = aboutSteps.getBoundingClientRect();
-    const vh = window.innerHeight;
-    const progressPx = Math.min(Math.max(vh * 0.65 - rect.top, 0), rect.height);
-    aboutStepsFill.style.height = progressPx + 'px';
-    aboutStepEls.forEach(step => {
-      const mid = step.offsetTop + step.offsetHeight / 2;
-      step.classList.toggle('in-focus', mid <= progressPx);
-    });
+  if (reducedMotion){
+    // reduced-motion visitors see the finished state immediately — no
+    // dimmed/disabled-looking text to wait out
+    aboutStepEls.forEach(step => step.classList.add('in-focus'));
+    aboutStepsFill.style.height = '100%';
+  } else {
+    function updateAboutSteps(){
+      const rect = aboutSteps.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const progressPx = Math.min(Math.max(vh * 0.65 - rect.top, 0), rect.height);
+      aboutStepsFill.style.height = progressPx + 'px';
+      aboutStepEls.forEach(step => {
+        const mid = step.offsetTop + step.offsetHeight / 2;
+        // once a paragraph has been reached, it stays fully visible — the
+        // reveal plays once and never re-dims a paragraph the visitor has
+        // already scrolled past (e.g. when scrolling back up)
+        if (mid <= progressPx) step.classList.add('in-focus');
+      });
+    }
+    window.addEventListener('scroll', rafThrottle(updateAboutSteps), { passive: true });
+    window.addEventListener('resize', updateAboutSteps);
+    updateAboutSteps();
+    // belt-and-braces: if a paragraph is already on/past-screen at load
+    // (e.g. a mid-page reload, or a short viewport) but the scroll handler
+    // hasn't fired yet, don't leave it looking permanently disabled
+    setTimeout(updateAboutSteps, 400);
   }
-  window.addEventListener('scroll', rafThrottle(updateAboutSteps), { passive: true });
-  window.addEventListener('resize', updateAboutSteps);
-  updateAboutSteps();
 }
 
 // ---------- toolkit: programs / skills switcher + staggered reveal ----------
@@ -500,7 +514,9 @@ if (toolkitSection && toolkitPanels.length){
     }
 
     currentPanel.classList.remove('is-active');
+    currentPanel.setAttribute('hidden', '');
     nextPanel.style.setProperty('--enter-x', direction === 'prev' ? '-26px' : '26px');
+    nextPanel.removeAttribute('hidden');
     nextPanel.classList.add('is-active', 'is-entering');
     nextPanel.addEventListener('animationend', function handler(){
       nextPanel.classList.remove('is-entering');
@@ -515,15 +531,39 @@ if (toolkitSection && toolkitPanels.length){
       });
     }
 
-    toolkitTabs.forEach(tab => tab.classList.toggle('is-active', tab.dataset.panel === nextPanelName));
+    toolkitTabs.forEach(tab => {
+      const isActive = tab.dataset.panel === nextPanelName;
+      tab.classList.toggle('is-active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      tab.tabIndex = isActive ? 0 : -1;
+    });
     activeIndex = nextIndex;
     runToolkitChoreography(nextPanel);
   }
 
-  toolkitTabs.forEach(tab => {
+  toolkitTabs.forEach((tab, i) => {
     tab.addEventListener('click', () => {
       const targetIndex = panelOrder.indexOf(tab.dataset.panel);
       showPanel(targetIndex, targetIndex > activeIndex ? 'next' : 'prev');
+    });
+
+    tab.addEventListener('keydown', (e) => {
+      let targetIndex = null;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+        targetIndex = (i + 1) % toolkitTabs.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+        targetIndex = (i - 1 + toolkitTabs.length) % toolkitTabs.length;
+      } else if (e.key === 'Home'){
+        targetIndex = 0;
+      } else if (e.key === 'End'){
+        targetIndex = toolkitTabs.length - 1;
+      }
+      if (targetIndex === null) return;
+      e.preventDefault();
+      const targetTab = toolkitTabs[targetIndex];
+      const panelIndex = panelOrder.indexOf(targetTab.dataset.panel);
+      showPanel(panelIndex, panelIndex > activeIndex ? 'next' : 'prev');
+      targetTab.focus();
     });
   });
 
@@ -923,7 +963,11 @@ if (canHover){
 const modal = document.getElementById('projectModal');
 if (modal){
   const coverImg = modal.querySelector('.project-modal-cover-img');
+  const coverVideo = modal.querySelector('.project-modal-cover-video');
+  const playToggle = modal.querySelector('.project-modal-play-toggle');
   const coverWrap = modal.querySelector('.project-modal-cover');
+  const modalPanel = modal.querySelector('.project-modal-panel');
+  const modalContent = modal.querySelector('.project-modal-content');
   const titleEl = modal.querySelector('.project-modal-title');
   const tagsEl = modal.querySelector('.project-modal-tags');
   const clientEl = modal.querySelector('.project-modal-client');
@@ -985,8 +1029,46 @@ if (modal){
     coverWrap.classList.remove('no-cover');
     coverImg.style.display = 'none';
     coverImg.removeAttribute('src');
+
+    // reset any previous case's video before wiring up this one
+    coverVideo.pause();
+    coverVideo.removeAttribute('src');
+    coverVideo.load();
+    coverVideo.style.display = 'none';
+    coverVideo.hidden = true;
+    playToggle.hidden = true;
+    playToggle.classList.remove('is-playing');
+
+    const videoSrc = card.dataset.video;
     const coverSrc = card.dataset.cover;
-    if (coverSrc){
+
+    if (videoSrc){
+      coverVideo.hidden = false;
+      coverVideo.poster = coverSrc || '';
+      coverVideo.src = videoSrc;
+      // shown immediately (poster displays right away, even before the clip
+      // itself loads) rather than gated behind a loadeddata event, so
+      // reduced-motion visitors — who never trigger playback — still see
+      // the poster instead of the plain branded fallback
+      coverVideo.style.display = 'block';
+      coverWrap.classList.add('has-photo');
+      playToggle.hidden = false;
+      playToggle.setAttribute('aria-label', 'Play video');
+
+      const setPlayingState = (playing) => {
+        playToggle.classList.toggle('is-playing', playing);
+        playToggle.setAttribute('aria-label', playing ? 'Pause video' : 'Play video');
+      };
+      playToggle.onclick = () => {
+        if (coverVideo.paused){ coverVideo.play().catch(() => {}); } else { coverVideo.pause(); }
+      };
+      coverVideo.onplay = () => setPlayingState(true);
+      coverVideo.onpause = () => setPlayingState(false);
+
+      if (!reducedMotion){
+        coverVideo.play().catch(() => {});
+      }
+    } else if (coverSrc){
       coverImg.onload = () => { coverImg.style.display = 'block'; coverWrap.classList.add('has-photo'); };
       coverImg.onerror = () => { coverImg.style.display = 'none'; coverWrap.classList.remove('has-photo'); };
       coverImg.src = coverSrc;
@@ -997,16 +1079,23 @@ if (modal){
     lastFocused = document.activeElement;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
+    modal.removeAttribute('inert');
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
+    // every case starts scrolled to the top, regardless of where a
+    // previously-viewed case had been scrolled to
+    if (modalPanel) modalPanel.scrollTop = 0;
+    if (modalContent) modalContent.scrollTop = 0;
     modal.querySelector('.project-modal-close').focus();
   }
 
   function closeModal(){
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute('inert', '');
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
+    coverVideo.pause();
     if (lastFocused) lastFocused.focus();
   }
 
@@ -1016,6 +1105,10 @@ if (modal){
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
   });
+
+  // start closed/inert so it's out of the accessibility tree and can't be
+  // tabbed or clicked into before it has ever been opened
+  modal.setAttribute('inert', '');
 }
 
 // ---------- mobile nav (hamburger toggle) ----------

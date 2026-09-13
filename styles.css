@@ -582,7 +582,7 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  margin-top: 26px;
+  margin-top: 16px;
   padding: 0 68px;
 }
 @media (max-width: 720px){
@@ -667,6 +667,27 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .project-modal-close:focus-visible{
   outline: 2px solid var(--accent-text);
   outline-offset: 3px;
+}
+
+/* compact statement replacing the old standalone "How I think" section —
+   a single editorial line, not another full feature block. Reuses the
+   site's existing .mask-line/.reveal unmask mechanics (see the generic
+   IntersectionObserver wiring in script.js), so no JS changes were needed
+   for this to animate in. */
+.work-statement{
+  max-width: 760px;
+  margin: 56px auto 0;
+  padding: 0 8px;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: clamp(19px, 2.6vw, 27px);
+  line-height: 1.35;
+  text-align: center;
+  color: var(--ink);
+}
+@media (max-width: 720px){
+  .work-statement{ margin-top: 40px; font-size: clamp(17px, 4.4vw, 21px); }
 }
 
 /* ---------- about ---------- */
@@ -774,11 +795,16 @@ html.reveal-js .about-photo.in-view .about-photo-clip{ clip-path: inset(0 0 0% 0
 .about-steps-list{ display: flex; flex-direction: column; gap: 30px; }
 .about-step{
   margin: 0;
-  color: var(--ink-soft);
-  opacity: 0.4;
+  color: var(--ink);
+  opacity: 1;
   transition: opacity .45s ease, color .45s ease;
 }
-.about-step.in-focus{ opacity: 1; color: var(--ink); }
+/* matches the site's established no-JS-safe pattern (see the inline script
+   in <head>): the dimmed "not yet reached" state only exists once .reveal-js
+   is present on <html>. Without JS, every paragraph is simply readable at
+   full opacity from the start — never permanently disabled-looking. */
+html.reveal-js .about-step{ color: var(--ink-soft); opacity: 0.55; }
+html.reveal-js .about-step.in-focus{ opacity: 1; color: var(--ink); }
 
 .chain-list{
   list-style: none;
@@ -1113,7 +1139,7 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 }
 
 /* ---------- hero showreel panel ---------- */
-.hero-reel{ margin-top: 48px; }
+.hero-reel{ margin-top: 32px; }
 .hero-reel-media{
   aspect-ratio: 21 / 9;
   border-radius: 18px;
@@ -1150,12 +1176,51 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 }
 /* the play control and "watch" tag return once a finished reel exists —
    drop a <video poster="..."> into .hero-reel-media, remove
-   .hero-reel-media--empty, and re-add .play-btn / .reel-tag markup.
-   Deliberately shorter than a real showreel would be (a finished reel would
-   likely run 16:9 or taller) — this is a placeholder, not a scaled-down
-   preview of the real thing, so it should take up noticeably less room. */
+   .hero-reel-media--empty, and re-add .play-btn / .reel-tag markup. */
 @media (max-width: 720px){
   .hero-reel-media{ aspect-ratio: 16 / 10; padding: 20px; }
+}
+
+/* compact placeholder strip: no finished reel yet, so this deliberately
+   does NOT scale like a scaled-down video preview — it's a short status
+   strip that gets out of the way and lets Selected Work show up sooner.
+   Fixed height (not aspect-ratio) is what keeps it in the 120-160px band
+   regardless of content width. */
+.hero-reel--compact .hero-reel-media{
+  aspect-ratio: auto;
+  height: clamp(120px, 14vw, 160px);
+  flex-direction: row;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px 28px;
+}
+.hero-reel--compact .hero-reel-heading{ font-size: clamp(15px, 1.8vw, 18px); }
+.hero-reel--compact .hero-reel-copy{ font-size: 13px; max-width: 360px; text-align: left; }
+@media (max-width: 720px){
+  .hero-reel--compact .hero-reel-media{
+    height: auto;
+    min-height: 96px;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    text-align: center;
+  }
+  .hero-reel--compact .hero-reel-copy{ text-align: center; }
+}
+.hero-reel-rec{
+  width: 8px; height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-accent 2s infinite;
+}
+@keyframes pulse-accent{
+  0%{ box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  70%{ box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); }
+  100%{ box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce){
+  .hero-reel-rec{ animation: none; }
 }
 
 /* ---------- personality bits ---------- */
@@ -1516,10 +1581,20 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 
 /* ---------- redesigned project modal ---------- */
 .project-modal-panel{ padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+/* mobile/base: title reads BEFORE the media (plain heading block, not an
+   overlay), so a visitor doesn't have to parse dark-on-image text before
+   the case even opens. Desktop restores the original overlay treatment
+   below at min-width:860px, unchanged from the previous design. */
 .project-modal-cover{
   position: relative;
-  aspect-ratio: 16/8;
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
+}
+.project-modal-cover-media{
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
   /* branded fallback used until a real cover photo/clip exists for a case —
      no visitor-facing "add image" text, just the site's own ink/accent
      treatment so it reads as an intentional cover, not a placeholder */
@@ -1527,16 +1602,16 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
     linear-gradient(135deg, transparent 0%, transparent 46%, color-mix(in srgb, var(--accent) 55%, transparent) 46.5%, transparent 47.5%, transparent 100%),
     linear-gradient(155deg, var(--ink) 0%, #2a2419 100%);
 }
-.project-modal-cover-img{
+.project-modal-cover-img,
+.project-modal-cover-video{
   position: absolute; inset: 0;
   width: 100%; height: 100%; object-fit: cover;
   display: none;
 }
 .project-modal-cover-scrim{
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 28px;
-  background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+  position: static;
+  padding: 22px 22px 10px;
+  background: none;
 }
 .project-modal-client{
   display: block;
@@ -1553,8 +1628,39 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   font-weight: 400;
   font-size: clamp(24px, 3.6vw, 36px);
   margin: 0;
-  color: var(--bone);
+  color: var(--ink);
   line-height: 1.05;
+}
+.project-modal-play-toggle{
+  position: absolute;
+  left: 14px; bottom: 14px;
+  z-index: 2;
+  width: 44px; height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: rgba(23,20,15,0.55);
+  cursor: pointer;
+  transition: background .2s ease;
+}
+.project-modal-play-toggle:hover{ background: var(--accent); }
+.project-modal-play-icon{
+  display: block;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 7px 0 7px 11px;
+  border-color: transparent transparent transparent var(--bone);
+  margin-left: 2px;
+}
+.project-modal-play-toggle.is-playing .project-modal-play-icon{
+  width: 4px; height: 14px;
+  border-style: none;
+  border-width: 0;
+  margin-left: 0;
+  background: var(--bone);
+  box-shadow: 8px 0 0 var(--bone);
 }
 .project-modal-close{
   position: absolute;
@@ -1604,7 +1710,19 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
    independently on the right */
 @media (min-width: 860px){
   .project-modal-panel{ flex-direction: row; max-height: 88vh; }
+  /* restore the original full-bleed cover with the title overlaid on the
+     image/video — the mobile "title before media" restructuring above is
+     purely a small-screen concern */
   .project-modal-cover{ flex: 0 0 40%; aspect-ratio: auto; height: auto; }
+  .project-modal-cover-media{ position: absolute; inset: 0; aspect-ratio: auto; height: 100%; }
+  .project-modal-cover-scrim{
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 1;
+    padding: 28px;
+    background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+  }
+  .project-modal-title{ color: var(--bone); }
   .project-modal-content{ flex: 1 1 60%; padding: 52px 60px; }
 }
 @media (min-width: 1200px){
@@ -2208,8 +2326,17 @@ body.nav-open{ overflow: hidden; }
 @media (max-width: 560px){
   .toolkit-grid, .skills-grid{ grid-template-columns: 1fr; }
 }
+@media (max-width: 560px){
+  /* shrink the card shell (padding, badge, min-height) to cut mobile page
+     length, while keeping body copy close to its normal size so it stays
+     easy to read */
+  .toolkit-card, .skill-card{ padding: 20px; }
+  .toolkit-badge, .skill-card .skill-tag{ margin-bottom: 14px; }
+  .toolkit-card h3, .skill-card h3{ margin-bottom: 6px; }
+  .toolkit-card p, .skill-card p{ min-height: 0; margin-bottom: 0; }
+}
 @media (max-width: 400px){
-  .toolkit-card, .skill-card{ padding: 22px; }
+  .toolkit-card, .skill-card{ padding: 18px; }
   .toolkit-card p, .skill-card p{ font-size: 14.5px; }
 }
 
