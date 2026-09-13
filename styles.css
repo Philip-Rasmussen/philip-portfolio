@@ -1667,15 +1667,17 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
     linear-gradient(135deg, transparent 0%, transparent 46%, color-mix(in srgb, var(--accent) 55%, transparent) 46.5%, transparent 47.5%, transparent 100%),
     linear-gradient(155deg, var(--ink) 0%, #2a2419 100%);
 }
-/* BET25's cover asset (poster image and clip alike) is a square 1080x1080
-   render, not the usual 16:9 — cropping it into the standard 16:9 box was
-   zooming in and cutting off the sides of the frame ("the format is still
-   messed up"). Matching the box to the asset's real aspect ratio shows the
-   whole frame, uncropped, at every width (this applies unconditionally, not
-   just inside the desktop no-cover-overlay override below, since mobile
-   already uses this same "title above media" layout by default). */
+/* BET25's modal clip is a vertical 1080x1920 (9:16) "midscroll" export, not
+   the usual 16:9 — cropping it into the standard 16:9 box was zooming in and
+   cutting off the frame ("the format is still messed up"). Matching the box
+   to the clip's real aspect ratio shows the whole frame, uncropped, at every
+   width (this applies unconditionally, not just inside the desktop
+   no-cover-overlay override below, since mobile already uses this same
+   "title above media" layout by default). Was 1/1 when the asset was still
+   the square 1080x1080 loop; updated to 9/16 when it was swapped for the
+   vertical export. */
 .project-modal-cover.no-cover-overlay .project-modal-cover-media{
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 9 / 16;
 }
 .project-modal-cover-img,
 .project-modal-cover-video{
@@ -1838,7 +1840,7 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
     height: auto;
   }
   .project-modal-cover.no-cover-overlay .project-modal-cover-media{
-    position: relative; inset: auto; aspect-ratio: 1 / 1; height: auto;
+    position: relative; inset: auto; aspect-ratio: 9 / 16; height: auto;
   }
   .project-modal-cover.no-cover-overlay .project-modal-cover-scrim{
     position: static;

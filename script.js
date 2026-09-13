@@ -1082,7 +1082,12 @@ if (modal){
 
     if (videoSrc){
       coverVideo.hidden = false;
-      coverVideo.poster = coverSrc || '';
+      // most cases share one still for the grid card and the modal, but a
+      // case whose modal clip has a different frame/aspect ratio (BET25's
+      // vertical 9:16 export vs. its square grid thumbnail) can supply its
+      // own data-video-poster so the modal never shows a mismatched still
+      // while the clip loads.
+      coverVideo.poster = card.dataset.videoPoster || coverSrc || '';
       coverVideo.src = videoSrc;
       // shown immediately (poster displays right away, even before the clip
       // itself loads) rather than gated behind a loadeddata event, so
