@@ -1011,6 +1011,11 @@ if (modal){
     // "title sits above the media" layout (the same one every case already
     // uses on mobile) instead of the desktop image-overlay treatment.
     coverWrap.classList.toggle('no-cover-overlay', card.dataset.coverHasText === 'true');
+    // data-cover-vertical marks a case whose clip/photo is portrait (9:16)
+    // rather than the usual landscape 16:9 — independent of the overlay
+    // opt-out above, so a vertical case can still use the same white
+    // title-on-media treatment as every other card (see BET25).
+    coverWrap.classList.toggle('vertical-cover', card.dataset.coverVertical === 'true');
     contextEl.innerHTML = card.dataset.context || '';
     renderParagraphs(workEl, card.dataset.work);
     resultTextEl.innerHTML = (card.dataset.resultText || '').split('%%').map(s => s.trim()).filter(Boolean).join(' ');

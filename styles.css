@@ -1671,13 +1671,32 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
    the usual 16:9 — cropping it into the standard 16:9 box was zooming in and
    cutting off the frame ("the format is still messed up"). Matching the box
    to the clip's real aspect ratio shows the whole frame, uncropped, at every
-   width (this applies unconditionally, not just inside the desktop
-   no-cover-overlay override below, since mobile already uses this same
-   "title above media" layout by default). Was 1/1 when the asset was still
-   the square 1080x1080 loop; updated to 9/16 when it was swapped for the
-   vertical export. */
-.project-modal-cover.no-cover-overlay .project-modal-cover-media{
+   width. Scoped to .vertical-cover (data-cover-vertical) rather than
+   .no-cover-overlay — this is purely about the asset's own proportions and
+   applies whether or not a case also opts out of the title-on-media overlay,
+   so BET25 can use the vertical ratio AND the same white-title-over-media
+   treatment as every other card.
+   Below 860px this box is a single full-width column (see the mobile-title
+   layout above), so a 9:16 ratio at full card width makes it VERY tall — at
+   mid-range widths (roughly 480–860px) the resulting height ran past the
+   viewport, so the clip's own on-screen text ("VIND IS OG KOLDE KONTANTER")
+   got pushed out of view and required scrolling to see, unlike every other
+   case's shorter 16:9 preview ("it gets cut off"). Capping the box's height
+   and letting its width shrink to match — instead of the other way around —
+   keeps the whole clip in view, sized more like the other cards' previews.
+   Scoped to <860px only: the desktop override further down sets its own
+   height (auto, driven by the fixed 40% column width), so letting THIS
+   width/height pair leak into that breakpoint collapsed the box to 0x0. */
+.project-modal-cover.vertical-cover .project-modal-cover-media{
   aspect-ratio: 9 / 16;
+}
+@media (max-width: 859px){
+  .project-modal-cover.vertical-cover .project-modal-cover-media{
+    align-self: center;
+    width: auto;
+    max-width: 100%;
+    height: min(58vh, 560px);
+  }
 }
 .project-modal-cover-img,
 .project-modal-cover-video{
@@ -1710,7 +1729,7 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 }
 .project-modal-play-toggle{
   position: absolute;
-  left: 14px; bottom: 14px;
+  left: 14px; top: 14px;
   z-index: 2;
   width: 44px; height: 44px;
   display: flex;
@@ -1848,6 +1867,22 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
     background: none;
   }
   .project-modal-cover.no-cover-overlay .project-modal-title{ color: var(--ink); }
+
+  /* BET25's clip is portrait, so it needs the same 40%-column-with-its-own-
+     height treatment as .no-cover-overlay above, but WITHOUT giving up the
+     white title-on-media overlay every other card uses on desktop — so this
+     only touches sizing (column width/aspect, media aspect-ratio), leaving
+     .project-modal-cover-scrim and .project-modal-title on their normal,
+     un-overridden (overlaid, white-text) styles from earlier in this block. */
+  .project-modal-cover.vertical-cover{
+    flex: 0 0 40%;
+    align-self: flex-start;
+    aspect-ratio: auto;
+    height: auto;
+  }
+  .project-modal-cover.vertical-cover .project-modal-cover-media{
+    position: relative; inset: auto; aspect-ratio: 9 / 16; height: auto;
+  }
 }
 @media (min-width: 1200px){
   .project-modal-content{ padding: 64px 76px; }
