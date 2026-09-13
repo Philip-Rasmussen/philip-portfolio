@@ -392,18 +392,18 @@ section{ padding-top: 120px; padding-bottom: 56px; }
      image to be worth looking at */
   .work-track{ height: auto; aspect-ratio: 4 / 5; max-height: 62vh; }
   .work-track-viewport{
-    margin: 0 -40px;
-    padding: 0 40px;
-    mask-image: linear-gradient(to right, transparent 0, black 40px, black calc(100% - 40px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 40px, black calc(100% - 40px), transparent 100%);
+    margin: 0 -76px;
+    padding: 0 76px;
+    mask-image: linear-gradient(to right, transparent 0, black 76px, black calc(100% - 76px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 76px, black calc(100% - 76px), transparent 100%);
   }
 }
 @media (max-width: 480px){
   .work-track-viewport{
-    margin: 0 -28px;
-    padding: 0 28px;
-    mask-image: linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 28px, black calc(100% - 28px), transparent 100%);
+    margin: 0 -56px;
+    padding: 0 56px;
+    mask-image: linear-gradient(to right, transparent 0, black 56px, black calc(100% - 56px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 56px, black calc(100% - 56px), transparent 100%);
   }
 }
 /* overlapping card stack — each card's position is driven by --offset
@@ -417,20 +417,27 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   width: min(100%, 640px);
   margin: 0 auto;
   cursor: pointer;
-  /* one card dominant, the rest shrunk down to thin peeking edges rather
-     than near-full-size siblings — the active card should read as the
-     clear subject, not one of several equal panels */
+  /* one card dominant, its neighbours peeking in flat and level beside it
+     rather than dropping away into a receded, rotated pile — a light scale/
+     opacity step is enough to read as "behind", the rest of the identity
+     (full height, no tilt, same vertical center) stays intact so a peeking
+     card still looks like a real card and not an offcut.
+     --drag (set from script.js while a touch gesture is in progress) rides
+     along in the same translateX so the whole stack tracks the finger 1:1
+     before snapping to rest — see the touch handling in script.js. */
   transform:
-    translateX(calc(var(--offset) * 58%))
-    translateY(calc(var(--dist) * 18px))
-    scale(calc(1 - var(--dist) * 0.34))
-    rotate(calc(var(--offset) * 3deg));
-  opacity: calc(1 - var(--dist) * 0.45);
+    translateX(calc(var(--offset) * 58% + var(--drag, 0px)))
+    scale(calc(1 - var(--dist) * 0.14));
+  opacity: calc(1 - var(--dist) * 0.18);
   z-index: calc(20 - var(--dist));
   /* a firm spring on the way in — Apple-style overshoot rather than a
      flat ease, so the stack feels like it snaps/settles into place */
   transition: transform .55s cubic-bezier(.32,1.85,.6,1), opacity .45s cubic-bezier(.65,0,.35,1);
 }
+/* while a touch drag is live, the stack must track the finger with zero
+   lag — the spring transition above is only for the settle/snap once the
+   finger lifts, so it's suspended for the duration of the gesture */
+.work-track.is-dragging .work-card{ transition: none; }
 .work-track .work-card.is-active{ cursor: default; }
 .work-media{
   height: 100%;
@@ -510,19 +517,15 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 @media (max-width: 720px){
   .work-track .work-card{
     transform:
-      translateX(calc(var(--offset) * 40%))
-      translateY(calc(var(--dist) * 10px))
-      scale(calc(1 - var(--dist) * 0.3))
-      rotate(calc(var(--offset) * 2deg));
+      translateX(calc(var(--offset) * 48% + var(--drag, 0px)))
+      scale(calc(1 - var(--dist) * 0.12));
   }
 }
 @media (max-width: 480px){
   .work-track .work-card{
     transform:
-      translateX(calc(var(--offset) * 24%))
-      translateY(calc(var(--dist) * 8px))
-      scale(calc(1 - var(--dist) * 0.28))
-      rotate(calc(var(--offset) * 1.5deg));
+      translateX(calc(var(--offset) * 42% + var(--drag, 0px)))
+      scale(calc(1 - var(--dist) * 0.1));
   }
 }
 

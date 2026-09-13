@@ -829,15 +829,67 @@ if (workShowcase && workTrack && workCards.length){
     if (e.key === 'ArrowRight'){ e.preventDefault(); goToWork(workIndex + 1); }
   });
 
-  // basic touch swipe
-  let workTouchX = null;
-  workShowcase.addEventListener('touchstart', (e) => { workTouchX = e.touches[0].clientX; }, { passive: true });
-  workShowcase.addEventListener('touchend', (e) => {
-    if (workTouchX === null) return;
-    const dx = e.changedTouches[0].clientX - workTouchX;
-    if (Math.abs(dx) > 40) goToWork(workIndex + (dx < 0 ? 1 : -1));
-    workTouchX = null;
+  // touch swipe — the stack tracks the finger 1:1 while dragging (via the
+  // --drag custom property read by .work-card's transform in styles.css)
+  // rather than only reacting once the gesture ends, so it reads as a real
+  // swipeable carousel on mobile instead of a blind "swipe left/right and
+  // hope". Released past the distance threshold, it advances/retreats a
+  // card; released short of it, --drag resets to 0 and the existing spring
+  // transition (suspended for the duration of the drag via the
+  // .is-dragging class) eases it straight back to place.
+  let workTouchStartX = null;
+  let workTouchStartY = null;
+  let workTouchCurrentX = null;
+  let workDragAxisLocked = null; // 'x' | 'y' | null, decided a few px into the gesture
+
+  function setWorkDrag(px){
+    workTrack.style.setProperty('--drag', `${px}px`);
+  }
+
+  workShowcase.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    workTouchStartX = workTouchCurrentX = e.touches[0].clientX;
+    workTouchStartY = e.touches[0].clientY;
+    workDragAxisLocked = null;
+    workTrack.classList.add('is-dragging');
   }, { passive: true });
+
+  workShowcase.addEventListener('touchmove', (e) => {
+    if (workTouchStartX === null) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - workTouchStartX;
+    const dy = touch.clientY - workTouchStartY;
+
+    if (workDragAxisLocked === null){
+      // wait for a few px of movement before committing to an axis, so a
+      // near-vertical touch (page scroll) never gets hijacked as a swipe
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      workDragAxisLocked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    if (workDragAxisLocked !== 'x') return; // let the page scroll vertically as normal
+
+    e.preventDefault(); // only once it's clearly a horizontal drag
+    workTouchCurrentX = touch.clientX;
+    setWorkDrag(dx);
+  }, { passive: false });
+
+  function endWorkDrag(){
+    workTrack.classList.remove('is-dragging');
+    if (workTouchStartX === null){ setWorkDrag(0); return; }
+    const dx = workDragAxisLocked === 'x' ? (workTouchCurrentX - workTouchStartX) : 0;
+    setWorkDrag(0);
+    const threshold = Math.min(90, workShowcase.getBoundingClientRect().width * 0.15);
+    if (Math.abs(dx) > threshold){
+      goToWork(workIndex + (dx < 0 ? 1 : -1));
+    } else {
+      renderWork(); // re-assert the current card's resting transform
+    }
+    workTouchStartX = workTouchStartY = workTouchCurrentX = null;
+    workDragAxisLocked = null;
+  }
+
+  workShowcase.addEventListener('touchend', endWorkDrag, { passive: true });
+  workShowcase.addEventListener('touchcancel', endWorkDrag, { passive: true });
 
   renderWork();
 }
