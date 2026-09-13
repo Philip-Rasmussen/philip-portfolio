@@ -22,7 +22,7 @@
   --font-display: "Anton", Impact, sans-serif;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 
-  --maxw: 1360px;
+  --maxw: 1500px;
   --pad: clamp(20px, 5vw, 64px);
 
   /* ---- motion system: one consistent easing curve + a small timing scale,
@@ -381,6 +381,10 @@ section{ padding-top: 120px; padding-bottom: 56px; }
      partly behind the active one. */
   margin: 0 -90px;
   padding: 0 90px;
+  /* gives the rotateY on .work-card below an actual vanishing point, so the
+     peeking cards read as tilting away in 3D space (a real coverflow) not
+     just sliding sideways flat */
+  perspective: 1600px;
 }
 .work-track{
   position: relative;
@@ -415,15 +419,18 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   width: min(100%, 640px);
   margin: 0 auto;
   cursor: pointer;
-  /* one card dominant, its neighbours overlapping in behind it at full size
-     and full opacity — no shrinking, no dimming, no edge fade. A peeking
-     card should read as a real card that's simply tucked partway behind the
-     active one (z-index + its own border/shadow do that job), not a hazy
-     receded copy of it.
+  /* a real coverflow: the active card sits square and sharp, its neighbours
+     rotate away in 3D space (rotateY) and recede slightly (scale) so the
+     whole thing reads as flipping/scrolling through a deck rather than
+     sliding flat cutouts sideways. Depth-of-field comes from the blur on
+     .work-media below, driven by the same --dist.
      --drag (set from script.js while a touch gesture is in progress) rides
      along in the same translateX so the whole stack tracks the finger 1:1
      before snapping to rest — see the touch handling in script.js. */
-  transform: translateX(calc(var(--offset) * 46% + var(--drag, 0px)));
+  transform:
+    translateX(calc(var(--offset) * 46% + var(--drag, 0px)))
+    rotateY(calc(var(--offset) * -14deg))
+    scale(calc(1 - var(--dist) * 0.1));
   z-index: calc(20 - var(--dist));
   /* a firm spring on the way in — Apple-style overshoot rather than a
      flat ease, so the stack feels like it snaps/settles into place */
@@ -443,14 +450,24 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform .5s cubic-bezier(.65,0,.35,1), box-shadow .5s cubic-bezier(.65,0,.35,1), border-color .3s ease;
+  /* the active card is the one thing meant to be in focus — every other
+     card in the stack (--dist > 0) gets progressively blurred, like a
+     shallow depth of field, so the eye is never in doubt about which one
+     you're "on" */
+  filter: blur(calc(var(--dist) * 3.5px));
+  transition: transform .5s cubic-bezier(.65,0,.35,1), box-shadow .5s cubic-bezier(.65,0,.35,1), border-color .3s ease, filter .5s cubic-bezier(.65,0,.35,1);
   /* promotes this element to its own compositing layer ahead of time,
      rather than only once the hover transform kicks in. Without it, some
      Safari versions have been seen mis-recomputing the mask/clip on the
      ancestor .work-track-viewport while this element's transform is mid-
      transition, showing up as the card getting clipped top and bottom for
-     a moment on hover. */
-  will-change: transform;
+     a moment on hover. The rounded corners rendering a little ragged on a
+     rotated/blurred card is the same family of GPU-compositing quirk —
+     backface-visibility:hidden keeps this on one stable layer instead of
+     flipping between two during the 3D rotate. */
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   /* branded fallback cover — used until a real thumbnail/clip is dropped in
      at the card's data-cover path (see script.js openModal / the inline
      onload handler on the <img> below, which swaps this out automatically) */
@@ -509,24 +526,24 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   .work-track .work-card.is-active:hover .work-media{ transform: scale(1.018); }
   .work-track .work-card.is-active:hover .work-media-viewcase{ transform: translateY(-4px); }
 }
-/* on touch-width screens the "receding stack" look (even the gentle
-   scale/opacity step used above) still reads as cards piled on top of one
-   another once they're this close together — Philip's call, based on a
-   reference site, was a plain side-by-side row instead: neighbours sit at
-   full size and full opacity, edge-to-edge with a small gap, so only the
-   viewport's own mask (see .work-track-viewport above) decides how much of
-   the next one peeks in. Nothing shrinks or dims here — the card that's
-   off-frame just is off-frame. */
+/* same coverflow on touch-width screens, just a touch less aggressive on
+   the rotate/recede so it doesn't get lost inside a much narrower frame —
+   the blur-driven focus (see .work-media) still does the main work of
+   telling the active card apart from the rest */
 @media (max-width: 720px){
   .work-track .work-card{
-    transform: translateX(calc(var(--offset) * (100% + 14px) + var(--drag, 0px)));
-    opacity: 1;
+    transform:
+      translateX(calc(var(--offset) * 46% + var(--drag, 0px)))
+      rotateY(calc(var(--offset) * -12deg))
+      scale(calc(1 - var(--dist) * 0.09));
   }
 }
 @media (max-width: 480px){
   .work-track .work-card{
-    transform: translateX(calc(var(--offset) * (100% + 10px) + var(--drag, 0px)));
-    opacity: 1;
+    transform:
+      translateX(calc(var(--offset) * 44% + var(--drag, 0px)))
+      rotateY(calc(var(--offset) * -10deg))
+      scale(calc(1 - var(--dist) * 0.08));
   }
 }
 
