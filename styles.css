@@ -375,10 +375,12 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   min-width: 0;
   overflow-x: clip;
   overflow-y: visible;
-  margin: 0 -64px;
-  padding: 0 64px;
-  mask-image: linear-gradient(to right, transparent 0, black 64px, black calc(100% - 64px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0, black 64px, black calc(100% - 64px), transparent 100%);
+  /* Philip's call: no fade-to-transparent at the edges — it read as hazy/
+     unfinished rather than "peeking". A neighbouring card now just sits at
+     full opacity right up to a plain hard clip, like a real card tucked
+     partly behind the active one. */
+  margin: 0 -90px;
+  padding: 0 90px;
 }
 .work-track{
   position: relative;
@@ -392,18 +394,14 @@ section{ padding-top: 120px; padding-bottom: 56px; }
      image to be worth looking at */
   .work-track{ height: auto; aspect-ratio: 4 / 5; max-height: 62vh; }
   .work-track-viewport{
-    margin: 0 -96px;
-    padding: 0 96px;
-    mask-image: linear-gradient(to right, transparent 0, black 96px, black calc(100% - 96px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 96px, black calc(100% - 96px), transparent 100%);
+    margin: 0 -100px;
+    padding: 0 100px;
   }
 }
 @media (max-width: 480px){
   .work-track-viewport{
-    margin: 0 -84px;
-    padding: 0 84px;
-    mask-image: linear-gradient(to right, transparent 0, black 84px, black calc(100% - 84px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 84px, black calc(100% - 84px), transparent 100%);
+    margin: 0 -88px;
+    padding: 0 88px;
   }
 }
 /* overlapping card stack — each card's position is driven by --offset
@@ -417,18 +415,15 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   width: min(100%, 640px);
   margin: 0 auto;
   cursor: pointer;
-  /* one card dominant, its neighbours peeking in flat and level beside it
-     rather than dropping away into a receded, rotated pile — a light scale/
-     opacity step is enough to read as "behind", the rest of the identity
-     (full height, no tilt, same vertical center) stays intact so a peeking
-     card still looks like a real card and not an offcut.
+  /* one card dominant, its neighbours overlapping in behind it at full size
+     and full opacity — no shrinking, no dimming, no edge fade. A peeking
+     card should read as a real card that's simply tucked partway behind the
+     active one (z-index + its own border/shadow do that job), not a hazy
+     receded copy of it.
      --drag (set from script.js while a touch gesture is in progress) rides
      along in the same translateX so the whole stack tracks the finger 1:1
      before snapping to rest — see the touch handling in script.js. */
-  transform:
-    translateX(calc(var(--offset) * 58% + var(--drag, 0px)))
-    scale(calc(1 - var(--dist) * 0.14));
-  opacity: calc(1 - var(--dist) * 0.18);
+  transform: translateX(calc(var(--offset) * 46% + var(--drag, 0px)));
   z-index: calc(20 - var(--dist));
   /* a firm spring on the way in — Apple-style overshoot rather than a
      flat ease, so the stack feels like it snaps/settles into place */
