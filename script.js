@@ -260,7 +260,7 @@ const statsIO = new IntersectionObserver((entries) => {
       el.textContent = target.toLocaleString() + suffix;
       return;
     }
-    const duration = 1400;
+    const duration = 1100; // was 1400 — Philip wanted the count-up a touch snappier
     const start = performance.now();
     function tick(now){
       const progress = Math.min((now - start) / duration, 1);
@@ -983,6 +983,7 @@ if (modal){
   const linksListEl = modal.querySelector('.project-modal-links-list');
   const watchTagEl = modal.querySelector('.project-modal-watch-tag');
   let lastFocused = null;
+  let modalScrollLockY = 0;
 
   // a data-* value may hold more than one short paragraph, separated by
   // "%%" (kept out of the visible copy) — used for "The work", where every
@@ -1117,8 +1118,20 @@ if (modal){
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     modal.removeAttribute('inert');
+    // lock background scroll WITHOUT losing scroll position: plain
+    // `overflow: hidden` on html/body collapses the scrollable area, and
+    // several browsers (Safari especially) reset scrollTop to 0 the moment
+    // that happens — so closing the modal "restored" scrolling but landed
+    // back at the very top of the page instead of back at Selected Work.
+    // Pinning the body at its current scroll offset via position:fixed
+    // keeps the real scrollY untouched underneath, and closeModal below
+    // explicitly scrolls back to it.
+    modalScrollLockY = window.scrollY || window.pageYOffset || 0;
     document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${modalScrollLockY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
     // every case starts scrolled to the top, regardless of where a
     // previously-viewed case had been scrolled to
     if (modalPanel) modalPanel.scrollTop = 0;
@@ -1131,7 +1144,11 @@ if (modal){
     modal.setAttribute('aria-hidden', 'true');
     modal.setAttribute('inert', '');
     document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    window.scrollTo(0, modalScrollLockY);
     coverVideo.pause();
     if (lastFocused) lastFocused.focus();
   }
