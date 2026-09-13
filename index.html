@@ -10,6 +10,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- BET25's case-study modal uses its own poster still (a frame from the
+     vertical clip) that's never shown anywhere else on the page — every
+     other case's modal poster is the same image already sitting in its
+     grid thumbnail, so the browser already has it cached by the time a
+     visitor opens that modal. Without this preload, BET25's modal poster
+     only starts downloading the moment the modal opens, so on a slow
+     mobile connection the branded gradient placeholder was visible for
+     a beat before anything else painted. -->
+<link rel="preload" as="image" href="assets/img/work/bet25-hedebolge-modal-poster.jpg">
+
 <link rel="stylesheet" href="styles.css">
 <script>
   // No-JS-safe scroll reveals: every .reveal element (and the photo wipe
@@ -616,7 +626,6 @@
 <div class="project-modal" id="projectModal" aria-hidden="true">
   <div class="project-modal-backdrop" data-close></div>
   <div class="project-modal-panel" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
-    <button type="button" class="project-modal-close" data-close aria-label="Close case study">✕</button>
 
     <div class="project-modal-cover">
       <div class="project-modal-cover-scrim">
@@ -665,6 +674,7 @@
       <a href="#contact" class="modal-cta" data-close>Want something like this? <span class="modal-cta-nowrap">Let's talk →</span></a>
     </div>
   </div>
+  <button type="button" class="project-modal-close" data-close aria-label="Close case study">✕</button>
 </div>
 
 <script src="script.js"></script>

@@ -1654,7 +1654,14 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 }
 
 /* ---------- redesigned project modal ---------- */
-.project-modal-panel{ padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+/* overflow-y:auto (not hidden) so that if a case's cover ever renders
+   taller than the panel's max-height (e.g. BET25's vertical clip on a
+   narrow phone), visitors can scroll the panel itself to reach the rest
+   of it instead of that content being silently clipped away. overflow-x
+   stays hidden so nothing can push the rounded panel wider than its box;
+   border-radius still clips both axes' content the same as overflow:hidden
+   did. */
+.project-modal-panel{ padding: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
 /* mobile/base: title reads BEFORE the media (plain heading block, not an
    overlay), so a visitor doesn't have to parse dark-on-image text before
    the case even opens. Desktop restores the original overlay treatment
@@ -1686,26 +1693,17 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
    so BET25 can use the vertical ratio AND the same white-title-over-media
    treatment as every other card.
    Below 860px this box is a single full-width column (see the mobile-title
-   layout above), so a 9:16 ratio at full card width makes it VERY tall — at
-   mid-range widths (roughly 480–860px) the resulting height ran past the
-   viewport, so the clip's own on-screen text ("VIND IS OG KOLDE KONTANTER")
-   got pushed out of view and required scrolling to see, unlike every other
-   case's shorter 16:9 preview ("it gets cut off"). Capping the box's height
-   and letting its width shrink to match — instead of the other way around —
-   keeps the whole clip in view, sized more like the other cards' previews.
-   Scoped to <860px only: the desktop override further down sets its own
-   height (auto, driven by the fixed 40% column width), so letting THIS
-   width/height pair leak into that breakpoint collapsed the box to 0x0. */
+   layout above), so a 9:16 ratio at full card width runs taller than most
+   phone viewports. An earlier version of this rule shrank the box's width
+   (via a height cap) so the whole clip always fit on-screen without
+   scrolling — but that also shrank the clip's own baked-in text small
+   enough to be hard to read ("barely see the text"), which defeated the
+   point. .project-modal-panel is now scrollable (see above) instead, so
+   the clip is simply left at full card width — legible, like every other
+   case's preview — and any extra height just scrolls like the rest of
+   the modal. */
 .project-modal-cover.vertical-cover .project-modal-cover-media{
   aspect-ratio: 9 / 16;
-}
-@media (max-width: 859px){
-  .project-modal-cover.vertical-cover .project-modal-cover-media{
-    align-self: center;
-    width: auto;
-    max-width: 100%;
-    height: min(58vh, 560px);
-  }
 }
 .project-modal-cover-img,
 .project-modal-cover-video{
@@ -1788,10 +1786,18 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 }
 .project-modal-work p{ margin: 0 0 12px; }
 .project-modal-work p:last-child{ margin-bottom: 0; }
+/* Positioned relative to .project-modal (the fixed, viewport-covering
+   wrapper) rather than .project-modal-panel — the panel now scrolls its
+   own content on cases whose cover runs tall on mobile (see
+   .project-modal-panel's overflow-y:auto above), and a close button that
+   was a child of the panel scrolled away with everything else instead of
+   staying reachable. .project-modal has its own 24px padding around the
+   panel, so 24+14=38px reproduces the exact corner position this button
+   always had relative to the panel itself. */
 .project-modal-close{
   position: absolute;
-  top: 14px; right: 14px;
-  z-index: 3;
+  top: 38px; right: 38px;
+  z-index: 10;
   /* real 44x44 hit target (WCAG target-size) — it used to be 36px */
   width: 44px; height: 44px;
   display: flex;
