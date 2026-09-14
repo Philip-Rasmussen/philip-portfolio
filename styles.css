@@ -1696,27 +1696,17 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
     linear-gradient(155deg, var(--ink) 0%, #2a2419 100%);
 }
 /* BET25's modal clip is a vertical 1080x1920 (9:16) "midscroll" export, not
-   the usual 16:9 — cropping it into the standard 16:9 box was zooming in and
-   cutting off the frame ("the format is still messed up"). Matching the box
-   to the clip's real aspect ratio shows the whole frame, uncropped, at every
-   width. Scoped to .vertical-cover (data-cover-vertical) rather than
-   .no-cover-overlay — this is purely about the asset's own proportions and
-   applies whether or not a case also opts out of the title-on-media overlay,
-   so BET25 can use the vertical ratio AND the same white-title-over-media
-   treatment as every other card.
-   Below 860px this box is a single full-width column (see the mobile-title
-   layout above), so a 9:16 ratio at full card width runs taller than most
-   phone viewports. An earlier version of this rule shrank the box's width
-   (via a height cap) so the whole clip always fit on-screen without
-   scrolling — but that also shrank the clip's own baked-in text small
-   enough to be hard to read ("barely see the text"), which defeated the
-   point. .project-modal-panel is now scrollable (see above) instead, so
-   the clip is simply left at full card width — legible, like every other
-   case's preview — and any extra height just scrolls like the rest of
-   the modal. */
-.project-modal-cover.vertical-cover .project-modal-cover-media{
-  aspect-ratio: 9 / 16;
-}
+   the usual 16:9. On desktop (see the vertical-cover rules inside the
+   min-width:860px block below) the box is matched to the clip's real
+   aspect ratio so the whole frame shows uncropped in its own 40%-width
+   column. On mobile that full 9:16 frame at full card width runs far
+   taller than the phone viewport, which reads as broken ("ser helt fuckt
+   ud") — so on mobile this case now falls back to the same 16:9
+   cropped/object-fit:cover treatment as every other card's modal cover,
+   matching the "3D Talking-Head Edit" card's mobile layout exactly. No
+   mobile-specific override needed here: simply not setting a 9:16 ratio
+   at this (unscoped/mobile) level lets the base .project-modal-cover-media
+   16:9 rule above apply. */
 .project-modal-cover-img,
 .project-modal-cover-video{
   position: absolute; inset: 0;
