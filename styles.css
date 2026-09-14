@@ -746,6 +746,94 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   outline-offset: 3px;
 }
 
+/* ---------- employer recommendation ---------- */
+/* Sits between Results (stats) and About. Deliberately not a boxed
+   "testimonial card" — same section-head as every other section, the quote
+   just reads as the next piece of editorial content, controlled to a
+   comfortable reading width. The thin accent-coloured left rule is the
+   section's only decoration (the site's "subtle lines" motif) instead of a
+   quote-mark glyph or any card/shadow/border treatment. */
+.recommendation{ padding-top: 90px; padding-bottom: 40px; }
+.recommendation-inner{ max-width: 720px; }
+.recommendation-quote{
+  margin: 0 0 40px;
+  padding-left: clamp(20px, 3vw, 32px);
+  border-left: 3px solid var(--accent);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(24px, 3.2vw, 38px);
+  line-height: 1.32;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+.recommendation-meta{ margin: 0 0 32px; padding-left: clamp(20px, 3vw, 32px); }
+.recommendation-name{
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+}
+.recommendation-name + .recommendation-name{ margin-top: 4px; }
+.recommendation-role{
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.recommendation-company{
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-text);
+}
+.recommendation-note{
+  margin: 14px 0 0;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-soft);
+  opacity: 0.75;
+}
+.recommendation-cta{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: clamp(20px, 3vw, 32px);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  border-bottom: 1.5px solid var(--line);
+  padding-bottom: 4px;
+  transition: color var(--dur-xs) var(--ease), border-color var(--dur-xs) var(--ease);
+}
+.recommendation-cta span{ display: inline-block; transition: transform var(--dur-xs) var(--ease); }
+.recommendation-cta:hover{ color: var(--accent-text); border-color: var(--accent); }
+.recommendation-cta:hover span{ transform: translate(2px, -2px); }
+/* smaller, quicker reveal + stagger than the site-wide .reveal default
+   (24px / no delay) — the brief calls for an 8-16px lift and a deliberate
+   quote → attribution → CTA sequence rather than everything arriving at
+   once. Duration is left at the shared --dur-md (620ms), already inside
+   the requested 400-700ms range. */
+html.reveal-js .recommendation-quote.reveal,
+html.reveal-js .recommendation-meta.reveal,
+html.reveal-js .recommendation-cta.reveal{
+  transform: translateY(14px);
+}
+.recommendation-quote.reveal{ transition-delay: 0s; }
+.recommendation-meta.reveal{ transition-delay: .16s; }
+.recommendation-cta.reveal{ transition-delay: .32s; }
+@media (max-width: 720px){
+  .recommendation{ padding-top: 56px; padding-bottom: 24px; }
+  .recommendation-quote{ margin-bottom: 32px; }
+  .recommendation-cta{ margin-left: clamp(16px, 4vw, 20px); }
+}
+@media (prefers-reduced-motion: reduce){
+  html.reveal-js .recommendation-quote.reveal,
+  html.reveal-js .recommendation-meta.reveal,
+  html.reveal-js .recommendation-cta.reveal{ transform: none; transition-delay: 0s; }
+}
+
 /* ---------- about ---------- */
 .about-grid{
   display: grid;
