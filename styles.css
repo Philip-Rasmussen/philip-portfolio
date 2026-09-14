@@ -783,6 +783,11 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .recommendation-quote .mask-line{ line-height: inherit; }
 html.reveal-js .recommendation-quote .mask-line > span{
   transition: transform 480ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 280ms var(--ease);
+  /* on top of the generic 110ms-per-line JS stagger, this adds one more
+     110ms so the first quote line picks up right where the mark's entrance
+     left off — keeping the whole section on a single, even 110ms cadence
+     (mark, line, line, line, meta, cta) instead of two separate groups. */
+  transition-delay: .11s;
 }
 .recommendation-meta{ margin: 0 0 32px; }
 .recommendation-name{
@@ -852,14 +857,13 @@ html.reveal-js .recommendation-mark.reveal.in-view{ transform: translateY(0) sca
    html.reveal-js prefix here (one class more than that rule) is what
    makes these delays actually stick. */
 html.reveal-js .recommendation-mark.reveal{ transition-delay: 0s; }
-html.reveal-js .recommendation-quote.reveal{ transition-delay: .05s; }
-/* the quote's own three lines finish rising in around ~700ms after the
-   section enters view (110ms stagger between lines + each line's own
-   480ms bounce) — meta follows close behind rather than waiting for a
-   full pause, and the CTA right after, so the whole section resolves
-   noticeably faster while still reading as mark → quote → attribution → CTA. */
-html.reveal-js .recommendation-meta.reveal{ transition-delay: .6s; }
-html.reveal-js .recommendation-cta.reveal{ transition-delay: .72s; }
+html.reveal-js .recommendation-quote.reveal{ transition-delay: 0s; }
+/* one continuous line-by-line cadence, ~110ms apart, all the way through:
+   mark (0ms) -> quote line 1 (110ms, via the rule above) -> line 2 (220ms)
+   -> line 3 (330ms) -> meta (440ms) -> CTA (550ms). Reads as a single
+   unbroken reveal instead of a quote group and a separate attribution group. */
+html.reveal-js .recommendation-meta.reveal{ transition-delay: .44s; }
+html.reveal-js .recommendation-cta.reveal{ transition-delay: .55s; }
 @media (max-width: 720px){
   .recommendation{ padding-top: 48px; padding-bottom: 24px; }
   .recommendation-quote{ margin-bottom: 28px; }
