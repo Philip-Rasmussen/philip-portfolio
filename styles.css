@@ -747,26 +747,32 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 }
 
 /* ---------- employer recommendation ---------- */
-/* Sits between Results (stats) and About. Deliberately not a boxed
-   "testimonial card" — same section-head as every other section, the quote
-   just reads as the next piece of editorial content, controlled to a
-   comfortable reading width. The thin accent-coloured left rule is the
-   section's only decoration (the site's "subtle lines" motif) instead of a
-   quote-mark glyph or any card/shadow/border treatment. */
+/* Sits between Results (stats) and About. Section-head stays left-aligned,
+   matching every other section — but the quote itself is centred as its
+   own editorial "moment": a large serif quotation mark, a centred quote,
+   centred attribution underneath. Still no card/box/shadow/star-rating —
+   just type and a lot of air, which is what actually reads as premium. */
 .recommendation{ padding-top: 90px; padding-bottom: 40px; }
-.recommendation-inner{ max-width: 720px; }
+.recommendation-inner{ max-width: 760px; margin: 0 auto; text-align: center; }
+.recommendation-mark{
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(52px, 7vw, 84px);
+  line-height: 1;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
 .recommendation-quote{
-  margin: 0 0 40px;
-  padding-left: clamp(20px, 3vw, 32px);
-  border-left: 3px solid var(--accent);
+  margin: 0 auto 40px;
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: clamp(24px, 3.2vw, 38px);
+  font-size: clamp(24px, 3.4vw, 40px);
   line-height: 1.32;
   letter-spacing: -0.005em;
   color: var(--ink);
+  text-wrap: balance;
 }
-.recommendation-meta{ margin: 0 0 32px; padding-left: clamp(20px, 3vw, 32px); }
+.recommendation-meta{ margin: 0 0 32px; }
 .recommendation-name{
   margin: 0;
   font-weight: 700;
@@ -797,7 +803,6 @@ section{ padding-top: 120px; padding-bottom: 56px; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-left: clamp(20px, 3vw, 32px);
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
@@ -812,26 +817,35 @@ section{ padding-top: 120px; padding-bottom: 56px; }
 .recommendation-cta:hover span{ transform: translate(2px, -2px); }
 /* smaller, quicker reveal + stagger than the site-wide .reveal default
    (24px / no delay) — the brief calls for an 8-16px lift and a deliberate
-   quote → attribution → CTA sequence rather than everything arriving at
-   once. Duration is left at the shared --dur-md (620ms), already inside
-   the requested 400-700ms range. */
+   mark → quote → attribution → CTA sequence rather than everything
+   arriving at once. Duration is left at the shared --dur-md (620ms),
+   already inside the requested 400-700ms range. The mark gets its own
+   slightly richer entrance (small scale-in alongside the lift) since it's
+   a graphic accent rather than a line of text — kept well short of a
+   "bounce": same --ease curve as everything else, just an added dimension. */
 html.reveal-js .recommendation-quote.reveal,
 html.reveal-js .recommendation-meta.reveal,
 html.reveal-js .recommendation-cta.reveal{
   transform: translateY(14px);
 }
-.recommendation-quote.reveal{ transition-delay: 0s; }
-.recommendation-meta.reveal{ transition-delay: .16s; }
-.recommendation-cta.reveal{ transition-delay: .32s; }
+html.reveal-js .recommendation-mark.reveal{
+  transform: translateY(10px) scale(0.85);
+  transition: opacity var(--dur-md) var(--ease), transform var(--dur-md) var(--ease);
+}
+html.reveal-js .recommendation-mark.reveal.in-view{ transform: translateY(0) scale(1); }
+.recommendation-mark.reveal{ transition-delay: 0s; }
+.recommendation-quote.reveal{ transition-delay: .1s; }
+.recommendation-meta.reveal{ transition-delay: .26s; }
+.recommendation-cta.reveal{ transition-delay: .4s; }
 @media (max-width: 720px){
   .recommendation{ padding-top: 56px; padding-bottom: 24px; }
   .recommendation-quote{ margin-bottom: 32px; }
-  .recommendation-cta{ margin-left: clamp(16px, 4vw, 20px); }
 }
 @media (prefers-reduced-motion: reduce){
   html.reveal-js .recommendation-quote.reveal,
   html.reveal-js .recommendation-meta.reveal,
-  html.reveal-js .recommendation-cta.reveal{ transform: none; transition-delay: 0s; }
+  html.reveal-js .recommendation-cta.reveal,
+  html.reveal-js .recommendation-mark.reveal{ transform: none; transition-delay: 0s; }
 }
 
 /* ---------- about ---------- */
