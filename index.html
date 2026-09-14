@@ -18,10 +18,10 @@
      only starts downloading the moment the modal opens, so on a slow
      mobile connection the branded gradient placeholder was visible for
      a beat before anything else painted. -->
-<link rel="preload" as="image" href="assets/img/work/bet25-hedebolge-modal-poster.jpg">
+<link rel="preload" as="image" href="assets/img/work/bet25-hedebolge-modal-poster.jpg" media="(min-width: 860px)">
+<link rel="preload" as="image" href="assets/img/work/bet25-hedebolge-modal-poster-mobile.jpg" media="(max-width: 859px)">
 
 <link rel="stylesheet" href="styles.css">
-<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 <script>
   // No-JS-safe scroll reveals: every .reveal element (and the photo wipe
   // below) defaults to fully visible in the CSS/HTML alone. This class is
@@ -175,6 +175,8 @@
             data-cover="assets/img/work/bet25-hedebolge-cover.jpg"
             data-video="assets/video/bet25-hedebolge-modal.mp4"
             data-video-poster="assets/img/work/bet25-hedebolge-modal-poster.jpg"
+            data-video-mobile="assets/video/bet25-hedebolge-modal-mobile.mp4"
+            data-video-poster-mobile="assets/img/work/bet25-hedebolge-modal-poster-mobile.jpg"
             data-cover-vertical="true"
             data-title="Hedebølge — summer campaign"
             data-tags="Campaign design · Motion · Paid media"

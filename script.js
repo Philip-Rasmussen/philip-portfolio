@@ -1082,7 +1082,14 @@ if (modal){
     playToggle.hidden = true;
     playToggle.classList.remove('is-playing');
 
-    const videoSrc = card.dataset.video;
+    // a case can supply a separate mobile-only clip/poster (e.g. BET25's
+    // wide horizontal export, cropped nicely into the mobile modal's 16:9
+    // box) via data-video-mobile / data-video-poster-mobile — checked live
+    // against the same 860px breakpoint the CSS uses, so resizing across it
+    // (e.g. rotating a tablet) picks the right asset on next open.
+    const useMobileVideo = window.matchMedia('(max-width: 859px)').matches
+      && !!card.dataset.videoMobile;
+    const videoSrc = useMobileVideo ? card.dataset.videoMobile : card.dataset.video;
     const coverSrc = card.dataset.cover;
 
     if (videoSrc){
@@ -1092,7 +1099,10 @@ if (modal){
       // vertical 9:16 export vs. its square grid thumbnail) can supply its
       // own data-video-poster so the modal never shows a mismatched still
       // while the clip loads.
-      coverVideo.poster = card.dataset.videoPoster || coverSrc || '';
+      const posterSrc = useMobileVideo
+        ? (card.dataset.videoPosterMobile || card.dataset.videoPoster || coverSrc || '')
+        : (card.dataset.videoPoster || coverSrc || '');
+      coverVideo.poster = posterSrc;
       coverVideo.src = videoSrc;
       // shown immediately (poster displays right away, even before the clip
       // itself loads) rather than gated behind a loadeddata event, so
