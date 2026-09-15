@@ -734,6 +734,10 @@ const workActiveTagsEl = document.getElementById('workActiveTags');
 // instead of binding its own click-to-open listener on every card, which is
 // what let a stray click land on the wrong project's modal before
 let openProjectModal = () => {};
+// wired up below alongside openProjectModal — lets the modal's own
+// prev/next arrows keep the underlying card stack's active index in sync,
+// so the stack reflects whichever case you left the modal on
+let syncWorkIndex = () => {};
 
 if (workShowcase && workTrack && workCards.length){
   let workIndex = 0;
@@ -843,6 +847,7 @@ if (workShowcase && workTrack && workCards.length){
     workIndex = (i + workTotal) % workTotal;
     renderWork();
   }
+  syncWorkIndex = goToWork;
 
   // the highlighted (active) card opens its case study; any card still
   // peeking out from the stack instead steps the stack to bring it forward
@@ -982,8 +987,11 @@ if (modal){
   const linksHeadingEl = linksBlock.querySelector('h4');
   const linksListEl = modal.querySelector('.project-modal-links-list');
   const watchTagEl = modal.querySelector('.project-modal-watch-tag');
+  const modalPrevBtn = document.getElementById('projectModalPrev');
+  const modalNextBtn = document.getElementById('projectModalNext');
   let lastFocused = null;
   let modalScrollLockY = 0;
+  let modalCardIndex = -1;
 
   // a data-* value may hold more than one short paragraph, separated by
   // "%%" (kept out of the visible copy) — used for "The work", where every
@@ -1002,6 +1010,7 @@ if (modal){
   }
 
   function openModal(card){
+    modalCardIndex = workCards.indexOf(card);
     titleEl.textContent = card.dataset.title || '';
     clientEl.textContent = card.dataset.client || '';
     // some case covers (BET25's Hedebølge campaign asset) already have their
@@ -1134,7 +1143,11 @@ if (modal){
       coverWrap.classList.remove('has-photo');
     }
 
-    lastFocused = document.activeElement;
+    // only capture the return-focus target on the initial open — a
+    // prev/next step re-runs this same function while the modal is
+    // already open, and by then document.activeElement is one of the
+    // modal's own nav buttons, not the card that originally opened it
+    if (!modal.classList.contains('open')) lastFocused = document.activeElement;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     modal.removeAttribute('inert');
@@ -1184,9 +1197,43 @@ if (modal){
 
   openProjectModal = openModal;
 
+  // prev/next: step to the next or previous case in the same order as the
+  // Selected Work stack, without closing and reopening the modal. A short
+  // opacity crossfade (see .project-modal-cover/.project-modal-content.is-
+  // switching in styles.css) covers the instant content swap so it reads
+  // as a deliberate transition rather than a flicker.
+  function stepModal(delta){
+    if (!workCards.length) return;
+    const total = workCards.length;
+    const fromIndex = modalCardIndex >= 0 ? modalCardIndex : 0;
+    const nextIndex = (fromIndex + delta + total) % total;
+    const nextCard = workCards[nextIndex];
+    if (!nextCard) return;
+    const swap = () => {
+      openModal(nextCard);
+      syncWorkIndex(nextIndex);
+    };
+    if (reducedMotion){
+      swap();
+      return;
+    }
+    coverWrap.classList.add('is-switching');
+    modalContent.classList.add('is-switching');
+    setTimeout(() => {
+      swap();
+      coverWrap.classList.remove('is-switching');
+      modalContent.classList.remove('is-switching');
+    }, 160);
+  }
+  if (modalPrevBtn) modalPrevBtn.addEventListener('click', () => stepModal(-1));
+  if (modalNextBtn) modalNextBtn.addEventListener('click', () => stepModal(1));
+
   modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModal));
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape'){ closeModal(); return; }
+    if (e.key === 'ArrowRight'){ e.preventDefault(); stepModal(1); return; }
+    if (e.key === 'ArrowLeft'){ e.preventDefault(); stepModal(-1); }
   });
 
   // start closed/inert so it's out of the accessibility tree and can't be

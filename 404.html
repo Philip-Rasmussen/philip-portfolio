@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found — Philip Rasmussen</title>
+<meta name="description" content="This page doesn't exist. Head back to Philip Rasmussen's video editing and design portfolio.">
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="index.html" class="logo">PHILIP<span class="dot">.</span></a>
+    <nav class="nav">
+      <a href="index.html#work">Work</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <a href="index.html#contact" class="nav-cta">Let's talk</a>
+    <button type="button" class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false" aria-controls="navMobile">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="nav-mobile" id="navMobile">
+  <a href="index.html#work">Work</a>
+  <a href="index.html#about">About</a>
+  <a href="index.html#contact">Contact</a>
+  <a href="index.html#contact" class="nav-mobile-cta">Let's talk</a>
+</div>
+
+<main>
+  <section class="notfound">
+    <div class="notfound-inner">
+      <span class="eyebrow notfound-eyebrow">404 error</span>
+      <div class="notfound-mark" aria-hidden="true">
+        <span class="notfound-word">PHILIP</span>
+        <span class="notfound-dot-stage">
+          <span class="notfound-dot-shadow"></span>
+          <span class="notfound-dot"></span>
+        </span>
+      </div>
+
+      <h1 class="notfound-title">This page took a bounce.</h1>
+      <p class="notfound-sub">The page you're looking for doesn't exist — it might have been moved, renamed, or the link's just wrong. Let's get you back on track.</p>
+
+      <div class="notfound-actions">
+        <a href="index.html" class="btn btn-primary">Back to home</a>
+        <a href="index.html#work" class="btn btn-ghost">View my work</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Minimal, self-contained mobile-nav toggle. script.js on the main site
+  // also wires up the work carousel, the case-study modal and the hero
+  // entrance sequence — none of which exist on this page — so rather than
+  // load all of that just for one interactive piece, this copies the small
+  // bit of it this page actually uses.
+  (function(){
+    var burger = document.getElementById('navBurger');
+    var navMobile = document.getElementById('navMobile');
+    if (!burger || !navMobile) return;
+    function closeNav(){
+      burger.setAttribute('aria-expanded', 'false');
+      burger.setAttribute('aria-label', 'Open menu');
+      navMobile.classList.remove('open');
+      document.body.classList.remove('nav-open');
+    }
+    function toggleNav(){
+      var open = navMobile.classList.toggle('open');
+      burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      document.body.classList.toggle('nav-open', open);
+    }
+    burger.addEventListener('click', toggleNav);
+    navMobile.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeNav); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && navMobile.classList.contains('open')) closeNav();
+    });
+  })();
+</script>
+</body>
+</html>
