@@ -2056,36 +2056,19 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   }
   .project-modal-cover.no-cover-overlay .project-modal-title{ color: var(--ink); }
 
-  /* BET25's clip is portrait, so it needs the same 40%-column-with-its-own-
-     height treatment as .no-cover-overlay above, but WITHOUT giving up the
-     white title-on-media overlay every other card uses on desktop — so this
-     only touches sizing (column width/aspect, media aspect-ratio), leaving
-     .project-modal-cover-scrim and .project-modal-title on their normal,
-     un-overridden (overlaid, white-text) styles from earlier in this block. */
-  /* Sized from HEIGHT, not width: a 9:16 clip at a fixed 40%-of-panel
-     width (the .no-cover-overlay approach above) gets taller than the
-     panel's own 88vh cap on anything but a very tall screen — a laptop
-     ends up needing to scroll the modal just to see the rest of the clip.
-     Capping the media's height and letting width follow the aspect ratio
-     instead means it always fits inside one screen, on any display. */
-  .project-modal-cover.vertical-cover{
-    flex: 0 1 auto;
-    width: auto;
-    max-width: 42%;
-    align-self: flex-start;
-    aspect-ratio: auto;
-    height: auto;
-  }
-  .project-modal-cover.vertical-cover .project-modal-cover-media{
-    position: relative; inset: auto;
-    aspect-ratio: 9 / 16;
-    width: auto;
-    height: min(76vh, 640px);
-    max-width: 100%;
-  }
-}
-@media (min-width: 860px) and (max-height: 700px){
-  .project-modal-cover.vertical-cover .project-modal-cover-media{ height: min(66vh, 640px); }
+  /* BET25's clip is portrait, but on desktop it now just uses the exact
+     same treatment as every other (16:9) case: a 40% column, stretched to
+     match the content column's height, with the video's own object-fit:
+     cover (set on .project-modal-cover-video/-img earlier in this file)
+     cropping it to fill that box. An earlier version instead sized this
+     column from the clip's true 9:16 aspect ratio at a fixed width, which
+     (a) made it taller than the panel's 88vh cap on a laptop screen,
+     forcing a scroll just to see the rest of the clip, and (b) after that
+     was capped by height instead, left a gap under the video whenever the
+     content column was taller than the capped clip. Letting it stretch
+     like every other card's cover avoids both — same rules, no override
+     needed here beyond the class existing as a hook for the .no-cover-
+     overlay-style comment above. */
 }
 @media (min-width: 1200px){
   .project-modal-content{ padding: 64px 76px; }
