@@ -1974,13 +1974,17 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
   .project-modal-nav{ display: none; }
 }
 
-/* brief crossfade while stepModal() swaps in the next/previous case's
-   content — otherwise the text/video just snap-replace instantly, which
-   reads as a glitch rather than a deliberate "next case" navigation. */
+/* crossfade while stepModal() swaps in the next/previous case's content —
+   otherwise the text/video just snap-replace instantly, which reads as a
+   glitch rather than a deliberate "next case" navigation. Uses the site's
+   own --ease curve (rather than a flat linear/ease opacity blink) and
+   pairs it with a small translateY so the new case visibly settles into
+   place instead of just flickering on — matches stepModal()'s own timeout
+   in script.js, which must stay equal to this duration. */
 .project-modal-cover,
-.project-modal-content{ transition: opacity .16s ease; }
+.project-modal-content{ transition: opacity .24s var(--ease), transform .24s var(--ease); }
 .project-modal-cover.is-switching,
-.project-modal-content.is-switching{ opacity: 0; }
+.project-modal-content.is-switching{ opacity: 0; transform: translateY(6px); }
 @media (prefers-reduced-motion: reduce){
   .project-modal-cover,
   .project-modal-content{ transition: none; }

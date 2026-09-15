@@ -1147,29 +1147,41 @@ if (modal){
     // prev/next step re-runs this same function while the modal is
     // already open, and by then document.activeElement is one of the
     // modal's own nav buttons, not the card that originally opened it
-    if (!modal.classList.contains('open')) lastFocused = document.activeElement;
+    // both the return-focus target and the background scroll lock are
+    // captured only on the INITIAL open — a prev/next step re-runs this
+    // same function while the modal is already open, and by then the
+    // background is already pinned via position:fixed (so window.scrollY
+    // reads 0, not the real page position) and document.activeElement is
+    // one of the modal's own nav buttons, not the card that opened it.
+    // Re-capturing either on a step overwrote the real values, which is
+    // what sent the page jumping back to the very top on close after
+    // browsing a couple of cases with the arrows.
+    const isInitialOpen = !modal.classList.contains('open');
+    if (isInitialOpen) lastFocused = document.activeElement;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     modal.removeAttribute('inert');
-    // lock background scroll WITHOUT losing scroll position: plain
-    // `overflow: hidden` on html/body collapses the scrollable area, and
-    // several browsers (Safari especially) reset scrollTop to 0 the moment
-    // that happens — so closing the modal "restored" scrolling but landed
-    // back at the very top of the page instead of back at Selected Work.
-    // Pinning the body at its current scroll offset via position:fixed
-    // keeps the real scrollY untouched underneath, and closeModal below
-    // explicitly scrolls back to it.
-    modalScrollLockY = window.scrollY || window.pageYOffset || 0;
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${modalScrollLockY}px`;
-    document.body.style.left = '0';
-    document.body.style.right = '0';
+    if (isInitialOpen){
+      // lock background scroll WITHOUT losing scroll position: plain
+      // `overflow: hidden` on html/body collapses the scrollable area, and
+      // several browsers (Safari especially) reset scrollTop to 0 the
+      // moment that happens — so closing the modal "restored" scrolling
+      // but landed back at the very top of the page instead of back at
+      // Selected Work. Pinning the body at its current scroll offset via
+      // position:fixed keeps the real scrollY untouched underneath, and
+      // closeModal below explicitly scrolls back to it.
+      modalScrollLockY = window.scrollY || window.pageYOffset || 0;
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${modalScrollLockY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+    }
     // every case starts scrolled to the top, regardless of where a
     // previously-viewed case had been scrolled to
     if (modalPanel) modalPanel.scrollTop = 0;
     if (modalContent) modalContent.scrollTop = 0;
-    modal.querySelector('.project-modal-close').focus();
+    if (isInitialOpen) modal.querySelector('.project-modal-close').focus();
   }
 
   function closeModal(){
@@ -1219,11 +1231,14 @@ if (modal){
     }
     coverWrap.classList.add('is-switching');
     modalContent.classList.add('is-switching');
+    // must match the .24s transition duration on .is-switching in
+    // styles.css — this is the fade-OUT half; swap() then updates the
+    // content while invisible and clearing the class starts the fade back in
     setTimeout(() => {
       swap();
       coverWrap.classList.remove('is-switching');
       modalContent.classList.remove('is-switching');
-    }, 160);
+    }, 240);
   }
   if (modalPrevBtn) modalPrevBtn.addEventListener('click', () => stepModal(-1));
   if (modalNextBtn) modalNextBtn.addEventListener('click', () => stepModal(1));
