@@ -191,7 +191,7 @@ main > section[id]{ scroll-margin-top: 116px; }
   text-transform: uppercase;
   line-height: 0.92;
   letter-spacing: 0.005em;
-  font-size: clamp(48px, 9vw, 128px);
+  font-size: clamp(48px, 8vw, 104px);
   margin: 0 0 32px;
 }
 /* each headline line sits in its own overflow-hidden mask; the line itself
@@ -315,7 +315,7 @@ main > section[id]{ scroll-margin-top: 116px; }
   font-family: var(--font-display);
   text-transform: uppercase;
   font-weight: 400;
-  font-size: clamp(32px, 5vw, 56px);
+  font-size: clamp(32px, 4.4vw, 46px);
   margin: 0;
   line-height: 1;
 }
@@ -1151,7 +1151,7 @@ html.reveal-js .about-step.in-focus{ opacity: 1; color: var(--ink); }
   font-family: var(--font-display);
   text-transform: uppercase;
   font-weight: 400;
-  font-size: clamp(40px, 7vw, 84px);
+  font-size: clamp(40px, 6vw, 68px);
   line-height: 0.98;
   margin: 0 0 22px;
 }
@@ -1553,7 +1553,7 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 }
 .stat-number{
   font-family: var(--font-display);
-  font-size: clamp(30px, 5vw, 58px);
+  font-size: clamp(30px, 4.4vw, 46px);
   color: var(--accent-text);
   line-height: 1;
   white-space: nowrap;
@@ -1652,7 +1652,7 @@ html.reveal-js .mask-line.in-view > span{ transform: translateY(0); opacity: 1; 
 .press-feature-brand{
   font-family: var(--font-display);
   text-transform: uppercase;
-  font-size: clamp(30px, 5vw, 52px);
+  font-size: clamp(30px, 4.4vw, 44px);
   letter-spacing: 0.01em;
   line-height: 1;
   margin: 0 0 16px;
