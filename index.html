@@ -131,7 +131,7 @@
     <div class="section-head reveal">
       <span class="section-num">01</span>
       <h2>Selected work</h2>
-      <p>Four projects across social content, cinematography, motion and campaign design. Open a case to see the work, my role and the result.</p>
+      <p>Five projects across social content, cinematography, motion and campaign design. Open a case to see the work, my role and the result.</p>
     </div>
 
     <div class="work-showcase reveal" id="workShowcase" tabindex="0" aria-label="Selected work — use arrow keys or the buttons to browse">
@@ -248,6 +248,32 @@
                 <source src="assets/video/personal-brand-loop.mp4" type="video/mp4">
               </video>
               <span class="work-media-mark">3D Edit</span>
+              <span class="work-media-viewcase">View case</span>
+            </div>
+          </article>
+
+          <article class="work-card" role="button" tabindex="-1"
+            aria-label="Zimpler payout animation. BET25 × Zimpler. View case study."
+            data-cover="assets/img/work/bet25-zimpler-cover.jpg"
+            data-video="assets/video/bet25-zimpler-loop.webm"
+            data-title="Zimpler payout — UI animation"
+            data-tags="Motion design · UI animation · Sound design"
+            data-client="BET25 × Zimpler"
+            data-role="UI Animation · After Effects · Motion · Sound Design"
+            data-context="BET25 and Zimpler wanted a short animation that shows <strong class='copy-emphasis'>how fast payouts work in the app</strong> — from a winning spin to money on the way to your bank account. The challenge was making a UI flow easy to follow in a few seconds."
+            data-work="I animated the <strong class='copy-emphasis'>app interface and phone mockup in After Effects</strong>, building the flow from the winning screen through the payout menu to the final BET25 × Zimpler lock-up.%%I also did the <strong class='copy-emphasis'>sound design</strong> — the SFX that tie each UI movement together — which is why the full version is best watched with sound on."
+            data-result-text="A short <strong class='copy-emphasis'>UI-animation piece with custom sound design</strong> that turns a product feature into a clear, fast-moving story. It shows how I approach motion design and sound for brands."
+            data-result="Motion + sound design"
+            data-watch-heading="Watch the work"
+            data-links="Watch with sound|lightbox:assets/video/bet25-zimpler-full.mp4">
+            <div class="work-media">
+              <video class="work-cover-video" id="zimplerCoverVideo" poster="assets/img/work/bet25-zimpler-cover.jpg" muted loop playsinline preload="none" aria-hidden="true"
+                onloadeddata="this.closest('.work-media').classList.add('has-photo')"
+                onerror="const m=this.closest('.work-media'); if(m) m.classList.remove('has-photo'); this.remove()">
+                <source src="assets/video/bet25-zimpler-loop.webm" type="video/webm">
+                <source src="assets/video/bet25-zimpler-loop.mp4" type="video/mp4">
+              </video>
+              <span class="work-media-mark">BET25 × Zimpler</span>
               <span class="work-media-viewcase">View case</span>
             </div>
           </article>
@@ -714,6 +740,14 @@
   <button type="button" class="project-modal-nav project-modal-nav-next" id="projectModalNext" aria-label="Next case study">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 L17 12 L9 20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
+</div>
+
+<div class="video-lightbox" id="videoLightbox" aria-hidden="true" inert>
+  <div class="video-lightbox-backdrop" data-lightbox-close></div>
+  <div class="video-lightbox-stage" role="dialog" aria-modal="true" aria-label="Full video with sound">
+    <video class="video-lightbox-video" controls playsinline preload="none"></video>
+  </div>
+  <button type="button" class="video-lightbox-close" data-lightbox-close aria-label="Close video">✕</button>
 </div>
 
 <script src="script.js"></script>

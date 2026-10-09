@@ -1009,6 +1009,48 @@ if (modal){
     });
   }
 
+  // ---- video lightbox: full video with sound + native controls, layered
+  // above the case modal. The src is only set on open (nothing loads until
+  // the visitor asks for it) and is removed again on close so audio can never
+  // keep playing in the background.
+  const lightbox = document.getElementById('videoLightbox');
+  const lightboxVideo = lightbox ? lightbox.querySelector('.video-lightbox-video') : null;
+  let lightboxReturnFocus = null;
+  const lightboxIsOpen = () => !!lightbox && lightbox.classList.contains('open');
+
+  function openLightbox(src, poster, trigger){
+    if (!lightbox || !lightboxVideo || !src) return;
+    lightboxReturnFocus = trigger || document.activeElement;
+    lightboxVideo.poster = poster || '';
+    lightboxVideo.src = src;
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    lightbox.removeAttribute('inert');
+    // started by the visitor's own click, so the browser allows sound
+    lightboxVideo.muted = false;
+    lightboxVideo.play().catch(() => {});
+    lightbox.querySelector('.video-lightbox-close').focus();
+  }
+
+  function closeLightbox(){
+    if (!lightboxIsOpen()) return;
+    lightboxVideo.pause();
+    lightboxVideo.removeAttribute('src');
+    lightboxVideo.load();
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightbox.setAttribute('inert', '');
+    if (lightboxReturnFocus && lightboxReturnFocus.isConnected) lightboxReturnFocus.focus();
+    lightboxReturnFocus = null;
+  }
+
+  if (lightbox){
+    lightbox.querySelectorAll('[data-lightbox-close]').forEach(el => el.addEventListener('click', closeLightbox));
+    lightbox.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape'){ e.stopPropagation(); closeLightbox(); }
+    });
+  }
+
   function openModal(card){
     modalCardIndex = workCards.indexOf(card);
     titleEl.textContent = card.dataset.title || '';
@@ -1065,12 +1107,25 @@ if (modal){
         const [label, url] = pair.split('|').map(s => (s || '').trim());
         if (!url) return;
         const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.textContent = label || url;
-        li.appendChild(a);
+        if (url.startsWith('lightbox:')){
+          // "lightbox:<video path>" opens the full video (with sound and real
+          // controls) in the video lightbox on top of this modal, instead of
+          // sending visitors to an external URL
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'project-modal-sound-btn';
+          btn.textContent = label || 'Watch with sound';
+          const src = url.slice('lightbox:'.length);
+          btn.addEventListener('click', () => openLightbox(src, card.dataset.cover || '', btn));
+          li.appendChild(btn);
+        } else {
+          const a = document.createElement('a');
+          a.href = url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = label || url;
+          li.appendChild(a);
+        }
         linksListEl.appendChild(li);
       });
       linksBlock.hidden = false;
@@ -1185,6 +1240,7 @@ if (modal){
   }
 
   function closeModal(){
+    closeLightbox();
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     modal.setAttribute('inert', '');
@@ -1246,6 +1302,12 @@ if (modal){
   modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModal));
   document.addEventListener('keydown', (e) => {
     if (!modal.classList.contains('open')) return;
+    if (lightboxIsOpen()){
+      // the lightbox owns the keyboard while it's open (Escape closes it;
+      // arrows must seek the video, not step to another case)
+      if (e.key === 'Escape'){ closeLightbox(); }
+      return;
+    }
     if (e.key === 'Escape'){ closeModal(); return; }
     if (e.key === 'ArrowRight'){ e.preventDefault(); stepModal(1); return; }
     if (e.key === 'ArrowLeft'){ e.preventDefault(); stepModal(-1); }

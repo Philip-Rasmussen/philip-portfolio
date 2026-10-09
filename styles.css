@@ -2892,3 +2892,81 @@ body.nav-open{ overflow: hidden; }
   justify-content: center;
   gap: 14px;
 }
+
+/* ---------- video lightbox (full video with sound) ---------- */
+.video-lightbox{
+  position: fixed;
+  inset: 0;
+  z-index: 700; /* above .project-modal (600) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+.video-lightbox.open{ opacity: 1; pointer-events: auto; }
+.video-lightbox-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(10,8,5,0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.video-lightbox-stage{
+  position: relative;
+  /* the video keeps its own 16:9 shape; width is capped by both the viewport
+     width and (via the 16:9 ratio) the viewport height, so it never overflows */
+  width: min(100%, 1200px, calc((100vh - 120px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,0.7);
+  transform: scale(.97);
+  transition: transform .35s var(--ease);
+}
+.video-lightbox.open .video-lightbox-stage{ transform: scale(1); }
+.video-lightbox-video{ display: block; width: 100%; height: 100%; object-fit: contain; background: #000; }
+.video-lightbox-close{
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top, 0px));
+  right: 16px;
+  z-index: 2;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(243,238,230,0.14);
+  color: var(--bone);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.video-lightbox-close:hover{ background: var(--accent); color: var(--ink); }
+@media (prefers-reduced-motion: reduce){
+  .video-lightbox, .video-lightbox-stage{ transition: none; transform: none; }
+}
+
+/* the "Watch with sound" trigger in a case's Watch the work list — a button
+   (it opens the lightbox, it doesn't navigate) styled as a clear CTA pill */
+.project-modal-sound-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease;
+}
+.project-modal-sound-btn::after{ content: "↗"; font-weight: 400; }
+.project-modal-sound-btn:hover{ transform: translateY(-2px); }
+.project-modal-sound-btn:focus-visible{ outline: 2px solid var(--ink); outline-offset: 3px; }
