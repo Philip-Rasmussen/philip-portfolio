@@ -1255,6 +1255,15 @@ html.reveal-js .about-step.in-focus{ opacity: 1; color: var(--ink); }
   .contact-grid{ grid-template-columns: 1fr; gap: 48px; align-items: start; }
   .contact-btn-row{ flex-direction: column; align-items: stretch; }
   .contact-email-btn{ width: 100%; justify-content: space-between; }
+  /* the grid column and the buttons must be allowed to shrink below the
+     email address's natural width, otherwise a long address pushes the whole
+     contact block wider than the phone screen */
+  .contact-grid > *{ min-width: 0; }
+  .contact-email-btn{ min-width: 0; }
+  .contact-email-btn > span:first-child{ min-width: 0; overflow-wrap: anywhere; }
+}
+@media (max-width: 480px){
+  .contact-email-btn{ gap: 12px; padding-left: 22px; font-size: clamp(13px, 4.2vw, 17px); }
 }
 @media (max-width: 720px){
   /* the marquee is absolutely positioned (top: 46px) over this section, so
