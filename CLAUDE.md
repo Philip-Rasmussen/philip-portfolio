@@ -1,7 +1,9 @@
 # Philip's Portfolio Site
 
 A personal portfolio for Philip Rasmussen — a 22-year-old Danish video editor / graphic
-designer / content creator, currently a media graphics apprentice at BET25 in Aarhus.
+designer / content creator, qualified as a Graphic Designer (mediegrafiker, Aarhus Tech, Oct 2026;
+grade 12 + bronze medal). Worked at BET25 in Aarhus until 20 Nov 2026; available full-time from
+1 Jan 2027 and open to freelance. Contributes to Top Comfy (not its founder — Magnus is).
 The site's job is to land freelance work and full-time roles by proving real skill and
 output to recruiters and brands, not to grow a social following.
 
